@@ -1,7 +1,8 @@
 "use client";
 
+import { useState, useRef, useEffect } from "react";
+import { ChevronDownIcon } from "lucide-react";
 import clsx from "clsx";
-import { useState, useEffect } from "react";
 
 type SelectProps = {
   value?: string;
@@ -10,80 +11,77 @@ type SelectProps = {
   defaultValue?: string;
   onChange?: (value: string) => void;
   options: { label: string; value: string }[];
+  error?: string;
 };
 
 export default function Select({
-  value,
   options,
+  placeholder,
   onChange,
   className,
-  defaultValue,
-  placeholder,
+  error,
 }: SelectProps) {
   const [isOpen, setIsOpen] = useState(false);
-  const [selected, setSelected] = useState(
-    value || defaultValue || options[0]?.value
-  );
+  const [selectedOption, setSelectedOption] = useState<Option | null>(null);
+  const dropdownRef = useRef<HTMLDivElement>(null);
 
   useEffect(() => {
-    if (value !== undefined) {
-      setSelected(value);
-    }
-  }, [value]);
+    const handleClickOutside = (event: MouseEvent) => {
+      if (dropdownRef.current && !dropdownRef.current.contains(event.target as Node)) {
+        setIsOpen(false);
+      }
+    };
 
-  const handleSelect = (newValue: string) => {
-    setSelected(newValue);
-    onChange?.(newValue);
+    document.addEventListener("mousedown", handleClickOutside);
+    return () => document.removeEventListener("mousedown", handleClickOutside);
+  }, []);
+
+  const handleOptionSelect = (option: Option) => {
+    setSelectedOption(option);
+    onChange?.(option.value);
     setIsOpen(false);
   };
 
-  const selectedLabel =
-    options.find((opt) => opt.value === selected)?.label || placeholder;
-
   return (
-    <div className="relative">
-      <button
-        type="button"
-        onClick={() => setIsOpen(!isOpen)}
-        className={clsx(
-          "w-full  px-4 py-3 rounded-[12px] border border-[#FFFFFF29] text-white text-[12px] md:text-base font-medium font-aloeMed gap-2 text-left flex items-center justify-between",
-          className
-        )}
-      >
-        <span>{selectedLabel}</span>
-        <svg
-          className={`size-3 md:size-4 transition-transform ${
-            isOpen ? "rotate-180" : ""
-          }`}
-          fill="none"
-          stroke="currentColor"
-          viewBox="0 0 24 24"
+    <div className="space-y-2">
+      <div className="relative" ref={dropdownRef}>
+        <button
+          type="button"
+          onClick={() => setIsOpen(!isOpen)}
+          className={clsx(
+            "w-full px-4 py-3 bg-neutral/60 border border-neutral-400/30 rounded-lg text-white focus:outline-none focus:ring-2 focus:ring-primary/50 focus:border-primary transition-all duration-200 font-inter flex items-center justify-between",
+            error && "border-accent focus:ring-accent/50 focus:border-accent",
+            className
+          )}
         >
-          <path
-            strokeLinecap="round"
-            strokeLinejoin="round"
-            strokeWidth={2}
-            d="M19 9l-7 7-7-7"
+          <span className={selectedOption ? "text-white" : "text-light/40"}>
+            {selectedOption ? selectedOption.label : placeholder}
+          </span>
+          <ChevronDownIcon
+            className={clsx(
+              "w-5 h-5 text-light/40 transition-transform duration-200",
+              isOpen && "rotate-180"
+            )}
           />
-        </svg>
-      </button>
+        </button>
 
-      {isOpen && (
-        <div className="absolute z-10 w-full mt-2 bg-[#283142] rounded-[12px] shadow-lg">
-          {options.map((option) => (
-            <button
-              key={option.value}
-              onClick={() => handleSelect(option.value)}
-              className={clsx(
-                "w-full px-4 py-3 text-[12px] whitespace-nowrap md:text-base font-medium font-aloeMed text-left hover:bg-[#374151] transition-colors",
-                option.value === selected ? "text-white" : "text-[#FFFFFF80]",
-                "first:rounded-t-[12px] last:rounded-b-[12px]"
-              )}
-            >
-              {option.label}
-            </button>
-          ))}
-        </div>
+        {isOpen && (
+          <div className="absolute z-50 w-full mt-2 bg-neutral border border-neutral-400/30 rounded-lg shadow-xl max-h-60 overflow-auto">
+            {options.map((option) => (
+              <button
+                key={option.value}
+                type="button"
+                onClick={() => handleOptionSelect(option)}
+                className="w-full px-4 py-3 text-left text-white hover:bg-primary/20 transition-colors duration-200 font-inter"
+              >
+                {option.label}
+              </button>
+            ))}
+          </div>
+        )}
+      </div>
+      {error && (
+        <p className="text-accent text-sm font-inter">{error}</p>
       )}
     </div>
   );

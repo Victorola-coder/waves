@@ -1,60 +1,33 @@
 "use client";
 
 import clsx from "clsx";
-import { useState } from "react";
-import { EyeIcon } from "../svgs";
 
 export default function Input({
-  id,
-  error,
-  placeholder,
   type = "text",
-  multiline,
+  placeholder,
+  value,
+  onChange,
+  error,
+  className,
   ...props
 }: InputProps) {
-  const [showPassword, setShowPassword] = useState(false);
-  const inputType =
-    type === "password" ? (showPassword ? "text" : "password") : type;
-
   return (
-    <fieldset>
-      <div className="relative">
-        {multiline ? (
-          <textarea
-            {...(props as React.TextareaHTMLAttributes<HTMLTextAreaElement>)}
-            placeholder={placeholder}
-            className={clsx(
-              "w-full bg-[#283142] p-4 rounded-[12px] text-white placeholder:text-[#FFFFFF80] font-aloe text-base leading-[22.4px] focus:outline-none focus:ring-0",
-              error && "border-1 border-red-500"
-            )}
-          />
-        ) : (
-          <input
-            {...(props as React.InputHTMLAttributes<HTMLInputElement>)}
-            type={inputType}
-            placeholder={placeholder}
-            autoComplete="off"
-            className={clsx(
-              "w-full bg-[#283142] h-full p-4 rounded-[12px] text-white placeholder:text-[#FFFFFF80] font-aloe text-base leading-[22.4px] focus:outline-none focus:ring-0",
-              error && "border-1 border-red-500",
-              type === "password" && "pr-12"
-            )}
-          />
+    <div className="space-y-2">
+      <input
+        type={type}
+        placeholder={placeholder}
+        value={value}
+        onChange={onChange}
+        className={clsx(
+          "w-full px-4 py-3 bg-neutral/60 border border-neutral-400/30 rounded-lg text-white placeholder-light/40 focus:outline-none focus:ring-2 focus:ring-primary/50 focus:border-primary transition-all duration-200 font-inter",
+          error && "border-accent focus:ring-accent/50 focus:border-accent",
+          className
         )}
-        {type === "password" && (
-          <span
-            onClick={() => setShowPassword(!showPassword)}
-            className="absolute right-4 top-1/2 -translate-y-1/2 text-[#FFFFFF80] hover:text-white transition-colors"
-          >
-            <EyeIcon fill={showPassword ? "white" : "#FFFFFF80"} />
-          </span>
-        )}
-      </div>
+        {...props}
+      />
       {error && (
-        <p className="text-red-500 font-aloe text-xs leading-[22.4px] mt-1">
-          {error}
-        </p>
+        <p className="text-accent text-sm font-inter">{error}</p>
       )}
-    </fieldset>
+    </div>
   );
 }

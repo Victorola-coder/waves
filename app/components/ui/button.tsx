@@ -19,19 +19,21 @@ export default function Button(props: ButtonProps) {
       disabled={loading || disabled}
       className={clsx(
         !noDefault &&
-          "transition-all duration-300 active:scale-[0.99] px-[21px] py-[10px] font-medium text-[18px] leading-normal font-aloeMed disabled:cursor-not-allowed disabled:bg-opacity-60",
+          "transition-all duration-300 active:scale-[0.99] px-[21px] py-[10px] font-medium text-[18px] leading-normal font-inter disabled:cursor-not-allowed disabled:bg-opacity-60 rounded-[12px]",
         {
           "px-[21px] py-[12.5px] text-[18px]": size === "default",
           "px-3 py-2 text-sm": size === "sm",
           "px-6 py-3 text-lg": size === "lg",
-          "bg-gradient-to-r from-primary-100 to-primary rounded-[10px]  text-white":
+          "bg-gradient-to-r from-primary to-primary-600 text-white hover:from-primary-600 hover:to-primary-700 shadow-lg hover:shadow-primary/25":
             variant === "default",
-          "bg-[#FFFFFF] text-black rounded-[16px]": variant === "secondary",
-          "bg-red-500/10 hover:bg-red-500/20 text-red-500":
+          "bg-light text-neutral hover:bg-light-100 border border-light-200":
+            variant === "secondary",
+          "bg-accent/10 hover:bg-accent/20 text-accent border border-accent/20":
             variant === "danger",
-          "bg-[#6B39FF] hover:bg-[#6B39FF]/80 rounded-[12px] active:bg-[#6B39FF]/90 text-white":
+          "bg-gradient-to-r from-primary to-secondary text-white hover:from-primary-600 hover:to-secondary-600 shadow-lg hover:shadow-primary/25":
             variant === "primary",
-          "bg-[#283142] rounded-[12px] text-[#FFFFFF]": variant === "google",
+          "bg-neutral text-light hover:bg-neutral-600 border border-neutral-400":
+            variant === "google",
         },
         className
       )}

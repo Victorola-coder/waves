@@ -11,7 +11,7 @@ export default function Glow({
     <div
       className={clsx(
         className,
-        "relative overflow-hidden after:content-[''] after:absolute after:bg-zinc-100 after:w-0 after:h-0.5 after:bottom-0 after:right-0 after:transition-all after:duration-300 after:hover:left-0 after:hover:w-full space-y-3 hover:shadow-2xl hover:shadow-emerald-400/20 group hover:bg-[#FFFFFF08] transition-all duration-300 hover:scale-[0.99] rounded-[36px]"
+        "relative overflow-hidden after:content-[''] after:absolute after:bg-gradient-to-r after:from-primary/50 after:to-secondary/50 after:w-0 after:h-0.5 after:bottom-0 after:right-0 after:transition-all after:duration-300 after:hover:left-0 after:hover:w-full space-y-3 hover:shadow-2xl hover:shadow-primary/20 group hover:bg-neutral/40 transition-all duration-300 hover:scale-[0.99] rounded-[36px] border border-neutral-400/20 hover:border-primary/30"
       )}
     >
       {children}

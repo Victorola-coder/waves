@@ -11,8 +11,9 @@
 
 body {
   color: white;
-  background-color: #0f0f0f;
+  background: linear-gradient(135deg, #0f0f0f 0%, #1B262C 50%, #0f0f0f 100%);
   overflow-x: hidden;
+  font-family: var(--font-inter), sans-serif;
 }
 
 body::-webkit-scrollbar {
@@ -25,7 +26,7 @@ body::-webkit-scrollbar-corner {
 
 /* scrollbar */
 body::-webkit-scrollbar-track {
-  @apply bg-primary;
+  @apply bg-primary/20;
 }
 
 body::-webkit-scrollbar-track-piece {
@@ -34,7 +35,7 @@ body::-webkit-scrollbar-track-piece {
 
 body::-webkit-scrollbar-thumb {
   @apply transition-all duration-500 
-  rounded-full bg-dark hover:bg-dark/60;
+  rounded-full bg-primary hover:bg-primary/60;
 }
 
 html.lenis {
@@ -68,6 +69,71 @@ input::-webkit-inner-spin-button {
 /* Firefox */
 input[type="number"] {
   -moz-appearance: textfield;
+}
+
+/* Waves brand typography */
+.font-poppins {
+  font-family: var(--font-poppins), sans-serif;
+}
+
+.font-inter {
+  font-family: var(--font-inter), sans-serif;
+}
+
+/* Wave animations */
+.wave-bg {
+  background: linear-gradient(45deg, 
+    rgba(0, 119, 182, 0.1) 0%, 
+    rgba(0, 191, 166, 0.1) 50%, 
+    rgba(255, 107, 107, 0.1) 100%);
+}
+
+.wave-border {
+  border: 2px solid transparent;
+  background: linear-gradient(45deg, #0077B6, #00BFA6, #FF6B6B) border-box;
+  -webkit-mask: 
+    linear-gradient(#fff 0 0) padding-box, 
+    linear-gradient(#fff 0 0);
+  -webkit-mask-composite: destination-out;
+  mask-composite: exclude;
+}
+
+/* Ocean wave effect */
+.ocean-wave {
+  position: relative;
+  overflow: hidden;
+}
+
+.ocean-wave::before {
+  content: '';
+  position: absolute;
+  top: 0;
+  left: -100%;
+  width: 100%;
+  height: 100%;
+  background: linear-gradient(90deg, 
+    transparent, 
+    rgba(0, 119, 182, 0.1), 
+    transparent);
+  animation: wave-flow 3s infinite;
+}
+
+/* Seafoam glow effect */
+.seafoam-glow {
+  box-shadow: 0 0 20px rgba(0, 191, 166, 0.3);
+}
+
+.seafoam-glow:hover {
+  box-shadow: 0 0 30px rgba(0, 191, 166, 0.5);
+}
+
+/* Sunset coral accent */
+.sunset-accent {
+  background: linear-gradient(135deg, #FF6B6B, #FF8E8E);
+}
+
+.sunset-accent:hover {
+  background: linear-gradient(135deg, #FF5252, #FF6B6B);
 }
 
 

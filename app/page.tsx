@@ -39,29 +39,32 @@ export default function Home() {
 
   return (
     <Animation>
-      <div className="min-h-screen bg-[#0f0f0f] p-8">
+      <div className="min-h-screen bg-gradient-to-br from-neutral-900 via-neutral-800 to-neutral-900 p-8">
         <div className="max-w-6xl mx-auto space-y-12">
           {/* Header */}
-
           <div className="text-center space-y-6 mb-16">
             <motion.div
               initial={{ scale: 0.9, opacity: 0 }}
               animate={{ scale: 1, opacity: 1 }}
               transition={{ duration: 0.5 }}
+              className="ocean-wave"
             >
-              <h1 className="text-5xl font-bold text-white font-geistSans">
-                UI Components
+              <h1 className="text-6xl font-bold text-white font-poppins bg-gradient-to-r from-primary via-secondary to-accent bg-clip-text text-transparent">
+                Waves
               </h1>
-              <p className="text-[#FFFFFF80] mt-4 max-w-2xl mx-auto">
-                A modern, accessible, and fully-featured component library built
-                with Next.js, Tailwind CSS, and TypeScript
+              <p className="text-light/80 mt-4 max-w-2xl mx-auto font-inter text-lg">
+                Listen Together, Rise Together. Connect your music apps and experience synchronized listening with friends.
               </p>
+              <div className="mt-6 flex justify-center">
+                <div className="w-24 h-1 bg-gradient-to-r from-primary via-secondary to-accent rounded-full"></div>
+              </div>
             </motion.div>
 
             <div className="flex gap-4 justify-center">
               <Button
                 variant="primary"
-                onClick={() => toast.success("Copied to clipboard!")}
+                onClick={() => toast.success("Welcome to Waves! 🌊")}
+                className="seafoam-glow"
               >
                 Get Started
               </Button>
@@ -69,7 +72,7 @@ export default function Home() {
                 variant="secondary"
                 onClick={() =>
                   window.open(
-                    "https://github.com/victorola-coder/next-template"
+                    "https://github.com/victorola-coder/waves"
                   )
                 }
               >
@@ -89,7 +92,7 @@ export default function Home() {
           <div className="grid grid-cols-1 md:grid-cols-2 gap-8">
             {/* Buttons Section */}
             <Glow className="p-6 space-y-4">
-              <h2 className="text-xl font-semibold text-white mb-4">Buttons</h2>
+              <h2 className="text-xl font-semibold text-white mb-4 font-poppins">Buttons</h2>
               <div className="flex flex-row flex-wrap gap-4">
                 <Button variant="default">Default Button</Button>
                 <Button variant="primary">Primary Button</Button>
@@ -99,41 +102,43 @@ export default function Home() {
                 <Button loading>Loading Button</Button>
               </div>
             </Glow>
+
             {/* Loading States */}
             <Glow className="p-6 space-y-4">
-              <h2 className="text-xl font-semibold text-white mb-4">Loaders</h2>
+              <h2 className="text-xl font-semibold text-white mb-4 font-poppins">Loaders</h2>
               <div className="grid grid-cols-3 gap-4">
                 <div className="flex flex-col items-center gap-2">
                   <Loader size="small" />
-                  <span className="text-sm text-[#FFFFFF80]">Small</span>
+                  <span className="text-sm text-light/60">Small</span>
                 </div>
                 <div className="flex flex-col items-center gap-2">
                   <Loader size="medium" />
-                  <span className="text-sm text-[#FFFFFF80]">Medium</span>
+                  <span className="text-sm text-light/60">Medium</span>
                 </div>
                 <div className="flex flex-col items-center gap-2">
                   <Loader size="large" />
-                  <span className="text-sm text-[#FFFFFF80]">Large</span>
+                  <span className="text-sm text-light/60">Large</span>
                 </div>
               </div>
             </Glow>
 
             {/* Icons & SVGs */}
             <Glow className="p-6 space-y-4">
-              <h2 className="text-xl font-semibold text-white mb-4">
+              <h2 className="text-xl font-semibold text-white mb-4 font-poppins">
                 Icons & SVGs
               </h2>
               <div className="grid grid-cols-4 gap-4">
                 <div className="flex flex-col items-center gap-2">
                   <EyeIcon className="w-6 h-6" fill="white" />
-                  <span className="text-sm text-[#FFFFFF80]">Eye</span>
+                  <span className="text-sm text-light/60">Eye</span>
                 </div>
                 {/* Add more icons here */}
               </div>
             </Glow>
+
             {/* Form Inputs Section */}
             <Glow className="p-6 space-y-4">
-              <h2 className="text-xl font-semibold text-white mb-4">Inputs</h2>
+              <h2 className="text-xl font-semibold text-white mb-4 font-poppins">Inputs</h2>
               <Input
                 placeholder="Regular Input"
                 value={inputValue}
@@ -161,7 +166,7 @@ export default function Home() {
 
             {/* Form Validation */}
             <Glow className="p-6 space-y-4">
-              <h2 className="text-xl font-semibold text-white mb-4">
+              <h2 className="text-xl font-semibold text-white mb-4 font-poppins">
                 Form Validation
               </h2>
               <form
@@ -189,7 +194,7 @@ export default function Home() {
 
             {/* Toggle & Select Section */}
             <Glow className="p-6 space-y-4">
-              <h2 className="text-xl font-semibold text-white mb-4">
+              <h2 className="text-xl font-semibold text-white mb-4 font-poppins">
                 Interactive Components
               </h2>
               <div className="space-y-6">
@@ -204,16 +209,17 @@ export default function Home() {
                 />
               </div>
             </Glow>
+
             {/* Animations */}
             <Glow className="p-6 space-y-4">
-              <h2 className="text-xl font-semibold text-white mb-4">
-                Animations
+              <h2 className="text-xl font-semibold text-white mb-4 font-poppins">
+                Wave Animations
               </h2>
               <div className="space-y-4">
                 <motion.div
                   whileHover={{ scale: 1.05 }}
                   whileTap={{ scale: 0.95 }}
-                  className="bg-[#283142] p-4 rounded-lg text-white text-center"
+                  className="bg-neutral/60 p-4 rounded-lg text-white text-center border border-primary/20"
                 >
                   Hover & Tap Animation
                 </motion.div>
@@ -225,47 +231,48 @@ export default function Home() {
                     duration: 2,
                     repeat: Infinity,
                   }}
-                  className="bg-[#283142] p-4 rounded-lg text-white text-center"
+                  className="bg-neutral/60 p-4 rounded-lg text-white text-center border border-secondary/20 animate-wave-float"
                 >
-                  Floating Animation
+                  Wave Float Animation
                 </motion.div>
               </div>
             </Glow>
+
             {/* Color Palette */}
             <Glow className="p-6 space-y-4">
-              <h2 className="text-xl font-semibold text-white mb-4">
-                Color Palette
+              <h2 className="text-xl font-semibold text-white mb-4 font-poppins">
+                Waves Brand Colors
               </h2>
               <div className="grid grid-cols-2 gap-4">
                 <div className="space-y-2">
-                  <div className="h-12 rounded-lg bg-primary" />
-                  <span className="text-sm text-[#FFFFFF80]">Primary</span>
+                  <div className="h-12 rounded-lg bg-primary shadow-lg shadow-primary/25" />
+                  <span className="text-sm text-light/60">Ocean Blue</span>
                 </div>
                 <div className="space-y-2">
-                  <div className="h-12 rounded-lg bg-[#283142]" />
-                  <span className="text-sm text-[#FFFFFF80]">Secondary</span>
+                  <div className="h-12 rounded-lg bg-secondary shadow-lg shadow-secondary/25" />
+                  <span className="text-sm text-light/60">Seafoam Green</span>
                 </div>
                 <div className="space-y-2">
-                  <div className="h-12 rounded-lg bg-[#6366F1]" />
-                  <span className="text-sm text-[#FFFFFF80]">Accent</span>
+                  <div className="h-12 rounded-lg bg-accent shadow-lg shadow-accent/25" />
+                  <span className="text-sm text-light/60">Sunset Coral</span>
                 </div>
                 <div className="space-y-2">
-                  <div className="h-12 rounded-lg bg-[#DC2626]" />
-                  <span className="text-sm text-[#FFFFFF80]">Danger</span>
+                  <div className="h-12 rounded-lg bg-neutral border border-neutral-400" />
+                  <span className="text-sm text-light/60">Dark Slate</span>
                 </div>
               </div>
             </Glow>
 
             {/* Card & Image Section */}
             <Glow className="p-6 space-y-4">
-              <h2 className="text-xl font-semibold text-white mb-4">
+              <h2 className="text-xl font-semibold text-white mb-4 font-poppins">
                 Display Components
               </h2>
               <Card>
-                <div className="bg-[#283142] p-4 rounded-lg">
+                <div className="bg-neutral/60 p-4 rounded-lg">
                   <Image
                     src="/images/logo.svg"
-                    alt="Placeholder"
+                    alt="Waves Logo"
                     width={300}
                     height={200}
                     className="rounded-lg"
@@ -276,7 +283,7 @@ export default function Home() {
 
             {/* Loading States Section */}
             <Glow className="p-6 space-y-4">
-              <h2 className="text-xl font-semibold text-white mb-4">
+              <h2 className="text-xl font-semibold text-white mb-4 font-poppins">
                 Loading States
               </h2>
               <div className="space-y-4">
@@ -288,7 +295,7 @@ export default function Home() {
 
             {/* Modal & OTP Section */}
             <Glow className="p-6 space-y-4">
-              <h2 className="text-xl font-semibold text-white mb-4">
+              <h2 className="text-xl font-semibold text-white mb-4 font-poppins">
                 Advanced Components
               </h2>
               <div className="space-y-4">
@@ -302,7 +309,7 @@ export default function Home() {
 
             {/* Toast Notifications */}
             <Glow className="p-6 space-y-4">
-              <h2 className="text-xl font-semibold text-white mb-4">
+              <h2 className="text-xl font-semibold text-white mb-4 font-poppins">
                 Toast Notifications
               </h2>
               <div className="grid grid-cols-2 gap-4">
@@ -335,39 +342,39 @@ export default function Home() {
 
             {/* Typography */}
             <Glow className="p-6 space-y-4">
-              <h2 className="text-xl font-semibold text-white mb-4">
-                Typography
+              <h2 className="text-xl font-semibold text-white mb-4 font-poppins">
+                Waves Typography
               </h2>
               <div className="space-y-6">
                 <div>
-                  <h1 className="text-4xl font-geistSans font-bold text-white">
-                    Heading 1
+                  <h1 className="text-4xl font-poppins font-bold text-white">
+                    Heading 1 - Poppins Bold
                   </h1>
-                  <p className="text-[#FFFFFF80] text-sm">
-                    Font: Geist Sans Bold - 36px
+                  <p className="text-light/60 text-sm">
+                    Font: Poppins Bold - 36px
                   </p>
                 </div>
                 <div>
-                  <h2 className="text-3xl font-geistSans font-semibold text-white">
-                    Heading 2
+                  <h2 className="text-3xl font-poppins font-semibold text-white">
+                    Heading 2 - Poppins Semibold
                   </h2>
-                  <p className="text-[#FFFFFF80] text-sm">
-                    Font: Geist Sans Semibold - 30px
+                  <p className="text-light/60 text-sm">
+                    Font: Poppins Semibold - 30px
                   </p>
                 </div>
                 <div>
-                  <p className="text-base font-geistSans text-white">
-                    Regular paragraph text with Geist Sans
+                  <p className="text-base font-inter text-white">
+                    Regular paragraph text with Inter
                   </p>
-                  <p className="text-[#FFFFFF80] text-sm">
-                    Font: Geist Sans Regular - 16px
+                  <p className="text-light/60 text-sm">
+                    Font: Inter Regular - 16px
                   </p>
                 </div>
                 <div>
                   <p className="font-geistMono text-white">
                     Monospace text with Geist Mono
                   </p>
-                  <p className="text-[#FFFFFF80] text-sm">
+                  <p className="text-light/60 text-sm">
                     Font: Geist Mono - 16px
                   </p>
                 </div>
@@ -376,32 +383,32 @@ export default function Home() {
 
             {/* Gradients */}
             <Glow className="p-6 space-y-4">
-              <h2 className="text-xl font-semibold text-white mb-4">
-                Gradients
+              <h2 className="text-xl font-semibold text-white mb-4 font-poppins">
+                Wave Gradients
               </h2>
               <div className="grid grid-cols-2 gap-4">
                 <div className="space-y-2">
-                  <div className="h-20 rounded-lg bg-gradient-to-r from-primary to-[#6366F1]" />
-                  <span className="text-sm text-[#FFFFFF80]">
-                    Primary Gradient
+                  <div className="h-20 rounded-lg bg-gradient-to-r from-primary to-secondary shadow-lg shadow-primary/25" />
+                  <span className="text-sm text-light/60">
+                    Ocean to Seafoam
                   </span>
                 </div>
                 <div className="space-y-2">
-                  <div className="h-20 rounded-lg bg-gradient-to-r from-[#DC2626] to-[#EA580C]" />
-                  <span className="text-sm text-[#FFFFFF80]">
-                    Danger Gradient
+                  <div className="h-20 rounded-lg bg-gradient-to-r from-accent to-secondary shadow-lg shadow-accent/25" />
+                  <span className="text-sm text-light/60">
+                    Sunset to Seafoam
                   </span>
                 </div>
                 <div className="space-y-2">
-                  <div className="h-20 rounded-lg bg-gradient-to-r from-[#283142] to-[#1A202B]" />
-                  <span className="text-sm text-[#FFFFFF80]">
-                    Background Gradient
+                  <div className="h-20 rounded-lg bg-gradient-to-r from-neutral to-neutral-600 shadow-lg shadow-neutral/25" />
+                  <span className="text-sm text-light/60">
+                    Dark Slate Gradient
                   </span>
                 </div>
                 <div className="space-y-2">
-                  <div className="h-20 rounded-lg bg-gradient-to-r from-[#059669] to-[#10B981]" />
-                  <span className="text-sm text-[#FFFFFF80]">
-                    Success Gradient
+                  <div className="h-20 rounded-lg bg-gradient-to-r from-primary via-secondary to-accent shadow-lg shadow-primary/25" />
+                  <span className="text-sm text-light/60">
+                    Full Wave Spectrum
                   </span>
                 </div>
               </div>
@@ -417,7 +424,7 @@ export default function Home() {
         >
           <div className="space-y-4">
             <p className="text-white">
-              This is an example modal that showcases the Modal component.
+              This is an example modal that showcases the Modal component with the new Waves design system.
             </p>
             <Button
               variant="primary"
@@ -429,9 +436,9 @@ export default function Home() {
           </div>
         </Modal>
       </div>
-      <footer className="mt-16 text-center text-[#FFFFFF80]">
-        <p>Built with Next.js, Tailwind CSS, and TypeScript</p>
-        <p className="mt-2">© {new Date().getFullYear()} Victorola</p>
+      <footer className="mt-16 text-center text-light/60 border-t border-neutral-400/20 pt-8">
+        <p className="font-inter">Built with Next.js, Tailwind CSS, and TypeScript</p>
+        <p className="mt-2 font-poppins text-primary">© {new Date().getFullYear()} Waves - Listen Together, Rise Together</p>
       </footer>
     </Animation>
   );

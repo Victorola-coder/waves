@@ -1,6 +1,6 @@
-export default function Card({ children }: { children: React.ReactNode }) {
+export default function Card({ children, className = "" }: { children: React.ReactNode; className?: string }) {
   return (
-    <div className="bg-[#FFFFFF] rounded-[24px] p-5 animate-float">
+    <div className={`bg-neutral/80 backdrop-blur-sm rounded-[24px] p-6 border border-neutral-400/20 hover:border-primary/30 transition-all duration-300 hover:shadow-xl hover:shadow-primary/10 ${className}`}>
       {children}
     </div>
   );

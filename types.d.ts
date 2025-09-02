@@ -6,6 +6,9 @@ declare module "*.svg" {
   const content: string;
   export default content;
 }
+
+declare module "spotify-web-api-node";
+
 interface SVGProps {
   fill?: string;
   className?: string;

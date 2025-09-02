@@ -361,14 +361,18 @@ export default function Home() {
             transition={{ duration: 0.6, delay: 0.4 }}
             viewport={{ once: true }}
           >
-            <div className="inline-flex flex-col sm:flex-row items-center gap-3 px-4 sm:px-6 py-2 sm:py-3 bg-gradient-to-r from-primary/10 to-secondary/10 border border-primary/20 rounded-full">
-              <span className="text-primary font-inter text-xs sm:text-sm">
-                ✨
-              </span>
-              <span className="text-light/80 font-inter text-xs sm:text-sm font-medium">
-                Ready to get started?
-              </span>
-              <Button variant="primary" size="sm" className="ml-0 sm:ml-2">
+            <div className="inline-flex flex-col sm:flex-row items-center gap-3 px-4 sm:px-6 py-3 sm:py-4 bg-gradient-to-r from-primary/10 to-secondary/10 border border-primary/20 rounded-full max-w-sm sm:max-w-none mx-auto">
+              <div className="flex items-center gap-2">
+                <span className="text-primary text-sm sm:text-base">✨</span>
+                <span className="text-light/80 font-inter text-sm sm:text-base font-medium">
+                  Ready to get started?
+                </span>
+              </div>
+              <Button
+                variant="primary"
+                size="sm"
+                className="w-full sm:w-auto text-sm sm:text-base px-4 sm:px-6 py-2 sm:py-3"
+              >
                 Try Waves Now
               </Button>
             </div>

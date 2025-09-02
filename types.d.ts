@@ -21,10 +21,7 @@ type InputProps = {
   placeholder?: string;
   type?: string;
   multiline?: boolean;
-} & (
-  | React.InputHTMLAttributes<HTMLInputElement>
-  | React.TextareaHTMLAttributes<HTMLTextAreaElement>
-);
+} & React.InputHTMLAttributes<HTMLInputElement>;
 
 interface ButtonProps extends React.ButtonHTMLAttributes<HTMLButtonElement> {
   disabled?: boolean;
@@ -74,9 +71,10 @@ type ToggleProps = {
   className?: string;
 };
 
-type TextareaProps = {
+type TextAreaProps = {
   name: string;
   value: string;
+  error?: string;
   onChange: (e: any) => void;
   placeholder?: string;
   className?: string;

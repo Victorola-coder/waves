@@ -107,6 +107,18 @@ CREATE TABLE IF NOT EXISTS user_achievements (
   icon_url TEXT
 );
 
+-- Spotify tokens table (for secure token storage)
+CREATE TABLE IF NOT EXISTS spotify_tokens (
+  id UUID PRIMARY KEY DEFAULT uuid_generate_v4(),
+  user_id UUID NOT NULL REFERENCES users(id) ON DELETE CASCADE,
+  access_token TEXT NOT NULL,
+  refresh_token TEXT NOT NULL,
+  expires_in INTEGER NOT NULL,
+  created_at TIMESTAMP WITH TIME ZONE DEFAULT NOW(),
+  updated_at TIMESTAMP WITH TIME ZONE DEFAULT NOW(),
+  UNIQUE(user_id)
+);
+
 -- Create indexes for better performance
 CREATE INDEX IF NOT EXISTS idx_rooms_host_id ON listening_rooms(host_id);
 CREATE INDEX IF NOT EXISTS idx_rooms_created_at ON listening_rooms(created_at);
@@ -195,3 +207,16 @@ CREATE POLICY "Users can view own stats" ON user_stats
 -- User achievements are viewable by the user
 CREATE POLICY "Users can view own achievements" ON user_achievements
   FOR SELECT USING (auth.uid() = user_id);
+
+-- Spotify tokens are only accessible by the user
+CREATE POLICY "Users can view own spotify tokens" ON spotify_tokens
+  FOR SELECT USING (auth.uid() = user_id);
+
+CREATE POLICY "Users can insert own spotify tokens" ON spotify_tokens
+  FOR INSERT WITH CHECK (auth.uid() = user_id);
+
+CREATE POLICY "Users can update own spotify tokens" ON spotify_tokens
+  FOR UPDATE USING (auth.uid() = user_id);
+
+CREATE POLICY "Users can delete own spotify tokens" ON spotify_tokens
+  FOR DELETE USING (auth.uid() = user_id);

@@ -46,5 +46,7 @@ yarn.lock
 package-lock.json
 pnpm-lock.yaml
 
+backend_setup.md
+
 
 /senti

@@ -1,42 +1,13 @@
 "use client";
 
 import { useState } from "react";
-import {
-  Button,
-  Card,
-  Image,
-  Input,
-  Modal,
-  Otp,
-  Select,
-  Skeleton,
-  Tabs,
-  TextArea,
-  Toggle,
-} from "./components/ui";
 import { motion } from "framer-motion";
-import { EyeIcon } from "./components/svgs";
-import { toast } from "sonner";
-import { Animation, Glow, Loader } from "./components/global";
 import { Header } from "./components/atom";
+import { Animation } from "./components/global";
+import { Button, Card, Modal } from "./components/ui";
 
 export default function Home() {
   const [isModalOpen, setIsModalOpen] = useState(false);
-  const [toggleState, setToggleState] = useState(false);
-  const [inputValue, setInputValue] = useState("");
-  const [textAreaValue, setTextAreaValue] = useState("");
-
-  const tabs = [
-    { label: "Overview", value: "overview" },
-    { label: "Components", value: "components" },
-    { label: "Settings", value: "settings" },
-  ];
-
-  const selectOptions = [
-    { label: "Option 1", value: "1" },
-    { label: "Option 2", value: "2" },
-    { label: "Option 3", value: "3" },
-  ];
 
   return (
     <Animation>
@@ -125,15 +96,29 @@ export default function Home() {
         {/* How It Works Section */}
         <section
           id="how-it-works"
-          className="bg-neutral/5 px-4 md:px-[118px] py-[60px] md:py-[100px]"
+          className="bg-gradient-to-br from-neutral/5 via-neutral/10 to-neutral/5 px-4 md:px-[118px] py-[80px] md:py-[120px] relative overflow-hidden"
         >
+          {/* Background decorative elements */}
+          <div className="absolute inset-0 overflow-hidden pointer-events-none">
+            <div className="absolute top-20 left-10 w-32 h-32 bg-primary/5 rounded-full blur-3xl"></div>
+            <div className="absolute bottom-20 right-10 w-40 h-40 bg-secondary/5 rounded-full blur-3xl"></div>
+            <div className="absolute top-1/2 left-1/4 w-24 h-24 bg-accent/5 rounded-full blur-2xl"></div>
+          </div>
+
           <motion.div
-            className="flex flex-col gap-[20px] items-center text-center"
+            className="flex flex-col gap-[20px] items-center text-center relative z-10"
             initial={{ opacity: 0, y: 50 }}
             whileInView={{ opacity: 1, y: 0 }}
             transition={{ duration: 0.8, ease: "easeOut" }}
             viewport={{ once: true }}
           >
+            <div className="inline-flex items-center gap-2 px-4 py-2 bg-primary/10 border border-primary/20 rounded-full mb-4">
+              <span className="w-2 h-2 bg-primary rounded-full animate-pulse"></span>
+              <span className="text-primary font-inter text-sm font-medium">
+                Simple & Easy
+              </span>
+            </div>
+
             <h2 className="text-[32px] md:text-[48px] lg:text-[61px] text-white leading-[40px] md:leading-[60px] lg:leading-[80px] tracking-[-1.22px] font-poppins font-bold">
               How Waves Works
             </h2>
@@ -144,49 +129,244 @@ export default function Home() {
           </motion.div>
 
           <motion.div
-            className="mt-[60px] md:mt-[104px] flex flex-col lg:flex-row justify-center items-center gap-6 md:gap-[24px]"
+            className="mt-[80px] md:mt-[120px] relative z-10"
             initial={{ opacity: 0, y: 100 }}
             whileInView={{ opacity: 1, y: 0 }}
             transition={{ duration: 0.8, ease: "easeOut" }}
             viewport={{ once: true }}
           >
-            {[
-              {
-                title: "Connect Your Music",
-                description:
-                  "Link your Spotify, YouTube Music, or other streaming accounts to get started.",
-                icon: "🎵",
-              },
-              {
-                title: "Join Listening Parties",
-                description:
-                  "Create or join rooms where everyone listens to the same music in perfect sync.",
-                icon: "🎉",
-              },
-              {
-                title: "Compete & Connect",
-                description:
-                  "Rise up the leaderboards, unlock achievements, and make new music friends.",
-                icon: "🏆",
-              },
-            ].map((step, index) => (
-              <motion.div
-                key={index}
-                className="w-full lg:w-[384px]"
-                whileHover={{ y: -10, scale: 1.02 }}
-                transition={{ duration: 0.3 }}
-              >
-                <Card className="w-full lg:w-[384px] px-[18px] pb-[36px] py-[43px] text-center">
-                  <div className="text-6xl mb-6">{step.icon}</div>
-                  <h3 className="text-[#111827] text-[20px] md:text-[22px] lg:text-[25px] leading-[24px] md:leading-[28px] lg:leading-[30px] font-poppins font-bold mb-4">
-                    {step.title}
-                  </h3>
-                  <p className="text-[#5A5A5A] text-[14px] md:text-[15px] lg:text-[16px] leading-[20px] md:leading-[24px] lg:leading-[31px] mx-auto text-center px-4 md:px-0 font-inter">
-                    {step.description}
-                  </p>
-                </Card>
-              </motion.div>
-            ))}
+            {/* Desktop: Horizontal layout with connecting lines */}
+            <div className="hidden lg:flex items-center justify-center gap-8 xl:gap-12">
+              {[
+                {
+                  step: "01",
+                  title: "Connect Your Music",
+                  description:
+                    "Link your Spotify, YouTube Music, or other streaming accounts to get started. We support all major platforms.",
+                  icon: "🎵",
+                  color: "primary",
+                  features: [
+                    "Spotify Integration",
+                    "YouTube Music",
+                    "Apple Music",
+                    "Last.fm Scrobbling",
+                  ],
+                },
+                {
+                  step: "02",
+                  title: "Join Listening Parties",
+                  description:
+                    "Create or join rooms where everyone listens to the same music in perfect sync. Real-time chat and reactions.",
+                  icon: "🎉",
+                  color: "secondary",
+                  features: [
+                    "Real-time Sync",
+                    "Live Chat",
+                    "Room Creation",
+                    "Invite Friends",
+                  ],
+                },
+                {
+                  step: "03",
+                  title: "Compete & Connect",
+                  description:
+                    "Rise up the leaderboards, unlock achievements, and make new music friends. Track your progress and stats.",
+                  icon: "🏆",
+                  color: "accent",
+                  features: [
+                    "Leaderboards",
+                    "Achievements",
+                    "Friend System",
+                    "Progress Tracking",
+                  ],
+                },
+              ].map((step, index) => (
+                <div key={index} className="flex flex-col items-center">
+                  {/* Step Card */}
+                  <motion.div
+                    className="w-[400px] relative"
+                    whileHover={{ y: -15, scale: 1.02 }}
+                    transition={{ duration: 0.3 }}
+                  >
+                    <Card className="p-8 text-center h-full border-2 border-neutral-400/20 hover:border-primary/30 transition-all duration-300">
+                      {/* Step Number Badge */}
+                      <div
+                        className={`inline-flex items-center justify-center w-16 h-16 rounded-full bg-${step.color}/10 border-2 border-${step.color}/20 mb-6`}
+                      >
+                        <span
+                          className={`text-${step.color} font-poppins font-bold text-2xl`}
+                        >
+                          {step.step}
+                        </span>
+                      </div>
+
+                      {/* Icon */}
+                      <div className="text-7xl mb-6">{step.icon}</div>
+
+                      {/* Title */}
+                      <h3 className="text-white text-[24px] md:text-[26px] lg:text-[28px] leading-[28px] md:leading-[32px] lg:leading-[36px] font-poppins font-bold mb-4">
+                        {step.title}
+                      </h3>
+
+                      {/* Description */}
+                      <p className="text-light/60 text-[16px] md:text-[17px] lg:text-[18px] leading-[24px] md:leading-[26px] lg:leading-[28px] mb-6 font-inter">
+                        {step.description}
+                      </p>
+
+                      {/* Features List */}
+                      <div className="space-y-2">
+                        {step.features.map((feature, featureIndex) => (
+                          <div
+                            key={featureIndex}
+                            className="flex items-center gap-2 text-sm text-light/50"
+                          >
+                            <div
+                              className={`w-1.5 h-1.5 rounded-full bg-${step.color}`}
+                            ></div>
+                            <span className="font-inter">{feature}</span>
+                          </div>
+                        ))}
+                      </div>
+                    </Card>
+                  </motion.div>
+
+                  {/* Connecting Line (except for last item) */}
+                  {index < 2 && (
+                    <div className="flex-1 h-0.5 bg-gradient-to-r from-neutral-400/20 to-neutral-400/20 relative">
+                      <div className="absolute inset-0 bg-gradient-to-r from-primary/40 via-secondary/40 to-accent/40 rounded-full animate-pulse"></div>
+                    </div>
+                  )}
+                </div>
+              ))}
+            </div>
+
+            {/* Mobile: Vertical layout */}
+            <div className="lg:hidden space-y-8">
+              {[
+                {
+                  step: "01",
+                  title: "Connect Your Music",
+                  description:
+                    "Link your Spotify, YouTube Music, or other streaming accounts to get started. We support all major platforms.",
+                  icon: "🎵",
+                  color: "primary",
+                  features: [
+                    "Spotify Integration",
+                    "YouTube Music",
+                    "Apple Music",
+                    "Last.fm Scrobbling",
+                  ],
+                },
+                {
+                  step: "02",
+                  title: "Join Listening Parties",
+                  description:
+                    "Create or join rooms where everyone listens to the same music in perfect sync. Real-time chat and reactions.",
+                  icon: "🎉",
+                  color: "secondary",
+                  features: [
+                    "Real-time Sync",
+                    "Live Chat",
+                    "Room Creation",
+                    "Invite Friends",
+                  ],
+                },
+                {
+                  step: "03",
+                  title: "Compete & Connect",
+                  description:
+                    "Rise up the leaderboards, unlock achievements, and make new music friends. Track your progress and stats.",
+                  icon: "🏆",
+                  color: "accent",
+                  features: [
+                    "Leaderboards",
+                    "Achievements",
+                    "Friend System",
+                    "Progress Tracking",
+                  ],
+                },
+              ].map((step, index) => (
+                <motion.div
+                  key={index}
+                  className="relative"
+                  initial={{ opacity: 0, x: -50 }}
+                  whileInView={{ opacity: 1, x: 0 }}
+                  transition={{ duration: 0.6, delay: index * 0.2 }}
+                  viewport={{ once: true }}
+                >
+                  {/* Step Number Badge */}
+                  <div className="absolute -top-4 -left-4 z-10">
+                    <div
+                      className={`w-12 h-12 rounded-full bg-${step.color} flex items-center justify-center shadow-lg`}
+                    >
+                      <span className="text-white font-poppins font-bold text-lg">
+                        {step.step}
+                      </span>
+                    </div>
+                  </div>
+
+                  <Card className="p-6 text-center border-2 border-neutral-400/20 hover:border-primary/30 transition-all duration-300">
+                    {/* Icon */}
+                    <div className="text-6xl mb-4">{step.icon}</div>
+
+                    {/* Title */}
+                    <h3 className="text-white text-[22px] leading-[28px] font-poppins font-bold mb-3">
+                      {step.title}
+                    </h3>
+
+                    {/* Description */}
+                    <p className="text-light/60 text-[15px] leading-[22px] mb-4 font-inter">
+                      {step.description}
+                    </p>
+
+                    {/* Features List */}
+                    <div className="grid grid-cols-2 gap-2 text-sm text-light/50">
+                      {step.features.map((feature, featureIndex) => (
+                        <div
+                          key={featureIndex}
+                          className="flex items-center gap-2"
+                        >
+                          <div
+                            className={`w-1.5 h-1.5 rounded-full bg-${step.color}`}
+                          ></div>
+                          <span className="font-inter text-xs">{feature}</span>
+                        </div>
+                      ))}
+                    </div>
+                  </Card>
+
+                  {/* Connecting Arrow (except for last item) */}
+                  {index < 2 && (
+                    <div className="flex justify-center mt-6">
+                      <div className="w-8 h-8 text-primary/40">
+                        <svg fill="currentColor" viewBox="0 0 24 24">
+                          <path d="M7 10l5 5 5-5z" />
+                        </svg>
+                      </div>
+                    </div>
+                  )}
+                </motion.div>
+              ))}
+            </div>
+          </motion.div>
+
+          {/* Bottom CTA */}
+          <motion.div
+            className="mt-[80px] text-center relative z-10"
+            initial={{ opacity: 0, y: 30 }}
+            whileInView={{ opacity: 1, y: 0 }}
+            transition={{ duration: 0.6, delay: 0.4 }}
+            viewport={{ once: true }}
+          >
+            <div className="inline-flex items-center gap-3 px-6 py-3 bg-gradient-to-r from-primary/10 to-secondary/10 border border-primary/20 rounded-full">
+              <span className="text-primary font-inter text-sm">✨</span>
+              <span className="text-light/80 font-inter text-sm font-medium">
+                Ready to get started?
+              </span>
+              <Button variant="primary" size="sm" className="ml-2">
+                Try Waves Now
+              </Button>
+            </div>
           </motion.div>
         </section>
 

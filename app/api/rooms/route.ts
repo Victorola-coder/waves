@@ -1,5 +1,5 @@
 import { NextRequest, NextResponse } from "next/server";
-import { supabase } from "@/app/lib/supabase";
+import { prisma } from "@/app/lib/prisma";
 
 export async function GET(request: NextRequest) {
   try {
@@ -7,50 +7,40 @@ export async function GET(request: NextRequest) {
     const page = parseInt(searchParams.get("page") || "1");
     const limit = parseInt(searchParams.get("limit") || "20");
     const search = searchParams.get("search") || "";
-    const isPrivate = searchParams.get("private");
+    const isPrivateParam = searchParams.get("private");
 
-    // Build query
-    let query = supabase
-      .from("listening_rooms")
-      .select(
-        `
-        *,
-        host:users!listening_rooms_host_id_fkey(username, avatar_url),
-        participants:room_participants(count)
-      `
-      )
-      .order("created_at", { ascending: false });
-
-    // Apply filters
+    const where: any = {};
     if (search) {
-      query = query.ilike("name", `%${search}%`);
+      where.name = { contains: search, mode: "insensitive" };
+    }
+    if (isPrivateParam !== null) {
+      where.isPrivate = isPrivateParam === "true";
     }
 
-    if (isPrivate !== null) {
-      query = query.eq("is_private", isPrivate === "true");
-    }
-
-    // Apply pagination
-    const offset = (page - 1) * limit;
-    query = query.range(offset, offset + limit - 1);
-
-    const { data: rooms, error, count } = await query;
-
-    if (error) {
-      console.error("List rooms error:", error);
-      return NextResponse.json(
-        { error: "Failed to fetch rooms" },
-        { status: 500 }
-      );
-    }
+    const [rooms, total] = await Promise.all([
+      prisma.listeningRoom.findMany({
+        where,
+        orderBy: { createdAt: "desc" },
+        skip: (page - 1) * limit,
+        take: limit,
+        include: {
+          host: { select: { username: true, avatarUrl: true } },
+          participants: true,
+        },
+      }),
+      prisma.listeningRoom.count({ where }),
+    ]);
 
     return NextResponse.json({
-      rooms: rooms || [],
+      rooms: rooms.map((r) => ({
+        ...r,
+        participants: [{ count: r.participants.length }],
+      })),
       pagination: {
         page,
         limit,
-        total: count || 0,
-        pages: Math.ceil((count || 0) / limit),
+        total,
+        pages: Math.ceil(total / limit),
       },
     });
   } catch (error) {

@@ -20,7 +20,7 @@ export const ACHIEVEMENTS = {
   LISTENING_TIME: {
     BRONZE: 1000, // 1000 minutes
     SILVER: 5000, // 5000 minutes
-    GOLD: 10000,  // 10000 minutes
+    GOLD: 10000, // 10000 minutes
     PLATINUM: 50000, // 50000 minutes
   },
   PARTIES_HOSTED: {

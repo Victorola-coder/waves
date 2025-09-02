@@ -355,23 +355,23 @@ export default function Home() {
 
           {/* Bottom CTA */}
           <motion.div
-            className="mt-[60px] sm:mt-[70px] md:mt-[80px] text-center relative z-10"
+            className="mt-[40px] sm:mt-[50px] md:mt-[60px] lg:mt-[70px] xl:mt-[80px] text-center relative z-10 px-4"
             initial={{ opacity: 0, y: 30 }}
             whileInView={{ opacity: 1, y: 0 }}
             transition={{ duration: 0.6, delay: 0.4 }}
             viewport={{ once: true }}
           >
-            <div className="inline-flex flex-col sm:flex-row items-center gap-3 px-4 sm:px-6 py-3 sm:py-4 bg-gradient-to-r from-primary/10 to-secondary/10 border border-primary/20 rounded-full max-w-sm sm:max-w-none mx-auto">
+            <div className="inline-flex flex-col items-center gap-4 sm:gap-3 px-6 sm:px-8 py-4 sm:py-5 bg-gradient-to-r from-primary/10 to-secondary/10 border border-primary/20 rounded-2xl sm:rounded-full max-w-xs sm:max-w-none mx-auto">
               <div className="flex items-center gap-2">
-                <span className="text-primary text-sm sm:text-base">✨</span>
-                <span className="text-light/80 font-inter text-sm sm:text-base font-medium">
+                <span className="text-primary text-lg sm:text-xl">✨</span>
+                <span className="text-light/80 font-inter text-base sm:text-lg font-medium">
                   Ready to get started?
                 </span>
               </div>
               <Button
                 variant="primary"
                 size="sm"
-                className="w-full sm:w-auto text-sm sm:text-base px-4 sm:px-6 py-2 sm:py-3"
+                className="w-full sm:w-auto text-sm sm:text-base px-6 sm:px-8 py-3 sm:py-4"
               >
                 Try Waves Now
               </Button>

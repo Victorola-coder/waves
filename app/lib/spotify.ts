@@ -16,7 +16,7 @@ export const SPOTIFY_SCOPES = [
   "user-top-read",
   "playlist-read-private",
   "playlist-read-collaborative",
-].join(" ");
+];
 
 export const getSpotifyAuthUrl = () => {
   return spotifyApi.createAuthorizeURL(SPOTIFY_SCOPES, "state");

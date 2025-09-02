@@ -1,47 +1,38 @@
-import { NextRequest, NextResponse } from 'next/server'
-import { spotifyApi } from '@/app/lib/spotify'
+import { NextRequest, NextResponse } from "next/server";
+import { spotifyApi } from "@/app/lib/spotify";
 
 export async function GET(request: NextRequest) {
   try {
-    const { searchParams } = new URL(request.url)
-    const query = searchParams.get('q')
-    const type = searchParams.get('type') || 'track'
-    const limit = searchParams.get('limit') || '20'
+    const { searchParams } = new URL(request.url);
+    const query = searchParams.get("q");
+    const type = searchParams.get("type") || "track";
+    const limit = searchParams.get("limit") || "20";
 
     if (!query) {
       return NextResponse.json(
-        { error: 'Search query is required' },
+        { error: "Search query is required" },
         { status: 400 }
-      )
+      );
     }
 
-    // Search Spotify
-    const searchResults = await spotifyApi.search(query, [type as any], {
-      limit: parseInt(limit),
-    })
-
-    // Transform results
-    const tracks = searchResults.body.tracks?.items.map(track => ({
-      id: track.id,
-      spotify_id: track.id,
-      title: track.name,
-      artist: track.artists.map(a => a.name).join(', '),
-      album: track.album.name,
-      duration: track.duration_ms,
-      album_art_url: track.album.images[0]?.url,
-      preview_url: track.preview_url,
-      external_url: track.external_urls.spotify,
-    })) || []
-
+    // For now, return a message that user needs to connect Spotify
+    // In a real app, you'd check if user has connected Spotify and use their token
     return NextResponse.json({
-      tracks,
-      total: searchResults.body.tracks?.total || 0,
-    })
+      message: "Spotify connection required for music search",
+      tracks: [],
+      total: 0,
+    });
+
+    // TODO: Implement actual Spotify search when user has connected their account
+    // const searchResults = await spotifyApi.search(query, [type as any], {
+    //   limit: parseInt(limit),
+    // })
+    // ... rest of the search logic
   } catch (error) {
-    console.error('Music search error:', error)
+    console.error("Music search error:", error);
     return NextResponse.json(
-      { error: 'Failed to search music' },
+      { error: "Failed to search music" },
       { status: 500 }
-    )
+    );
   }
 }

@@ -9,33 +9,25 @@
     "lint": "next lint"
   },
   "dependencies": {
-    "@prisma/client": "^6.15.0",
-    "@supabase/auth-helpers-nextjs": "^0.10.0",
-    "@supabase/supabase-js": "^2.56.1",
     "aos": "^2.3.4",
-    "axios": "^1.11.0",
+    "axios": "^1.7.9",
     "clsx": "^2.1.1",
-    "dotenv": "^17.2.1",
     "framer-motion": "^11.11.9",
     "lucide-react": "^0.471.1",
     "next": "^15.1.4",
     "react": "^19.0.0",
     "react-dom": "^19.0.0",
-    "socket.io": "^4.8.1",
-    "socket.io-client": "^4.8.1",
     "sonner": "^1.7.2",
-    "spotify-web-api-node": "^5.0.2",
     "zod": "^3.24.1"
   },
   "devDependencies": {
+    "typescript": "^5",
     "@types/node": "^20",
     "@types/react": "^18",
     "@types/react-dom": "^18",
-    "eslint": "^8",
-    "eslint-config-next": "15.0.0",
     "postcss": "^8",
-    "prisma": "^6.15.0",
     "tailwindcss": "^3.4.1",
-    "typescript": "^5"
+    "eslint": "^8",
+    "eslint-config-next": "15.0.0"
   }
 }

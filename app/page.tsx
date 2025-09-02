@@ -361,7 +361,7 @@ export default function Home() {
             transition={{ duration: 0.6, delay: 0.4 }}
             viewport={{ once: true }}
           >
-            <div className="inline-flex flex-col items-center gap-4 sm:gap-3 px-6 sm:px-8 py-4 sm:py-5 bg-gradient-to-r from-primary/10 to-secondary/10 border border-primary/20 rounded-2xl sm:rounded-full sm:bg-none max-w-xs sm:max-w-none mx-auto">
+            <div className="inline-flex flex-col items-center gap-4 sm:gap-3 px-6 sm:px-8 py-4 sm:py-5 bg-gradient-to-r from-primary/10 to-secondary/10 border border-primary/20 rounded-2xl sm:rounded-full max-w-xs sm:max-w-none mx-auto">
               <div className="flex items-center gap-2">
                 <span className="text-primary text-lg sm:text-xl">✨</span>
                 <span className="text-light/80 font-inter text-base sm:text-lg font-medium">

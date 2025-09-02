@@ -1,5 +1,38 @@
 import { NextRequest, NextResponse } from "next/server";
+import { prisma } from "@/app/lib/prisma";
 import { supabase } from "@/app/lib/supabase";
+
+async function resolveUserId(request: NextRequest): Promise<string | null> {
+  const devUserId = request.headers.get("x-user-id");
+  if (process.env.NODE_ENV !== "production" && devUserId) {
+    await prisma.user.upsert({
+      where: { id: devUserId },
+      update: {},
+      create: {
+        id: devUserId,
+        email: `${devUserId}@dev.local`,
+        username: `dev_${devUserId.substring(0, 6)}`,
+      },
+    });
+    return devUserId;
+  }
+  const authHeader = request.headers.get("authorization");
+  if (!authHeader) return null;
+  const token = authHeader.replace("Bearer ", "");
+  const { data: userData } = await supabase.auth.getUser(token);
+  const user = userData?.user;
+  if (!user) return null;
+  await prisma.user.upsert({
+    where: { id: user.id },
+    update: { email: user.email ?? undefined },
+    create: {
+      id: user.id,
+      email: user.email || `${user.id}@user.local`,
+      username: user.email?.split("@")[0] || `user_${user.id.substring(0, 6)}`,
+    },
+  });
+  return user.id;
+}
 
 export async function POST(
   request: NextRequest,
@@ -8,77 +41,40 @@ export async function POST(
   try {
     const roomId = params.id;
 
-    // Get authenticated user
-    const authHeader = request.headers.get("authorization");
-    if (!authHeader) {
+    const userId = await resolveUserId(request);
+    if (!userId)
       return NextResponse.json(
         { error: "Authentication required" },
         { status: 401 }
       );
-    }
 
-    const token = authHeader.replace("Bearer ", "");
-    const {
-      data: { user },
-      error: authError,
-    } = await supabase.auth.getUser(token);
-
-    if (authError || !user) {
-      return NextResponse.json({ error: "Invalid token" }, { status: 401 });
-    }
-
-    // Check if user is in the room
-    const { data: participant } = await supabase
-      .from("room_participants")
-      .select("id, role")
-      .eq("room_id", roomId)
-      .eq("user_id", user.id)
-      .eq("is_active", true)
-      .single();
-
-    if (!participant) {
+    const participant = await prisma.roomParticipant.findUnique({
+      where: { roomId_userId: { roomId, userId } },
+    });
+    if (!participant || !participant.isActive) {
       return NextResponse.json(
         { error: "You are not in this room" },
         { status: 400 }
       );
     }
 
-    // If user is the host, they cannot leave (must delete room instead)
-    if (participant.role === "host") {
+    if (participant.role === "HOST") {
       return NextResponse.json(
         { error: "Host cannot leave room. Delete the room instead." },
         { status: 400 }
       );
     }
 
-    // Mark user as left
-    const { error: leaveError } = await supabase
-      .from("room_participants")
-      .update({
-        is_active: false,
-        left_at: new Date().toISOString(),
-      })
-      .eq("id", participant.id);
-
-    if (leaveError) {
-      return NextResponse.json(
-        { error: "Failed to leave room" },
-        { status: 500 }
-      );
-    }
-
-    // Add system message about user leaving
-    await supabase.from("room_messages").insert({
-      room_id: roomId,
-      user_id: user.id,
-      content: "left the room",
-      message_type: "system",
-      created_at: new Date().toISOString(),
+    await prisma.roomParticipant.update({
+      where: { roomId_userId: { roomId, userId } },
+      data: { isActive: false, leftAt: new Date() },
     });
 
-    return NextResponse.json({
-      message: "Successfully left the room",
+    await prisma.message.create({
+      data: { roomId, userId, type: "SYSTEM", content: "left the room" },
     });
+
+    return NextResponse.json({ message: "Successfully left the room" });
   } catch (error) {
     console.error("Leave room error:", error);
     return NextResponse.json(

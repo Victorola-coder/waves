@@ -1,11 +1,11 @@
-import { supabase } from "@/app/lib/supabase";
 import { NextRequest, NextResponse } from "next/server";
+import { prisma } from "@/app/lib/prisma";
+import { supabase } from "@/app/lib/supabase";
 
 export async function POST(request: NextRequest) {
   try {
     const { room_id } = await request.json();
 
-    // Validate input
     if (!room_id) {
       return NextResponse.json(
         { error: "Room ID is required" },
@@ -13,76 +13,72 @@ export async function POST(request: NextRequest) {
       );
     }
 
-    // Get authenticated user
-    const authHeader = request.headers.get("authorization");
-    if (!authHeader) {
-      return NextResponse.json(
-        { error: "Authentication required" },
-        { status: 401 }
-      );
-    }
-
-    const token = authHeader.replace("Bearer ", "");
-    const {
-      data: { user },
-      error: authError,
-    } = await supabase.auth.getUser(token);
-
-    if (authError || !user) {
-      return NextResponse.json({ error: "Invalid token" }, { status: 401 });
-    }
-
-    // Check if room exists and is not full
-    const { data: room, error: roomError } = await supabase
-      .from("listening_rooms")
-      .select("*")
-      .eq("id", room_id)
-      .single();
-
-    if (roomError || !room) {
-      return NextResponse.json({ error: "Room not found" }, { status: 404 });
-    }
-
-    // Check if user is already in the room
-    const { data: existingParticipant } = await supabase
-      .from("room_participants")
-      .select("*")
-      .eq("room_id", room_id)
-      .eq("user_id", user.id)
-      .single();
-
-    if (existingParticipant) {
-      return NextResponse.json({ error: "Already in room" }, { status: 409 });
-    }
-
-    // Check if room is full
-    const { count: participantCount } = await supabase
-      .from("room_participants")
-      .select("*", { count: "exact", head: true })
-      .eq("room_id", room_id)
-      .eq("is_active", true);
-
-    if (participantCount && participantCount >= room.max_participants) {
-      return NextResponse.json({ error: "Room is full" }, { status: 409 });
-    }
-
-    // Join room
-    const { error: joinError } = await supabase
-      .from("room_participants")
-      .insert({
-        room_id,
-        user_id: user.id,
-        role: "listener",
-        joined_at: new Date().toISOString(),
-        is_active: true,
+    // Resolve user (dev header or Supabase auth)
+    let userId: string | null = null;
+    const devUserId = request.headers.get("x-user-id");
+    if (process.env.NODE_ENV !== "production" && devUserId) {
+      userId = devUserId;
+      await prisma.user.upsert({
+        where: { id: userId },
+        update: {},
+        create: {
+          id: userId,
+          email: `${userId}@dev.local`,
+          username: `dev_${userId.substring(0, 6)}`,
+        },
       });
-
-    if (joinError) {
-      return NextResponse.json(
-        { error: "Failed to join room" },
-        { status: 500 }
+    } else {
+      const authHeader = request.headers.get("authorization");
+      if (!authHeader)
+        return NextResponse.json(
+          { error: "Authentication required" },
+          { status: 401 }
+        );
+      const token = authHeader.replace("Bearer ", "");
+      const { data: userData, error: authError } = await supabase.auth.getUser(
+        token
       );
+      const user = userData?.user;
+      if (authError || !user)
+        return NextResponse.json({ error: "Invalid token" }, { status: 401 });
+      userId = user.id;
+      await prisma.user.upsert({
+        where: { id: userId },
+        update: { email: user.email ?? undefined },
+        create: {
+          id: userId,
+          email: user.email || `${userId}@user.local`,
+          username:
+            user.email?.split("@")[0] || `user_${userId.substring(0, 6)}`,
+        },
+      });
     }
+
+    // Room exists?
+    const room = await prisma.listeningRoom.findUnique({
+      where: { id: room_id },
+    });
+    if (!room)
+      return NextResponse.json({ error: "Room not found" }, { status: 404 });
+
+    // Already participant?
+    const existing = await prisma.roomParticipant.findUnique({
+      where: { roomId_userId: { roomId: room_id, userId } },
+    });
+    if (existing)
+      return NextResponse.json({ error: "Already in room" }, { status: 409 });
+
+    // Count active participants
+    const activeCount = await prisma.roomParticipant.count({
+      where: { roomId: room_id, isActive: true },
+    });
+    if (activeCount >= room.capacity)
+      return NextResponse.json({ error: "Room is full" }, { status: 409 });
+
+    // Join as GUEST
+    await prisma.roomParticipant.create({
+      data: { roomId: room_id, userId, role: "GUEST", isActive: true },
+    });
 
     return NextResponse.json({
       message: "Joined room successfully",
@@ -90,8 +86,7 @@ export async function POST(request: NextRequest) {
         id: room.id,
         name: room.name,
         description: room.description,
-        current_track_id: room.current_track_id,
-        is_playing: room.is_playing,
+        current_track_id: room.currentTrackId,
       },
     });
   } catch (error) {

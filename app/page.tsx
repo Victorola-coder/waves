@@ -18,6 +18,7 @@ import { motion } from "framer-motion";
 import { EyeIcon } from "./components/svgs";
 import { toast } from "sonner";
 import { Animation, Glow, Loader } from "./components/global";
+import { Header } from "./components/atom";
 
 export default function Home() {
   const [isModalOpen, setIsModalOpen] = useState(false);
@@ -39,407 +40,290 @@ export default function Home() {
 
   return (
     <Animation>
-      <div className="min-h-screen bg-gradient-to-br from-neutral-900 via-neutral-800 to-neutral-900 p-8">
-        <div className="max-w-6xl mx-auto space-y-12">
-          {/* Header */}
-          <div className="text-center space-y-6 mb-16">
+      <div className="min-h-screen bg-gradient-to-br from-neutral-900 via-neutral-800 to-neutral-900">
+        {/* Header */}
+        <Header />
+
+        {/* Hero Section */}
+        <section className="px-4 md:px-[118px] pt-[60px] md:pt-[100px] bg-gradient-to-l from-primary/20 to-secondary/20 rounded-b-[20px] flex flex-col lg:flex-row items-center lg:items-end gap-8 md:gap-[80px]">
+          <motion.div
+            className="flex flex-col items-start w-full lg:w-auto"
+            initial={{ opacity: 0, y: 20 }}
+            animate={{ opacity: 1, y: 0 }}
+            transition={{ duration: 0.6, ease: "easeOut" }}
+          >
+            {/* Badge */}
             <motion.div
-              initial={{ scale: 0.9, opacity: 0 }}
+              className="w-fit flex flex-row items-center gap-[8px] p-[6px] rounded-[100px] border border-primary/20 bg-primary/10 shadow-lg"
+              initial={{ scale: 0.8, opacity: 0 }}
               animate={{ scale: 1, opacity: 1 }}
-              transition={{ duration: 0.5 }}
-              className="ocean-wave"
+              transition={{ duration: 0.4, delay: 0.2 }}
             >
-              <h1 className="text-6xl font-bold text-white font-poppins bg-gradient-to-r from-primary via-secondary to-accent bg-clip-text text-transparent">
-                Waves
-              </h1>
-              <p className="text-light/80 mt-4 max-w-2xl mx-auto font-inter text-lg">
-                Listen Together, Rise Together. Connect your music apps and experience synchronized listening with friends.
+              <p className="text-[14px] md:text-[16px] text-white leading-[20px] md:leading-[24px] font-poppins font-bold bg-primary py-[5px] px-[12px] rounded-[100px]">
+                New
               </p>
-              <div className="mt-6 flex justify-center">
-                <div className="w-24 h-1 bg-gradient-to-r from-primary via-secondary to-accent rounded-full"></div>
-              </div>
+              <p className="text-[14px] md:text-[16px] text-light/80 leading-[20px] md:leading-[24px] font-inter font-medium">
+                Social Music Streaming
+              </p>
             </motion.div>
 
-            <div className="flex gap-4 justify-center">
+            {/* Main Content */}
+            <motion.div
+              className="flex flex-col items-start gap-[20px] my-[30px] md:my-[43px] max-w-[678px]"
+              initial={{ opacity: 0, y: 20 }}
+              animate={{ opacity: 1, y: 0 }}
+              transition={{ duration: 0.6, delay: 0.3 }}
+            >
+              <h1 className="text-[40px] md:text-[60px] lg:text-[76px] text-white leading-[44px] md:leading-[66px] lg:leading-[81px] font-poppins font-bold">
+                Listen Together,{" "}
+                <span className="text-secondary">Rise Together</span>
+              </h1>
+              <p className="text-[16px] md:text-[18px] lg:text-[20px] text-light/80 leading-[24px] md:leading-[32px] lg:leading-[40px] font-inter font-normal">
+                Connect your music apps and experience synchronized listening
+                with friends. Join listening parties, compete on leaderboards,
+                and discover music together.
+              </p>
+            </motion.div>
+
+            {/* CTA Buttons */}
+            <motion.div
+              className="flex flex-col md:flex-row items-center gap-[12px] mb-[60px] md:mb-[140px] w-full"
+              initial={{ opacity: 0, y: 20 }}
+              animate={{ opacity: 1, y: 0 }}
+              transition={{ duration: 0.6, delay: 0.4 }}
+            >
               <Button
                 variant="primary"
-                onClick={() => toast.success("Welcome to Waves! 🌊")}
-                className="seafoam-glow"
+                className="w-full md:w-auto px-8 py-4 text-lg"
               >
                 Get Started
               </Button>
               <Button
                 variant="secondary"
-                onClick={() =>
-                  window.open(
-                    "https://github.com/victorola-coder/waves"
-                  )
-                }
+                className="w-full md:w-auto px-8 py-4 text-lg"
               >
-                View on GitHub
+                Learn More
+              </Button>
+            </motion.div>
+          </motion.div>
+
+          {/* Hero Image */}
+          <motion.div
+            className="w-full lg:w-auto flex justify-center lg:justify-end"
+            initial={{ opacity: 0, x: 50 }}
+            animate={{ opacity: 1, x: 0 }}
+            transition={{ duration: 0.6, delay: 0.5 }}
+          >
+            <div className="w-full max-w-[400px] lg:max-w-none h-[300px] bg-gradient-to-br from-primary/20 to-secondary/20 rounded-[28px] border border-primary/20 flex items-center justify-center">
+              <p className="text-light/60 font-inter text-lg">
+                Waves Hero Visual
+              </p>
+            </div>
+          </motion.div>
+        </section>
+
+        {/* How It Works Section */}
+        <section
+          id="how-it-works"
+          className="bg-neutral/5 px-4 md:px-[118px] py-[60px] md:py-[100px]"
+        >
+          <motion.div
+            className="flex flex-col gap-[20px] items-center text-center"
+            initial={{ opacity: 0, y: 50 }}
+            whileInView={{ opacity: 1, y: 0 }}
+            transition={{ duration: 0.8, ease: "easeOut" }}
+            viewport={{ once: true }}
+          >
+            <h2 className="text-[32px] md:text-[48px] lg:text-[61px] text-white leading-[40px] md:leading-[60px] lg:leading-[80px] tracking-[-1.22px] font-poppins font-bold">
+              How Waves Works
+            </h2>
+            <p className="max-w-[766px] text-light/60 text-[16px] md:text-[18px] lg:text-[20px] leading-[24px] md:leading-[28px] lg:leading-[30px] px-4 font-inter">
+              Experience music together in three simple steps. No complex
+              setups, just pure musical connection.
+            </p>
+          </motion.div>
+
+          <motion.div
+            className="mt-[60px] md:mt-[104px] flex flex-col lg:flex-row justify-center items-center gap-6 md:gap-[24px]"
+            initial={{ opacity: 0, y: 100 }}
+            whileInView={{ opacity: 1, y: 0 }}
+            transition={{ duration: 0.8, ease: "easeOut" }}
+            viewport={{ once: true }}
+          >
+            {[
+              {
+                title: "Connect Your Music",
+                description:
+                  "Link your Spotify, YouTube Music, or other streaming accounts to get started.",
+                icon: "🎵",
+              },
+              {
+                title: "Join Listening Parties",
+                description:
+                  "Create or join rooms where everyone listens to the same music in perfect sync.",
+                icon: "🎉",
+              },
+              {
+                title: "Compete & Connect",
+                description:
+                  "Rise up the leaderboards, unlock achievements, and make new music friends.",
+                icon: "🏆",
+              },
+            ].map((step, index) => (
+              <motion.div
+                key={index}
+                className="w-full lg:w-[384px]"
+                whileHover={{ y: -10, scale: 1.02 }}
+                transition={{ duration: 0.3 }}
+              >
+                <Card className="w-full lg:w-[384px] px-[18px] pb-[36px] py-[43px] text-center">
+                  <div className="text-6xl mb-6">{step.icon}</div>
+                  <h3 className="text-[#111827] text-[20px] md:text-[22px] lg:text-[25px] leading-[24px] md:leading-[28px] lg:leading-[30px] font-poppins font-bold mb-4">
+                    {step.title}
+                  </h3>
+                  <p className="text-[#5A5A5A] text-[14px] md:text-[15px] lg:text-[16px] leading-[20px] md:leading-[24px] lg:leading-[31px] mx-auto text-center px-4 md:px-0 font-inter">
+                    {step.description}
+                  </p>
+                </Card>
+              </motion.div>
+            ))}
+          </motion.div>
+        </section>
+
+        {/* Features Section */}
+        <section
+          id="features"
+          className="px-4 md:px-[118px] py-[60px] md:py-[100px]"
+        >
+          <motion.div
+            className="flex flex-col gap-[20px] items-center text-center mb-[60px] md:mb-[104px]"
+            initial={{ opacity: 0, y: 50 }}
+            whileInView={{ opacity: 1, y: 0 }}
+            transition={{ duration: 0.8, ease: "easeOut" }}
+            viewport={{ once: true }}
+          >
+            <h2 className="text-[32px] md:text-[48px] lg:text-[61px] text-white leading-[40px] md:leading-[60px] lg:leading-[80px] tracking-[-1.22px] font-poppins font-bold">
+              Why Choose Waves
+            </h2>
+            <p className="max-w-[766px] text-light/60 text-[16px] md:text-[18px] lg:text-[20px] leading-[24px] md:leading-[28px] lg:leading-[30px] px-4 font-inter">
+              Experience the future of social music streaming with cutting-edge
+              features and seamless integration.
+            </p>
+          </motion.div>
+
+          <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6 md:gap-[24px]">
+            {[
+              {
+                title: "Real-time Sync",
+                description: "Perfect synchronization across all devices",
+                icon: "⚡",
+              },
+              {
+                title: "Social Features",
+                description: "Connect with music lovers worldwide",
+                icon: "🌍",
+              },
+              {
+                title: "Leaderboards",
+                description: "Compete and climb the ranks",
+                icon: "🏅",
+              },
+              {
+                title: "Achievements",
+                description: "Unlock badges and milestones",
+                icon: "🎖️",
+              },
+              {
+                title: "Multi-Platform",
+                description: "Works with all major streaming services",
+                icon: "🔗",
+              },
+              {
+                title: "Privacy First",
+                description: "Your data stays secure and private",
+                icon: "🔒",
+              },
+            ].map((feature, index) => (
+              <motion.div
+                key={index}
+                initial={{ opacity: 0, y: 50 }}
+                whileInView={{ opacity: 1, y: 0 }}
+                transition={{ duration: 0.6, delay: index * 0.1 }}
+                viewport={{ once: true }}
+                whileHover={{ y: -5, scale: 1.02 }}
+              >
+                <Card className="p-6 text-center h-full">
+                  <div className="text-4xl mb-4">{feature.icon}</div>
+                  <h3 className="text-white text-xl font-poppins font-bold mb-3">
+                    {feature.title}
+                  </h3>
+                  <p className="text-light/60 text-sm font-inter">
+                    {feature.description}
+                  </p>
+                </Card>
+              </motion.div>
+            ))}
+          </div>
+        </section>
+
+        {/* CTA Section */}
+        <section className="bg-gradient-to-r from-primary/20 to-secondary/20 px-4 md:px-[118px] py-[60px] md:py-[100px] text-center">
+          <motion.div
+            className="max-w-[800px] mx-auto"
+            initial={{ opacity: 0, y: 50 }}
+            whileInView={{ opacity: 1, y: 0 }}
+            transition={{ duration: 0.8, ease: "easeOut" }}
+            viewport={{ once: true }}
+          >
+            <h2 className="text-[32px] md:text-[48px] lg:text-[61px] text-white leading-[40px] md:leading-[60px] lg:leading-[80px] font-poppins font-bold mb-6">
+              Ready to Make Waves?
+            </h2>
+            <p className="text-light/80 text-[16px] md:text-[18px] lg:text-[20px] leading-[24px] md:leading-[28px] lg:leading-[30px] mb-8 font-inter">
+              Join thousands of music lovers who are already experiencing the
+              future of social music streaming.
+            </p>
+            <div className="flex flex-col md:flex-row items-center justify-center gap-4">
+              <Button variant="primary" className="px-8 py-4 text-lg">
+                Start Listening Together
+              </Button>
+              <Button variant="secondary" className="px-8 py-4 text-lg">
+                View Demo
               </Button>
             </div>
-          </div>
+          </motion.div>
+        </section>
 
-          {/* Tabs Navigation */}
-          <Tabs
-            tabs={tabs}
-            defaultValue="components"
-            className="justify-center"
-          />
-
-          {/* Components Grid */}
-          <div className="grid grid-cols-1 md:grid-cols-2 gap-8">
-            {/* Buttons Section */}
-            <Glow className="p-6 space-y-4">
-              <h2 className="text-xl font-semibold text-white mb-4 font-poppins">Buttons</h2>
-              <div className="flex flex-row flex-wrap gap-4">
-                <Button variant="default">Default Button</Button>
-                <Button variant="primary">Primary Button</Button>
-                <Button variant="secondary">Secondary Button</Button>
-                <Button variant="danger">Danger Button</Button>
-                <Button variant="google">Google Button</Button>
-                <Button loading>Loading Button</Button>
-              </div>
-            </Glow>
-
-            {/* Loading States */}
-            <Glow className="p-6 space-y-4">
-              <h2 className="text-xl font-semibold text-white mb-4 font-poppins">Loaders</h2>
-              <div className="grid grid-cols-3 gap-4">
-                <div className="flex flex-col items-center gap-2">
-                  <Loader size="small" />
-                  <span className="text-sm text-light/60">Small</span>
-                </div>
-                <div className="flex flex-col items-center gap-2">
-                  <Loader size="medium" />
-                  <span className="text-sm text-light/60">Medium</span>
-                </div>
-                <div className="flex flex-col items-center gap-2">
-                  <Loader size="large" />
-                  <span className="text-sm text-light/60">Large</span>
-                </div>
-              </div>
-            </Glow>
-
-            {/* Icons & SVGs */}
-            <Glow className="p-6 space-y-4">
-              <h2 className="text-xl font-semibold text-white mb-4 font-poppins">
-                Icons & SVGs
-              </h2>
-              <div className="grid grid-cols-4 gap-4">
-                <div className="flex flex-col items-center gap-2">
-                  <EyeIcon className="w-6 h-6" fill="white" />
-                  <span className="text-sm text-light/60">Eye</span>
-                </div>
-                {/* Add more icons here */}
-              </div>
-            </Glow>
-
-            {/* Form Inputs Section */}
-            <Glow className="p-6 space-y-4">
-              <h2 className="text-xl font-semibold text-white mb-4 font-poppins">Inputs</h2>
-              <Input
-                placeholder="Regular Input"
-                value={inputValue}
-                onChange={(e: React.ChangeEvent<HTMLInputElement>) =>
-                  setInputValue(e.target.value)
-                }
-              />
-              <Input
-                type="password"
-                placeholder="Password Input"
-                value={inputValue}
-                onChange={(e: React.ChangeEvent<HTMLInputElement>) =>
-                  setInputValue(e.target.value)
-                }
-              />
-              <TextArea
-                name="textarea"
-                value={textAreaValue}
-                onChange={(e: React.ChangeEvent<HTMLInputElement>) =>
-                  setTextAreaValue(e.target.value)
-                }
-                placeholder="Text Area Input"
-              />
-            </Glow>
-
-            {/* Form Validation */}
-            <Glow className="p-6 space-y-4">
-              <h2 className="text-xl font-semibold text-white mb-4 font-poppins">
-                Form Validation
-              </h2>
-              <form
-                onSubmit={(e) => {
-                  e.preventDefault();
-                  toast.success("Form submitted!");
-                }}
-                className="space-y-4"
-              >
-                <Input
-                  placeholder="Email"
-                  type="email"
-                  error="Please enter a valid email"
-                />
-                <Input
-                  placeholder="Password"
-                  type="password"
-                  error="Password is required"
-                />
-                <Button type="submit" className="w-full">
-                  Submit
-                </Button>
-              </form>
-            </Glow>
-
-            {/* Toggle & Select Section */}
-            <Glow className="p-6 space-y-4">
-              <h2 className="text-xl font-semibold text-white mb-4 font-poppins">
-                Interactive Components
-              </h2>
-              <div className="space-y-6">
-                <div className="flex items-center justify-between">
-                  <span className="text-white">Toggle Component</span>
-                  <Toggle checked={toggleState} onChange={setToggleState} />
-                </div>
-                <Select
-                  options={selectOptions}
-                  placeholder="Select an option"
-                  onChange={(value) => console.log(value)}
-                />
-              </div>
-            </Glow>
-
-            {/* Animations */}
-            <Glow className="p-6 space-y-4">
-              <h2 className="text-xl font-semibold text-white mb-4 font-poppins">
-                Wave Animations
-              </h2>
-              <div className="space-y-4">
-                <motion.div
-                  whileHover={{ scale: 1.05 }}
-                  whileTap={{ scale: 0.95 }}
-                  className="bg-neutral/60 p-4 rounded-lg text-white text-center border border-primary/20"
-                >
-                  Hover & Tap Animation
-                </motion.div>
-                <motion.div
-                  animate={{
-                    y: [0, -10, 0],
-                  }}
-                  transition={{
-                    duration: 2,
-                    repeat: Infinity,
-                  }}
-                  className="bg-neutral/60 p-4 rounded-lg text-white text-center border border-secondary/20 animate-wave-float"
-                >
-                  Wave Float Animation
-                </motion.div>
-              </div>
-            </Glow>
-
-            {/* Color Palette */}
-            <Glow className="p-6 space-y-4">
-              <h2 className="text-xl font-semibold text-white mb-4 font-poppins">
-                Waves Brand Colors
-              </h2>
-              <div className="grid grid-cols-2 gap-4">
-                <div className="space-y-2">
-                  <div className="h-12 rounded-lg bg-primary shadow-lg shadow-primary/25" />
-                  <span className="text-sm text-light/60">Ocean Blue</span>
-                </div>
-                <div className="space-y-2">
-                  <div className="h-12 rounded-lg bg-secondary shadow-lg shadow-secondary/25" />
-                  <span className="text-sm text-light/60">Seafoam Green</span>
-                </div>
-                <div className="space-y-2">
-                  <div className="h-12 rounded-lg bg-accent shadow-lg shadow-accent/25" />
-                  <span className="text-sm text-light/60">Sunset Coral</span>
-                </div>
-                <div className="space-y-2">
-                  <div className="h-12 rounded-lg bg-neutral border border-neutral-400" />
-                  <span className="text-sm text-light/60">Dark Slate</span>
-                </div>
-              </div>
-            </Glow>
-
-            {/* Card & Image Section */}
-            <Glow className="p-6 space-y-4">
-              <h2 className="text-xl font-semibold text-white mb-4 font-poppins">
-                Display Components
-              </h2>
-              <Card>
-                <div className="bg-neutral/60 p-4 rounded-lg">
-                  <Image
-                    src="/images/logo.svg"
-                    alt="Waves Logo"
-                    width={300}
-                    height={200}
-                    className="rounded-lg"
-                  />
-                </div>
-              </Card>
-            </Glow>
-
-            {/* Loading States Section */}
-            <Glow className="p-6 space-y-4">
-              <h2 className="text-xl font-semibold text-white mb-4 font-poppins">
-                Loading States
-              </h2>
-              <div className="space-y-4">
-                <Skeleton className="h-12 w-full" />
-                <Skeleton className="h-12 w-3/4" />
-                <Skeleton className="h-12 w-1/2" />
-              </div>
-            </Glow>
-
-            {/* Modal & OTP Section */}
-            <Glow className="p-6 space-y-4">
-              <h2 className="text-xl font-semibold text-white mb-4 font-poppins">
-                Advanced Components
-              </h2>
-              <div className="space-y-4">
-                <Button onClick={() => setIsModalOpen(true)}>Open Modal</Button>
-                <div className="mt-8">
-                  <h3 className="text-white mb-4">OTP Input</h3>
-                  <Otp />
-                </div>
-              </div>
-            </Glow>
-
-            {/* Toast Notifications */}
-            <Glow className="p-6 space-y-4">
-              <h2 className="text-xl font-semibold text-white mb-4 font-poppins">
-                Toast Notifications
-              </h2>
-              <div className="grid grid-cols-2 gap-4">
-                <Button
-                  variant="default"
-                  onClick={() => toast.success("Success message")}
-                >
-                  Success Toast
-                </Button>
-                <Button
-                  variant="danger"
-                  onClick={() => toast.error("Error message")}
-                >
-                  Error Toast
-                </Button>
-                <Button
-                  variant="primary"
-                  onClick={() => toast.info("Info message")}
-                >
-                  Info Toast
-                </Button>
-                <Button
-                  variant="secondary"
-                  onClick={() => toast.warning("Warning message")}
-                >
-                  Warning Toast
-                </Button>
-              </div>
-            </Glow>
-
-            {/* Typography */}
-            <Glow className="p-6 space-y-4">
-              <h2 className="text-xl font-semibold text-white mb-4 font-poppins">
-                Waves Typography
-              </h2>
-              <div className="space-y-6">
-                <div>
-                  <h1 className="text-4xl font-poppins font-bold text-white">
-                    Heading 1 - Poppins Bold
-                  </h1>
-                  <p className="text-light/60 text-sm">
-                    Font: Poppins Bold - 36px
-                  </p>
-                </div>
-                <div>
-                  <h2 className="text-3xl font-poppins font-semibold text-white">
-                    Heading 2 - Poppins Semibold
-                  </h2>
-                  <p className="text-light/60 text-sm">
-                    Font: Poppins Semibold - 30px
-                  </p>
-                </div>
-                <div>
-                  <p className="text-base font-inter text-white">
-                    Regular paragraph text with Inter
-                  </p>
-                  <p className="text-light/60 text-sm">
-                    Font: Inter Regular - 16px
-                  </p>
-                </div>
-                <div>
-                  <p className="font-geistMono text-white">
-                    Monospace text with Geist Mono
-                  </p>
-                  <p className="text-light/60 text-sm">
-                    Font: Geist Mono - 16px
-                  </p>
-                </div>
-              </div>
-            </Glow>
-
-            {/* Gradients */}
-            <Glow className="p-6 space-y-4">
-              <h2 className="text-xl font-semibold text-white mb-4 font-poppins">
-                Wave Gradients
-              </h2>
-              <div className="grid grid-cols-2 gap-4">
-                <div className="space-y-2">
-                  <div className="h-20 rounded-lg bg-gradient-to-r from-primary to-secondary shadow-lg shadow-primary/25" />
-                  <span className="text-sm text-light/60">
-                    Ocean to Seafoam
-                  </span>
-                </div>
-                <div className="space-y-2">
-                  <div className="h-20 rounded-lg bg-gradient-to-r from-accent to-secondary shadow-lg shadow-accent/25" />
-                  <span className="text-sm text-light/60">
-                    Sunset to Seafoam
-                  </span>
-                </div>
-                <div className="space-y-2">
-                  <div className="h-20 rounded-lg bg-gradient-to-r from-neutral to-neutral-600 shadow-lg shadow-neutral/25" />
-                  <span className="text-sm text-light/60">
-                    Dark Slate Gradient
-                  </span>
-                </div>
-                <div className="space-y-2">
-                  <div className="h-20 rounded-lg bg-gradient-to-r from-primary via-secondary to-accent shadow-lg shadow-primary/25" />
-                  <span className="text-sm text-light/60">
-                    Full Wave Spectrum
-                  </span>
-                </div>
-              </div>
-            </Glow>
-          </div>
-        </div>
-
-        {/* Modal */}
-        <Modal
-          isOpen={isModalOpen}
-          onClose={() => setIsModalOpen(false)}
-          title="Modal Example"
-        >
-          <div className="space-y-4">
-            <p className="text-white">
-              This is an example modal that showcases the Modal component with the new Waves design system.
-            </p>
-            <Button
-              variant="primary"
-              onClick={() => setIsModalOpen(false)}
-              className="w-full"
-            >
-              Close Modal
-            </Button>
-          </div>
-        </Modal>
+        {/* Footer */}
+        <footer className="border-t border-neutral-400/20 px-4 md:px-[118px] py-8 text-center">
+          <p className="text-light/60 font-inter">
+            Built with Next.js, Tailwind CSS, and TypeScript
+          </p>
+          <p className="mt-2 font-poppins text-primary">
+            © {new Date().getFullYear()} Waves - Listen Together, Rise Together
+          </p>
+        </footer>
       </div>
-      <footer className="mt-16 text-center text-light/60 border-t border-neutral-400/20 pt-8">
-        <p className="font-inter">Built with Next.js, Tailwind CSS, and TypeScript</p>
-        <p className="mt-2 font-poppins text-primary">© {new Date().getFullYear()} Waves - Listen Together, Rise Together</p>
-      </footer>
+
+      {/* Modal */}
+      <Modal
+        isOpen={isModalOpen}
+        onClose={() => setIsModalOpen(false)}
+        title="Modal Example"
+      >
+        <div className="space-y-4">
+          <p className="text-white">
+            This is an example modal that showcases the Modal component with the
+            new Waves design system.
+          </p>
+          <Button
+            variant="primary"
+            onClick={() => setIsModalOpen(false)}
+            className="w-full"
+          >
+            Close Modal
+          </Button>
+        </div>
+      </Modal>
     </Animation>
   );
 }

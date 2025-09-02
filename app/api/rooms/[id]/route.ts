@@ -36,10 +36,11 @@ async function resolveUserId(request: NextRequest): Promise<string | null> {
 
 export async function GET(
   request: NextRequest,
-  { params }: { params: { id: string } }
+  context: { params: Promise<{ id: string }> }
 ) {
   try {
-    const roomId = params.id;
+    const { id } = await context.params;
+    const roomId = id;
 
     const room = await prisma.listeningRoom.findUnique({
       where: { id: roomId },
@@ -77,19 +78,19 @@ export async function GET(
     });
   } catch (error) {
     console.error("Get room error:", error);
-    return NextResponse.json(
-      { error: "Internal server error" },
-      { status: 500 }
-    );
+    const message =
+      error instanceof Error ? error.message : "Internal server error";
+    return NextResponse.json({ error: message }, { status: 500 });
   }
 }
 
 export async function PUT(
   request: NextRequest,
-  { params }: { params: { id: string } }
+  context: { params: Promise<{ id: string }> }
 ) {
   try {
-    const roomId = params.id;
+    const { id } = await context.params;
+    const roomId = id;
     const { name, description, max_participants, is_private } =
       await request.json();
 
@@ -137,10 +138,11 @@ export async function PUT(
 
 export async function DELETE(
   request: NextRequest,
-  { params }: { params: { id: string } }
+  context: { params: Promise<{ id: string }> }
 ) {
   try {
-    const roomId = params.id;
+    const { id } = await context.params;
+    const roomId = id;
 
     const userId = await resolveUserId(request);
     if (!userId)

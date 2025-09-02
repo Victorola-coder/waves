@@ -102,7 +102,7 @@ export default function Header() {
         <div className="flex items-center gap-3">
           <div className="w-8 h-8 md:w-10 md:h-10 lg:w-12 lg:h-12 bg-gradient-to-br from-primary to-secondary rounded-lg flex items-center justify-center">
             <span className="text-white font-poppins font-bold text-lg md:text-xl lg:text-2xl">
-              W
+              🌊
             </span>
           </div>
           <span className="text-white font-poppins font-bold text-xl md:text-2xl lg:text-3xl">

@@ -492,7 +492,7 @@ export default function Home() {
 
         {/* Footer */}
         <footer className="bg-neutral/20 border-t border-neutral-400/20 px-4 sm:px-6 md:px-8 lg:px-16 xl:px-[118px] py-8 sm:py-10 md:py-12 lg:py-14 xl:py-16">
-          <div className="max-w-7xl mx-auto">
+          <div className="max-w-7x_ mx-auto">
             {/* Main Footer Content */}
             <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-6 sm:gap-8 md:gap-10 lg:gap-12 mb-6 sm:mb-8">
               {/* Company Info */}
@@ -500,7 +500,7 @@ export default function Home() {
                 <div className="flex items-center gap-2 sm:gap-3 mb-3 sm:mb-4">
                   <div className="w-8 sm:w-10 h-8 sm:h-10 bg-gradient-to-br from-primary to-secondary rounded-lg flex items-center justify-center">
                     <span className="text-white font-poppins font-bold text-lg sm:text-xl">
-                      W
+                      🌊
                     </span>
                   </div>
                   <span className="text-white font-poppins font-bold text-xl sm:text-2xl">
@@ -625,14 +625,14 @@ export default function Home() {
 
             {/* Newsletter Signup */}
             <div className="border-t border-neutral-400/20 pt-6 sm:pt-8 mb-6 sm:mb-8">
-              <div className="text-center">
+              <div className="text-center_">
                 <h3 className="text-white font-poppins font-semibold text-base sm:text-lg mb-2">
                   Stay in the loop
                 </h3>
                 <p className="text-light/60 font-inter text-xs sm:text-sm mb-3 sm:mb-4">
                   Get the latest updates on new features and releases
                 </p>
-                <div className="flex flex-col sm:flex-row items-center justify-center gap-3 max-w-md mx-auto">
+                <div className="flex flex-col sm:flex-row items-center justify-center gap-3 max-w-md mx-auto_">
                   <input
                     type="email"
                     placeholder="Enter your email"

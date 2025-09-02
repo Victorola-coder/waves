@@ -2,7 +2,7 @@ import "./global.css";
 import { Toaster } from "sonner";
 import localFont from "next/font/local";
 import { AOS } from "./components/global";
-import { Montserrat } from "next/font/google";
+import { Poppins, Inter } from "next/font/google";
 import type { Metadata, Viewport } from "next";
 
 const geistSans = localFont({
@@ -16,9 +16,15 @@ const geistMono = localFont({
   weight: "100 900",
 });
 
-const montserrat = Montserrat({
+const poppins = Poppins({
   subsets: ["latin"],
-  variable: "--font-montserrat",
+  variable: "--font-poppins",
+  weight: ["100", "200", "300", "400", "500", "600", "700", "800", "900"],
+});
+
+const inter = Inter({
+  subsets: ["latin"],
+  variable: "--font-inter",
   weight: ["100", "200", "300", "400", "500", "600", "700", "800", "900"],
 });
 
@@ -27,18 +33,18 @@ export const viewport: Viewport = {
 };
 
 export const metadata: Metadata = {
-  metadataBase: new URL("https://nextapptemplate.xyz"),
+  metadataBase: new URL("https://waves.app"),
   icons: {
     icon: "/icon.png",
   },
-  title: "nextjs template",
+  title: "Waves - Listen Together, Rise Together",
   description:
-    "I fell in love with next.js, im trying to make a template for it also",
-  applicationName: "next Web Application",
-  authors: [{ name: "nextapp template", url: "https://domainname.host" }],
-  keywords: ["NextJs", "reactjs", "template", "typescript"],
-  creator: "VickyJay",
-  publisher: "VickyJay",
+    "Connect your music apps and listen together in real-time. Join listening parties, compete on leaderboards, and discover music with friends.",
+  applicationName: "Waves - Social Music Streaming",
+  authors: [{ name: "Waves Team", url: "https://waves.app" }],
+  keywords: ["Music", "Streaming", "Social", "Listening Parties", "Leaderboards", "Spotify", "YouTube Music"],
+  creator: "Waves",
+  publisher: "Waves",
   generator: "Next.js",
   referrer: "origin",
   robots: {
@@ -47,41 +53,38 @@ export const metadata: Metadata = {
   },
   openGraph: {
     type: "website",
-    url: "https://domainname.host",
-    title: "Nextjs template",
-    siteName: "nextapp template",
+    url: "https://waves.app",
+    title: "Waves - Listen Together, Rise Together",
+    siteName: "Waves",
     locale: "en_US",
     images: [
       {
-        url: "linktoopengraphimage.cdn",
+        url: "https://waves.app/og-image.jpg",
         width: 1200,
         height: 630,
-        alt: "next OG Image",
+        alt: "Waves - Social Music Streaming Platform",
       },
     ],
   },
   twitter: {
-    site: "nextapp",
-    creator: "socialmediahandle",
-    title:
-      "nextapp template - I fell in love with next.js, im trying to make a template for it tooo",
-    description:
-      "I fell in love with next.js, im trying to make a template for it too",
+    site: "waves",
+    creator: "waves",
+    title: "Waves - Listen Together, Rise Together",
+    description: "Connect your music apps and listen together in real-time. Join listening parties, compete on leaderboards, and discover music with friends.",
     card: "summary_large_image",
-    images: ["linktoopengraph.com"],
+    images: ["https://waves.app/og-image.jpg"],
   },
   appleWebApp: {
     capable: true,
-    title: "nextapp template",
+    title: "Waves",
     statusBarStyle: "black-translucent",
   },
   formatDetection: {
     telephone: false,
   },
-  abstract:
-    "I fell in love with next.js, im trying to make a template for it tooo",
-  category: "Social",
-  classification: "Social",
+  abstract: "Connect your music apps and listen together in real-time. Join listening parties, compete on leaderboards, and discover music with friends.",
+  category: "Music",
+  classification: "Social Music Streaming",
 };
 
 export default function RootLayout({
@@ -92,7 +95,7 @@ export default function RootLayout({
   return (
     <html lang="en">
       <body
-        className={`${geistSans.variable} ${montserrat.className} ${geistMono.variable} antialiased`}
+        className={`${geistSans.variable} ${poppins.variable} ${inter.variable} ${geistMono.variable} antialiased`}
       >
         <Toaster richColors />
         <AOS />

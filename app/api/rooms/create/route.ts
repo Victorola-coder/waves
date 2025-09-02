@@ -1,40 +1,45 @@
-import { NextRequest, NextResponse } from 'next/server'
-import { supabase } from '@/app/lib/supabase'
+import { supabase } from "@/app/lib/supabase";
+import { NextRequest, NextResponse } from "next/server";
 
 export async function POST(request: NextRequest) {
   try {
-    const { name, description, max_participants = 10, is_private = false } = await request.json()
+    const {
+      name,
+      description,
+      max_participants = 10,
+      is_private = false,
+    } = await request.json();
 
     // Validate input
     if (!name) {
       return NextResponse.json(
-        { error: 'Room name is required' },
+        { error: "Room name is required" },
         { status: 400 }
-      )
+      );
     }
 
     // Get authenticated user
-    const authHeader = request.headers.get('authorization')
+    const authHeader = request.headers.get("authorization");
     if (!authHeader) {
       return NextResponse.json(
-        { error: 'Authentication required' },
+        { error: "Authentication required" },
         { status: 401 }
-      )
+      );
     }
 
-    const token = authHeader.replace('Bearer ', '')
-    const { data: { user }, error: authError } = await supabase.auth.getUser(token)
+    const token = authHeader.replace("Bearer ", "");
+    const {
+      data: { user },
+      error: authError,
+    } = await supabase.auth.getUser(token);
 
     if (authError || !user) {
-      return NextResponse.json(
-        { error: 'Invalid token' },
-        { status: 401 }
-      )
+      return NextResponse.json({ error: "Invalid token" }, { status: 401 });
     }
 
     // Create room
     const { data: room, error: roomError } = await supabase
-      .from('listening_rooms')
+      .from("listening_rooms")
       .insert({
         name,
         description,
@@ -44,35 +49,35 @@ export async function POST(request: NextRequest) {
         created_at: new Date().toISOString(),
       })
       .select()
-      .single()
+      .single();
 
     if (roomError) {
       return NextResponse.json(
-        { error: 'Failed to create room' },
+        { error: "Failed to create room" },
         { status: 500 }
-      )
+      );
     }
 
     // Add host as participant
     const { error: participantError } = await supabase
-      .from('room_participants')
+      .from("room_participants")
       .insert({
         room_id: room.id,
         user_id: user.id,
-        role: 'host',
+        role: "host",
         joined_at: new Date().toISOString(),
         is_active: true,
-      })
+      });
 
     if (participantError) {
       return NextResponse.json(
-        { error: 'Failed to add host to room' },
+        { error: "Failed to add host to room" },
         { status: 500 }
-      )
+      );
     }
 
     return NextResponse.json({
-      message: 'Room created successfully',
+      message: "Room created successfully",
       room: {
         id: room.id,
         name: room.name,
@@ -82,12 +87,12 @@ export async function POST(request: NextRequest) {
         is_private: room.is_private,
         created_at: room.created_at,
       },
-    })
+    });
   } catch (error) {
-    console.error('Create room error:', error)
+    console.error("Create room error:", error);
     return NextResponse.json(
-      { error: 'Internal server error' },
+      { error: "Internal server error" },
       { status: 500 }
-    )
+    );
   }
 }

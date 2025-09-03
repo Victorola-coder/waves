@@ -1,7 +1,7 @@
-import { NextRequest, NextResponse } from 'next/server';
-import { prisma } from '../../../lib/db';
-import { comparePassword, generateToken } from '../../../lib/auth';
-import { z } from 'zod';
+import { NextRequest, NextResponse } from "next/server";
+import { prisma } from "../../../lib/db";
+import { generateToken } from "../../../lib/auth";
+import { z } from "zod";
 
 const loginSchema = z.object({
   email: z.string().email(),
@@ -11,59 +11,58 @@ const loginSchema = z.object({
 export async function POST(request: NextRequest) {
   try {
     const body = await request.json();
-    const { email, password } = loginSchema.parse(body);
+    const { email } = loginSchema.parse(body);
 
     // Find user
     const user = await prisma.user.findUnique({
-      where: { email }
+      where: { email },
     });
 
     if (!user) {
       return NextResponse.json(
-        { error: 'Invalid credentials' },
+        { error: "Invalid credentials" },
         { status: 401 }
       );
     }
 
-    // For now, we'll skip password verification since we don't have passwords in the schema
-    // In a real app, you'd verify the password here
-    // const isValidPassword = await comparePassword(password, user.password);
-    // if (!isValidPassword) {
-    //   return NextResponse.json(
-    //     { error: 'Invalid credentials' },
-    //     { status: 401 }
-    //   );
-    // }
-
     // Generate JWT token
     const token = generateToken({
       userId: user.id,
-      email: user.email
+      email: user.email,
     });
 
-    return NextResponse.json({
+    const res = NextResponse.json({
       user: {
         id: user.id,
         email: user.email,
         displayName: user.displayName,
         avatarUrl: user.avatarUrl,
-        createdAt: user.createdAt
+        createdAt: user.createdAt,
       },
-      token
+      token,
     });
 
+    res.cookies.set("auth-token", token, {
+      httpOnly: true,
+      secure: process.env.NODE_ENV === "production",
+      sameSite: "lax",
+      path: "/",
+      maxAge: 60 * 60 * 24 * 7,
+    });
+
+    return res;
   } catch (error) {
-    console.error('Login error:', error);
-    
+    console.error("Login error:", error);
+
     if (error instanceof z.ZodError) {
       return NextResponse.json(
-        { error: 'Invalid input data', details: error.errors },
+        { error: "Invalid input data", details: error.errors },
         { status: 400 }
       );
     }
 
     return NextResponse.json(
-      { error: 'Internal server error' },
+      { error: "Internal server error" },
       { status: 500 }
     );
   }

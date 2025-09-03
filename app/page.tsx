@@ -6,6 +6,7 @@ import { Header } from "./components/atom";
 import { WavesHero } from "./components/svgs";
 import { Animation } from "./components/global";
 import { Button, Card, Modal } from "./components/ui";
+import Link from "next/link";
 
 export default function Home() {
   const [isModalOpen, setIsModalOpen] = useState(false);
@@ -519,30 +520,30 @@ export default function Home() {
                   worldwide.
                 </p>
                 <div className="flex space-x-3 sm:space-x-4">
-                  <a
+                  <Link
                     href="#"
                     className="w-8 sm:w-10 h-8 sm:h-10 bg-neutral/40 hover:bg-primary/20 rounded-lg flex items-center justify-center transition-colors duration-200"
                   >
                     <span className="text-light/60 hover:text-primary text-base sm:text-lg">
                       🎵
                     </span>
-                  </a>
-                  <a
+                  </Link>
+                  <Link
                     href="#"
                     className="w-8 sm:w-10 h-8 sm:h-10 bg-neutral/40 hover:bg-primary/20 rounded-lg flex items-center justify-center transition-colors duration-200"
                   >
                     <span className="text-light/60 hover:text-primary text-base sm:text-lg">
                       🌊
                     </span>
-                  </a>
-                  <a
+                  </Link>
+                  <Link
                     href="#"
                     className="w-8 sm:w-10 h-8 sm:h-10 bg-neutral/40 hover:bg-primary/20 rounded-lg flex items-center justify-center transition-colors duration-200"
                   >
                     <span className="text-light/60 hover:text-primary text-base sm:text-lg">
                       🎉
                     </span>
-                  </a>
+                  </Link>
                 </div>
               </div>
 
@@ -553,36 +554,36 @@ export default function Home() {
                 </h3>
                 <ul className="space-y-2 sm:space-y-3">
                   <li>
-                    <a
+                    <Link
                       href="#"
                       className="text-light/60 hover:text-primary font-inter text-xs sm:text-sm transition-colors duration-200"
                     >
                       Features
-                    </a>
+                    </Link>
                   </li>
                   <li>
-                    <a
+                    <Link
                       href="#"
                       className="text-light/60 hover:text-primary font-inter text-xs sm:text-sm transition-colors duration-200"
                     >
                       Pricing
-                    </a>
+                    </Link>
                   </li>
                   <li>
-                    <a
+                    <Link
                       href="#"
                       className="text-light/60 hover:text-primary font-inter text-xs sm:text-sm transition-colors duration-200"
                     >
                       API
-                    </a>
+                    </Link>
                   </li>
                   <li>
-                    <a
+                    <Link
                       href="#"
                       className="text-light/60 hover:text-primary font-inter text-xs sm:text-sm transition-colors duration-200"
                     >
                       Integrations
-                    </a>
+                    </Link>
                   </li>
                 </ul>
               </div>
@@ -594,36 +595,36 @@ export default function Home() {
                 </h3>
                 <ul className="space-y-2 sm:space-y-3">
                   <li>
-                    <a
+                    <Link
                       href="#"
                       className="text-light/60 hover:text-primary font-inter text-xs sm:text-sm transition-colors duration-200"
                     >
                       About
-                    </a>
+                    </Link>
                   </li>
                   <li>
-                    <a
+                    <Link
                       href="#"
                       className="text-light/60 hover:text-primary font-inter text-xs sm:text-sm transition-colors duration-200"
                     >
                       Blog
-                    </a>
+                    </Link>
                   </li>
                   <li>
-                    <a
+                    <Link
                       href="#"
                       className="text-light/60 hover:text-primary font-inter text-xs sm:text-sm transition-colors duration-200"
                     >
                       Careers
-                    </a>
+                    </Link>
                   </li>
                   <li>
-                    <a
+                    <Link
                       href="#"
                       className="text-light/60 hover:text-primary font-inter text-xs sm:text-sm transition-colors duration-200"
                     >
                       Contact
-                    </a>
+                    </Link>
                   </li>
                 </ul>
               </div>
@@ -661,18 +662,18 @@ export default function Home() {
                   © {new Date().getFullYear()} Waves. All rights reserved.
                 </span>
                 <div className="flex gap-3 sm:gap-6">
-                  <a
+                  <Link
                     href="#"
                     className="hover:text-primary transition-colors duration-200"
                   >
                     Privacy Policy
-                  </a>
-                  <a
+                  </Link>
+                  <Link
                     href="#"
                     className="hover:text-primary transition-colors duration-200"
                   >
                     Terms of Service
-                  </a>
+                  </Link>
                 </div>
               </div>
               <div className="flex items-center gap-2">

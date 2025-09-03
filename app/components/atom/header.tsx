@@ -4,11 +4,13 @@ import { useState, useEffect } from "react";
 import { motion, AnimatePresence } from "framer-motion";
 import { Button } from "../ui";
 import Link from "next/link";
+import { useRouter } from "next/navigation";
 
 export default function Header() {
   const [isMobileMenuOpen, setIsMobileMenuOpen] = useState(false);
   const [user, setUser] = useState<any>(null);
   const [isClient, setIsClient] = useState(false);
+  const router = useRouter();
 
   useEffect(() => {
     setIsClient(true);
@@ -66,12 +68,12 @@ export default function Header() {
               animate={{ opacity: 1, y: 0 }}
               transition={{ duration: 0.6, delay: index * 0.1 }}
             >
-              <a
+              <Link
                 href={item.href}
                 className="text-[16px] xl:text-[18px] 2xl:text-[20px] leading-[24px] xl:leading-[28px] 2xl:leading-[40px] font-medium transition-all duration-300 hover:text-primary hover:font-semibold cursor-pointer text-light/80 whitespace-nowrap"
               >
                 {item.label}
-              </a>
+              </Link>
             </motion.li>
           ))}
         </ul>
@@ -85,14 +87,14 @@ export default function Header() {
             <Button
               variant="secondary"
               className="text-sm md:text-base px-4 md:px-6 py-2 md:py-3"
-              onClick={() => (window.location.href = "/dashboard")}
+              onClick={() => router.push("/dashboard")}
             >
               Dashboard
             </Button>
             <Button
               variant="primary"
               className="text-sm md:text-base px-4 md:px-6 py-2 md:py-3"
-              onClick={() => (window.location.href = "/profile")}
+              onClick={() => router.push("/profile")}
             >
               Profile
             </Button>
@@ -103,14 +105,14 @@ export default function Header() {
             <Button
               variant="secondary"
               className="text-sm md:text-base px-4 md:px-6 py-2 md:py-3"
-              onClick={() => (window.location.href = "/login")}
+              onClick={() => router.push("/login")}
             >
               Sign In
             </Button>
             <Button
               variant="primary"
               className="text-sm md:text-base px-4 md:px-6 py-2 md:py-3"
-              onClick={() => (window.location.href = "/signup")}
+              onClick={() => router.push("/signup")}
             >
               Get Started
             </Button>
@@ -158,14 +160,14 @@ export default function Header() {
             <div className="px-4 py-6 space-y-4">
               {/* Mobile Navigation Items */}
               {navItems.map((item) => (
-                <a
+                <Link
                   key={item.label}
                   href={item.href}
                   onClick={() => setIsMobileMenuOpen(false)}
                   className="block text-light/80 hover:text-white transition-colors duration-200 font-medium text-lg py-2"
                 >
                   {item.label}
-                </a>
+                </Link>
               ))}
 
               {/* Mobile Auth Buttons */}
@@ -178,7 +180,7 @@ export default function Header() {
                       className="w-full justify-center"
                       onClick={() => {
                         setIsMobileMenuOpen(false);
-                        window.location.href = "/dashboard";
+                        router.push("/dashboard");
                       }}
                     >
                       Dashboard
@@ -188,7 +190,7 @@ export default function Header() {
                       className="w-full justify-center"
                       onClick={() => {
                         setIsMobileMenuOpen(false);
-                        window.location.href = "/profile";
+                        router.push("/profile");
                       }}
                     >
                       Profile
@@ -202,7 +204,7 @@ export default function Header() {
                       className="w-full justify-center"
                       onClick={() => {
                         setIsMobileMenuOpen(false);
-                        window.location.href = "/login";
+                        router.push("/login");
                       }}
                     >
                       Sign In
@@ -212,7 +214,7 @@ export default function Header() {
                       className="w-full justify-center"
                       onClick={() => {
                         setIsMobileMenuOpen(false);
-                        window.location.href = "/signup";
+                        router.push("/signup");
                       }}
                     >
                       Get Started

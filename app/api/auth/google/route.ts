@@ -9,6 +9,15 @@ export async function GET(request: NextRequest) {
     const code = searchParams.get("code");
     const error = searchParams.get("error");
 
+    // Check for access_token in hash fragment (Supabase OAuth success)
+    const hash = request.url.split("#")[1];
+    let accessToken = null;
+
+    if (hash) {
+      const hashParams = new URLSearchParams(hash);
+      accessToken = hashParams.get("access_token");
+    }
+
     if (error) {
       return NextResponse.json(
         { error: `OAuth error: ${error}` },
@@ -16,15 +25,11 @@ export async function GET(request: NextRequest) {
       );
     }
 
-    if (!code) {
-      return NextResponse.json(
-        { error: "Authorization code required" },
-        { status: 400 }
-      );
-    }
-
     // Check if Supabase is configured
-    if (!process.env.NEXT_PUBLIC_SUPABASE_URL || !process.env.SUPABASE_SERVICE_ROLE_KEY) {
+    if (
+      !process.env.NEXT_PUBLIC_SUPABASE_URL ||
+      !process.env.SUPABASE_SERVICE_ROLE_KEY
+    ) {
       return NextResponse.json(
         { error: "Supabase not configured" },
         { status: 500 }
@@ -33,18 +38,51 @@ export async function GET(request: NextRequest) {
 
     const supabase = createServerSupabaseClient();
 
-    // Exchange code for session
-    const { data: authData, error: authError } = await supabase.auth.exchangeCodeForSession(code);
+    let user;
 
-    if (authError || !authData.user) {
-      console.error("Supabase auth error:", authError);
+    if (accessToken) {
+      // Handle direct access token from Supabase OAuth
+      try {
+        // Get user info using the access token
+        const { data: userData, error: userError } =
+          await supabase.auth.getUser(accessToken);
+
+        if (userError || !userData.user) {
+          console.error("Error getting user from access token:", userError);
+          return NextResponse.json(
+            { error: "Failed to get user info" },
+            { status: 400 }
+          );
+        }
+
+        user = userData.user;
+      } catch (tokenError) {
+        console.error("Error processing access token:", tokenError);
+        return NextResponse.json(
+          { error: "Invalid access token" },
+          { status: 400 }
+        );
+      }
+    } else if (code) {
+      // Handle authorization code flow
+      const { data: authData, error: authError } =
+        await supabase.auth.exchangeCodeForSession(code);
+
+      if (authError || !authData.user) {
+        console.error("Supabase auth error:", authError);
+        return NextResponse.json(
+          { error: "Authentication failed" },
+          { status: 400 }
+        );
+      }
+
+      user = authData.user;
+    } else {
       return NextResponse.json(
-        { error: "Authentication failed" },
+        { error: "Authorization code or access token required" },
         { status: 400 }
       );
     }
-
-    const { user } = authData;
 
     // Check if user exists in our database
     let dbUser = await prisma.user.findUnique({
@@ -58,8 +96,10 @@ export async function GET(request: NextRequest) {
           email: user.email!,
           authProvider: "google",
           googleId: user.id,
-          displayName: user.user_metadata?.full_name || user.user_metadata?.name,
-          avatarUrl: user.user_metadata?.avatar_url || user.user_metadata?.picture,
+          displayName:
+            user.user_metadata?.full_name || user.user_metadata?.name,
+          avatarUrl:
+            user.user_metadata?.avatar_url || user.user_metadata?.picture,
         },
       });
     } else {
@@ -69,8 +109,14 @@ export async function GET(request: NextRequest) {
         data: {
           authProvider: "google",
           googleId: user.id,
-          displayName: user.user_metadata?.full_name || user.user_metadata?.name || dbUser.displayName,
-          avatarUrl: user.user_metadata?.avatar_url || user.user_metadata?.picture || dbUser.avatarUrl,
+          displayName:
+            user.user_metadata?.full_name ||
+            user.user_metadata?.name ||
+            dbUser.displayName,
+          avatarUrl:
+            user.user_metadata?.avatar_url ||
+            user.user_metadata?.picture ||
+            dbUser.avatarUrl,
         },
       });
     }
@@ -94,7 +140,6 @@ export async function GET(request: NextRequest) {
     redirectUrl.searchParams.set("token", token);
 
     return NextResponse.redirect(redirectUrl.toString());
-
   } catch (error) {
     console.error("Google OAuth error:", error);
     return NextResponse.json(
@@ -108,7 +153,10 @@ export async function GET(request: NextRequest) {
 export async function POST(request: NextRequest) {
   try {
     // Check if Supabase is configured
-    if (!process.env.NEXT_PUBLIC_SUPABASE_URL || !process.env.SUPABASE_SERVICE_ROLE_KEY) {
+    if (
+      !process.env.NEXT_PUBLIC_SUPABASE_URL ||
+      !process.env.SUPABASE_SERVICE_ROLE_KEY
+    ) {
       return NextResponse.json(
         { error: "Supabase not configured" },
         { status: 500 }
@@ -124,30 +172,26 @@ export async function POST(request: NextRequest) {
     }
 
     const supabase = createServerSupabaseClient();
-    
+
     const { data, error } = await supabase.auth.signInWithOAuth({
-      provider: 'google',
+      provider: "google",
       options: {
         redirectTo: `${process.env.NEXT_PUBLIC_APP_URL}/api/auth/google`,
         queryParams: {
-          access_type: 'offline',
-          prompt: 'consent',
+          access_type: "offline",
+          prompt: "consent",
         },
       },
     });
 
     if (error) {
-      return NextResponse.json(
-        { error: error.message },
-        { status: 400 }
-      );
+      return NextResponse.json({ error: error.message }, { status: 400 });
     }
 
-    return NextResponse.json({ 
+    return NextResponse.json({
       authUrl: data.url,
-      message: "Redirect user to this URL to authorize with Google"
+      message: "Redirect user to this URL to authorize with Google",
     });
-
   } catch (error) {
     console.error("Google OAuth URL error:", error);
     return NextResponse.json(

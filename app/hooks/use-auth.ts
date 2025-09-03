@@ -38,8 +38,21 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
   const [loading, setLoading] = useState(true);
   const router = useRouter();
 
+  // Check if user is authenticated on mount
   useEffect(() => {
     checkAuth();
+
+    // Check for token in URL (from OAuth redirect)
+    const urlParams = new URLSearchParams(window.location.search);
+    const tokenFromUrl = urlParams.get("token");
+
+    if (tokenFromUrl) {
+      localStorage.setItem("auth-token", tokenFromUrl);
+      // Clean up URL
+      window.history.replaceState({}, document.title, window.location.pathname);
+      // Refresh user state
+      checkAuth();
+    }
   }, []);
 
   const checkAuth = async () => {

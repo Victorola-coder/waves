@@ -130,11 +130,6 @@ export default function Login() {
               className="w-full py-3 text-lg font-medium"
               disabled={isLoading}
             >
-              {isLoading ? (
-                <div className="w-5 h-5 border-2 border-white border-t-transparent rounded-full animate-spin mr-2" />
-              ) : (
-                "Sign In"
-              )}
               {isLoading ? "Signing In..." : "Sign In"}
             </Button>
           </form>
@@ -163,7 +158,7 @@ export default function Login() {
             ) : (
               <Chrome className="w-5 h-5 mr-2" />
             )}
-            {isGoogleLoading ? "Connecting..." : "Continue with Google"}
+            {isGoogleLoading ? "Connecting..." : "Google"}
           </Button>
 
           {/* Sign Up Link */}

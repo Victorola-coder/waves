@@ -15,7 +15,7 @@ import {
   Bell,
   Settings,
 } from "lucide-react";
-import { Button, Card, Input } from "../components/ui";
+import { Button, Card, Input } from "../../components/ui";
 
 export default function Dashboard() {
   const [searchQuery, setSearchQuery] = useState("");

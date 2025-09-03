@@ -2,20 +2,20 @@
 
 import { useState } from "react";
 import { motion } from "framer-motion";
-import { 
-  Music, 
-  Users, 
-  Lock, 
-  Globe, 
-  Youtube, 
+import {
+  Music,
+  Users,
+  Lock,
+  Globe,
+  Youtube,
   Plus,
   ArrowLeft,
 } from "lucide-react";
-import Button from "../../components/ui/button";
-import Card from "../../components/ui/card";
-import Input from "../../components/ui/input";
-import TextArea from "../../components/ui/textArea";
-import Select from "../../components/ui/select";
+import Button from "../../../components/ui/button";
+import Card from "../../../components/ui/card";
+import Input from "../../../components/ui/input";
+import TextArea from "../../../components/ui/textArea";
+import Select from "../../../components/ui/select";
 import Link from "next/link";
 
 export default function CreateRoom() {

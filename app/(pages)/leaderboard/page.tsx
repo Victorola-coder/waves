@@ -14,7 +14,7 @@ import {
   Star,
   Award,
 } from "lucide-react";
-import { Card } from "../components/ui";
+import { Card } from "../../components/ui";
 // import { Card } from "../components/ui/card";
 // import { Button } from "../components/ui/button";
 // import { Select } from "../components/ui/select";

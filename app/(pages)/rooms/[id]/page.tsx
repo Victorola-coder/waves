@@ -2,16 +2,16 @@
 
 import { useState, useEffect } from "react";
 import { motion, AnimatePresence } from "framer-motion";
-import { 
-  Music, 
-  Users, 
-  MessageSquare, 
-  Play, 
-  Pause, 
-  SkipBack, 
-  SkipForward, 
-  Volume2, 
-  Shuffle, 
+import {
+  Music,
+  Users,
+  MessageSquare,
+  Play,
+  Pause,
+  SkipBack,
+  SkipForward,
+  Volume2,
+  Shuffle,
   Repeat,
   Plus,
   Heart,
@@ -24,9 +24,9 @@ import {
   Headphones,
   Crown,
 } from "lucide-react";
-import Button from "../../components/ui/button";
-import Card from "../../components/ui/card";
-import Input from "../../components/ui/input";
+import Button from "../../../components/ui/button";
+import Card from "../../../components/ui/card";
+import Input from "../../../components/ui/input";
 import Link from "next/link";
 
 interface Track {
@@ -56,9 +56,13 @@ interface Message {
   type: "message" | "system";
 }
 
-export default async function RoomPage({ params }: { params: Promise<{ id: string }> }) {
+export default async function RoomPage({
+  params,
+}: {
+  params: Promise<{ id: string }>;
+}) {
   const { id } = await params;
-  
+
   return <RoomClient roomId={id} />;
 }
 

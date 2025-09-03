@@ -21,10 +21,10 @@ import {
   CheckCircle,
   XCircle,
 } from "lucide-react";
-import Button from "../components/ui/button";
-import Card from "../components/ui/card";
-import Input from "../components/ui/input";
-import TextArea from "../components/ui/textArea";
+import Button from "../../components/ui/button";
+import Card from "../../components/ui/card";
+import Input from "../../components/ui/input";
+import TextArea from "../../components/ui/textArea";
 
 interface ListeningSession {
   id: string;

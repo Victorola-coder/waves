@@ -91,16 +91,16 @@ export default function Dashboard() {
   const handleQuickAction = (action: string) => {
     switch (action) {
       case "create-room":
-        router.push("/(pages)/rooms/create");
+        router.push("/rooms/create");
         break;
       case "join-room":
-        router.push("/(pages)/rooms");
+        router.push("/rooms");
         break;
       case "find-friends":
-        router.push("/(pages)/profile");
+        router.push("/profile");
         break;
       case "leaderboard":
-        router.push("/(pages)/leaderboard");
+        router.push("/leaderboard");
         break;
       default:
         break;

@@ -41,7 +41,7 @@ export default function NavHeader() {
         transition={{ duration: 0.2 }}
         className="flex-shrink-0"
       >
-        <Link href="/(pages)/dashboard" className="flex items-center gap-3">
+        <Link href=" /dashboard" className="flex items-center gap-3">
           <div className="w-8 h-8 md:w-10 md:h-10 lg:w-12 lg:h-12 bg-gradient-to-br from-primary to-secondary rounded-lg flex items-center justify-center">
             <img
               src="/images/wave_emoji.svg"

@@ -3,9 +3,9 @@
 import { useState } from "react";
 import { motion } from "framer-motion";
 import { Header } from "./components/atom";
+import { WavesHero } from "./components/svgs";
 import { Animation } from "./components/global";
 import { Button, Card, Modal } from "./components/ui";
-import { WavesHero } from "./components/svgs";
 
 export default function Home() {
   const [isModalOpen, setIsModalOpen] = useState(false);

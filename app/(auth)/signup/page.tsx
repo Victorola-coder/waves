@@ -116,7 +116,7 @@ export default function SignupPage() {
   );
 
   return (
-    <div className="min-h-screen bg-gradient-to-br from-neutral-900 via-neutral-800 to-neutral-900 flex items-center justify-center px-4">
+    <div className="min-h-screen py-10 bg-gradient-to-br from-neutral-900 via-neutral-800 to-neutral-900 flex items-center justify-center px-4">
       <motion.div
         initial={{ opacity: 0, y: 20 }}
         animate={{ opacity: 1, y: 0 }}
@@ -220,7 +220,7 @@ export default function SignupPage() {
               </div>
 
               {/* Password Requirements */}
-              <div className="space-y-2 mt-3">
+              <div className="flex flex-row flex-wrap gap-1.5">
                 <PasswordRequirement
                   met={passwordStrength.length}
                   text="At least 8 characters"

@@ -16,9 +16,12 @@ import {
 import { useState } from "react";
 import { motion } from "framer-motion";
 import { Button, Card, Input } from "@/app/components/ui";
+import { NavHeader } from "@/app/components/atom";
+import { useRouter } from "next/navigation";
 
 export default function Dashboard() {
   const [searchQuery, setSearchQuery] = useState("");
+  const router = useRouter();
 
   const userStats = {
     totalListens: 1247,
@@ -85,49 +88,64 @@ export default function Dashboard() {
     },
   ];
 
+  const handleQuickAction = (action: string) => {
+    switch (action) {
+      case "create-room":
+        router.push("/(pages)/rooms/create");
+        break;
+      case "join-room":
+        router.push("/(pages)/rooms");
+        break;
+      case "find-friends":
+        router.push("/(pages)/profile");
+        break;
+      case "leaderboard":
+        router.push("/(pages)/leaderboard");
+        break;
+      default:
+        break;
+    }
+  };
+
   return (
     <div className="min-h-screen bg-gradient-to-br from-neutral-900 via-neutral-800 to-neutral-900">
-      {/* Header */}
-      <header className="border-b border-neutral-700/50 bg-neutral-900/80 backdrop-blur-sm">
-        <div className="container mx-auto px-4 py-4">
-          <div className="flex items-center justify-between">
-            <div className="flex items-center space-x-4">
-              <div className="w-10 h-10 bg-gradient-to-r from-primary to-secondary rounded-full flex items-center justify-center">
-                <Music className="w-6 h-6 text-white" />
-              </div>
-              <h1 className="text-2xl font-bold text-white">Waves Dashboard</h1>
-            </div>
-
-            <div className="flex items-center space-x-4">
-              <div className="relative">
-                <Search className="absolute left-3 top-1/2 transform -translate-y-1/2 text-neutral-400 w-4 h-4" />
-                <Input
-                  placeholder="Search rooms, friends..."
-                  value={searchQuery}
-                  onChange={(e) => setSearchQuery(e.target.value)}
-                  className="pl-10 bg-neutral-800 border-neutral-600 text-white placeholder-neutral-400 w-64"
-                />
-              </div>
-              <Button
-                variant="default"
-                size="default"
-                className="text-neutral-400 hover:text-white bg-gradient-to-r from-primary to-secondary"
-              >
-                <Bell className="w-5 h-5" />
-              </Button>
-              <Button
-                variant="primary"
-                size="default"
-                className="text-neutral-400 hover:text-white bg-gradient-to-r from-primary to-secondary"
-              >
-                <Settings className="w-5 h-5" />
-              </Button>
-            </div>
-          </div>
-        </div>
-      </header>
+      {/* Navigation Header */}
+      <NavHeader />
 
       <div className="container mx-auto px-4 py-8">
+        {/* Welcome Section */}
+        <motion.div
+          initial={{ opacity: 0, y: 20 }}
+          animate={{ opacity: 1, y: 0 }}
+          transition={{ duration: 0.6 }}
+          className="mb-8"
+        >
+          <h1 className="text-3xl md:text-4xl lg:text-5xl font-bold text-white font-poppins mb-4">
+            Welcome back, Music Explorer! 🎵
+          </h1>
+          <p className="text-light/60 font-inter text-lg">
+            Ready to discover new music with friends?
+          </p>
+        </motion.div>
+
+        {/* Search Bar */}
+        <motion.div
+          initial={{ opacity: 0, y: 20 }}
+          animate={{ opacity: 1, y: 0 }}
+          transition={{ duration: 0.6, delay: 0.1 }}
+          className="mb-8"
+        >
+          <div className="relative max-w-md">
+            <Search className="absolute left-3 top-1/2 transform -translate-y-1/2 text-light/40 w-5 h-5" />
+            <Input
+              placeholder="Search rooms, friends, or music..."
+              value={searchQuery}
+              onChange={(e) => setSearchQuery(e.target.value)}
+              className="pl-10 bg-neutral/60 border-neutral-400/30"
+            />
+          </div>
+        </motion.div>
+
         {/* User Stats Overview */}
         <motion.div
           initial={{ opacity: 0, y: 20 }}
@@ -209,19 +227,22 @@ export default function Dashboard() {
           </h2>
           <div className="grid grid-cols-2 md:grid-cols-4 gap-4">
             {quickActions.map((action, index) => (
-              <Card
+              <div
                 key={action.action}
-                className="bg-neutral-800/50 border-neutral-600/30 hover:border-primary/50 transition-all duration-300 cursor-pointer group"
+                className="cursor-pointer group"
+                onClick={() => handleQuickAction(action.action)}
               >
-                <div className="p-4 text-center">
-                  <div
-                    className={`w-12 h-12 mx-auto mb-3 rounded-full bg-gradient-to-r from-${action.color} to-${action.color}/70 flex items-center justify-center group-hover:scale-110 transition-transform duration-300`}
-                  >
-                    <action.icon className="w-6 h-6 text-white" />
+                <Card className="bg-neutral-800/50 border-neutral-600/30 hover:border-primary/50 transition-all duration-300">
+                  <div className="p-4 text-center">
+                    <div
+                      className={`w-12 h-12 mx-auto mb-3 rounded-full bg-gradient-to-r from-${action.color} to-${action.color}/70 flex items-center justify-center group-hover:scale-110 transition-transform duration-300`}
+                    >
+                      <action.icon className="w-6 h-6 text-white" />
+                    </div>
+                    <p className="text-white font-medium">{action.title}</p>
                   </div>
-                  <p className="text-white font-medium">{action.title}</p>
-                </div>
-              </Card>
+                </Card>
+              </div>
             ))}
           </div>
         </motion.div>

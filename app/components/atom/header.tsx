@@ -181,20 +181,52 @@ export default function Header() {
                   </motion.li>
                 ))}
               </ul>
+
+              {/* Mobile Auth Buttons */}
+              <div className="mt-6 pt-6 border-t border-neutral-400/20 space-y-3">
+                <Button
+                  variant="secondary"
+                  className="w-full justify-center"
+                  onClick={() => {
+                    setIsMobileMenuOpen(false);
+                    window.location.href = "/login";
+                  }}
+                >
+                  Sign In
+                </Button>
+                <Button
+                  variant="primary"
+                  className="w-full justify-center"
+                  onClick={() => {
+                    setIsMobileMenuOpen(false);
+                    window.location.href = "/signup";
+                  }}
+                >
+                  Get Started
+                </Button>
+              </div>
             </nav>
           </motion.div>
         )}
       </AnimatePresence>
 
-      {/* Desktop Button - Hidden on Mobile */}
+      {/* Desktop Buttons - Hidden on Mobile */}
       <motion.div
-        className="hidden lg:block flex-shrink-0"
+        className="hidden lg:block flex-shrink-0 flex items-center gap-4"
         whileHover={{ scale: 1.05 }}
         whileTap={{ scale: 0.95 }}
       >
         <Button
+          variant="secondary"
+          className="text-sm md:text-base px-4 md:px-6 py-2 md:py-3"
+          onClick={() => (window.location.href = "/login")}
+        >
+          Sign In
+        </Button>
+        <Button
           variant="primary"
           className="text-sm md:text-base px-4 md:px-6 py-2 md:py-3"
+          onClick={() => (window.location.href = "/signup")}
         >
           Get Started
         </Button>

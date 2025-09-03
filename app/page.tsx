@@ -67,12 +67,18 @@ export default function Home() {
               <Button
                 variant="primary"
                 className="w-full sm:w-auto px-6 sm:px-8 py-3 sm:py-4 text-base sm:text-lg"
+                onClick={() => (window.location.href = "/signup")}
               >
                 Get Started
               </Button>
               <Button
                 variant="secondary"
                 className="w-full sm:w-auto px-6 sm:px-8 py-3 sm:py-4 text-base sm:text-lg"
+                onClick={() =>
+                  document
+                    .getElementById("how-it-works")
+                    ?.scrollIntoView({ behavior: "smooth" })
+                }
               >
                 Learn More
               </Button>

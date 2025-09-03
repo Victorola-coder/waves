@@ -43,6 +43,25 @@ export async function GET(request: NextRequest) {
       );
     }
 
+    // Check if user has required scopes (scopes is stored as comma-separated string)
+    const requiredScopes = ["user-read-playback-state"];
+    const userScopes = spotifyConnection.scopes
+      .split(",")
+      .map((s: string) => s.trim());
+    const hasRequiredScopes = requiredScopes.every((scope) =>
+      userScopes.includes(scope)
+    );
+
+    if (!hasRequiredScopes) {
+      return NextResponse.json(
+        {
+          error:
+            "Insufficient Spotify permissions. Please reconnect with required scopes.",
+        },
+        { status: 400 }
+      );
+    }
+
     // Get current playback from Spotify
     const response = await fetch(
       "https://api.spotify.com/v1/me/player/currently-playing",

@@ -10,8 +10,8 @@ generator client {
 }
 
 datasource db {
-  provider = "postgresql"
-  url      = env("DATABASE_URL")
+  provider = "sqlite"
+  url      = "file:./dev.db"
 }
 
 // Enums
@@ -34,7 +34,7 @@ enum RoomRole {
 
 // Core models (MVP)
 model User {
-  id          String    @id @db.Uuid
+  id          String    @id @default(cuid())
   email       String    @unique
   passwordHash String
   displayName String?
@@ -49,13 +49,13 @@ model User {
 }
 
 model Connection {
-  id           String    @id @db.Uuid
-  userId       String    @db.Uuid
+  id           String    @id @default(cuid())
+  userId       String
   provider     Provider
   accessToken  String
   refreshToken String?
   expiresAt    DateTime?
-  scopes       String[]
+  scopes       String
   createdAt    DateTime  @default(now())
 
   user User @relation(fields: [userId], references: [id], onDelete: Cascade)
@@ -64,8 +64,8 @@ model Connection {
 }
 
 model Room {
-  id                 String      @id @db.Uuid
-  hostId             String      @db.Uuid
+  id                 String      @id @default(cuid())
+  hostId             String
   name               String
   isPrivate          Boolean     @default(false)
   status             RoomStatus  @default(idle)
@@ -81,9 +81,9 @@ model Room {
 }
 
 model RoomMember {
-  id        String   @id @db.Uuid
-  roomId    String   @db.Uuid
-  userId    String   @db.Uuid
+  id        String   @id @default(cuid())
+  roomId    String
+  userId    String
   role      RoomRole @default(listener)
   joinedAt  DateTime @default(now())
   leftAt    DateTime?
@@ -96,7 +96,7 @@ model RoomMember {
 }
 
 model Track {
-  id               String    @id @db.Uuid
+  id               String    @id @default(cuid())
   provider         Provider
   providerTrackId  String
   title            String
@@ -112,10 +112,10 @@ model Track {
 }
 
 model QueueItem {
-  id            String   @id @db.Uuid
-  roomId        String   @db.Uuid
-  trackId       String   @db.Uuid
-  addedByUserId String   @db.Uuid
+  id            String   @id @default(cuid())
+  roomId        String
+  trackId       String
+  addedByUserId String
   position      Int
   playedAt      DateTime?
   createdAt     DateTime @default(now())

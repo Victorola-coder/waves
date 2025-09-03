@@ -1,15 +1,15 @@
 import clsx from "clsx";
 
-const LARGE = "w-16 h-16";
-const MEDIUM = "w-12 h-12";
-const SMALL_CONTAINER = "w-8 h-8";
+const LARGE = "w-12 h-12";
+const MEDIUM = "w-8 h-8";
+const SMALL_CONTAINER = "w-4 h-4";
 
 const PRIMARY_PSEUDO = "before:bg-primary after:bg-primary";
 const BODY_PSEUDO = "before:bg-body after:bg-body";
 
 export default function Loader({
   color = "primary",
-  size = "medium",
+  size = "small",
   className,
 }: {
   color?: "primary" | "body";

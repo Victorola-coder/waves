@@ -13,6 +13,9 @@ import Link from "next/link";
 import { useState } from "react";
 import { motion } from "framer-motion";
 import { Button, Card, Input, TextArea } from "@/app/components/ui";
+import { useRooms } from "@/app/hooks/use-rooms";
+import { useRouter } from "next/navigation";
+import { toast } from "sonner";
 
 export default function CreateRoom() {
   const [roomData, setRoomData] = useState({
@@ -24,15 +27,32 @@ export default function CreateRoom() {
   });
 
   const [step, setStep] = useState(1);
+  const { createRoom, loading: apiLoading } = useRooms();
+  const router = useRouter();
 
   const handleInputChange = (field: string, value: string | boolean) => {
     setRoomData((prev) => ({ ...prev, [field]: value }));
   };
 
-  const handleSubmit = (e: React.FormEvent) => {
+  const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
-    // Handle room creation logic here
-    console.log("Creating room:", roomData);
+    
+    if (!roomData.name.trim()) {
+      toast.error("Room name is required");
+      return;
+    }
+
+    try {
+      const newRoom = await createRoom({
+        name: roomData.name.trim(),
+        isPrivate: roomData.isPrivate,
+      });
+      
+      toast.success("Room created successfully! 🎉");
+      router.push(`/rooms/${newRoom.id}`);
+    } catch (error: any) {
+      toast.error(error.message || "Failed to create room");
+    }
   };
 
   const musicPlatforms = [

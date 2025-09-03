@@ -1,6 +1,6 @@
 "use client";
 
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import { motion, AnimatePresence } from "framer-motion";
 import { Menu, X, Music, Bell, Settings, LogOut, User } from "lucide-react";
 import { Button } from "../ui";
@@ -10,7 +10,12 @@ import { toast } from "sonner";
 
 export default function NavHeader() {
   const [isMobileMenuOpen, setIsMobileMenuOpen] = useState(false);
+  const [isClient, setIsClient] = useState(false);
   const { user, logout } = useAuth();
+
+  useEffect(() => {
+    setIsClient(true);
+  }, []);
 
   const navItems = [
     { label: "Dashboard", href: "/dashboard" },
@@ -29,8 +34,8 @@ export default function NavHeader() {
     }
   };
 
-  if (!user) {
-    return null; // Don't render header if user is not authenticated
+  if (!isClient || !user) {
+    return null; // Don't render until client-side or if no user
   }
 
   return (

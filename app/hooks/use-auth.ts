@@ -1,5 +1,6 @@
 "use client";
 
+import React from "react";
 import apiClient from "../lib/api-client";
 import { useRouter } from "next/navigation";
 import { createContext, useContext, useEffect, useState } from "react";
@@ -37,7 +38,6 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
   const [loading, setLoading] = useState(true);
   const router = useRouter();
 
-  // Check if user is authenticated on mount
   useEffect(() => {
     checkAuth();
   }, []);
@@ -63,7 +63,6 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
         password,
       });
       const { user, token } = response.data;
-
       localStorage.setItem("auth-token", token);
       setUser(user);
       router.push("/dashboard");
@@ -84,7 +83,6 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
         displayName,
       });
       const { user, token } = response.data;
-
       localStorage.setItem("auth-token", token);
       setUser(user);
       router.push("/dashboard");
@@ -109,19 +107,15 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
     try {
       const response = await apiClient.post("/api/auth/google");
       const { authUrl } = response.data;
-
-      // Open Google OAuth in new window
       const authWindow = window.open(
         authUrl,
         "google-oauth",
         "width=500,height=600,scrollbars=yes,resizable=yes"
       );
-
-      // Listen for OAuth completion
-      const checkAuth = setInterval(async () => {
+      const checkAuthInterval = setInterval(async () => {
         if (authWindow?.closed) {
-          clearInterval(checkAuth);
-          await checkAuth(); // Refresh user state
+          clearInterval(checkAuthInterval);
+          await checkAuth();
         }
       }, 1000);
     } catch (error: any) {
@@ -135,7 +129,6 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
   }) => {
     try {
       if (!user) throw new Error("No user logged in");
-
       const response = await apiClient.put(`/api/users/${user.id}`, data);
       setUser(response.data);
     } catch (error: any) {
@@ -153,7 +146,7 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
     updateProfile,
   };
 
-  return <AuthContext.Provider value={value}>{children}</AuthContext.Provider>;
+  return React.createElement(AuthContext.Provider, { value }, children);
 }
 
 export function useAuth() {

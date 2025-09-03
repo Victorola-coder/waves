@@ -1,15 +1,23 @@
 "use client";
 
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import { motion, AnimatePresence } from "framer-motion";
-import { Menu, X } from "lucide-react";
 import { Button } from "../ui";
 import Link from "next/link";
-import { useAuth } from "../../hooks/use-auth";
 
 export default function Header() {
   const [isMobileMenuOpen, setIsMobileMenuOpen] = useState(false);
-  const { user } = useAuth();
+  const [user, setUser] = useState<any>(null);
+  const [isClient, setIsClient] = useState(false);
+
+  useEffect(() => {
+    setIsClient(true);
+    // Check if user is logged in
+    const token = localStorage.getItem("auth-token");
+    if (token) {
+      setUser({ id: "user" }); // Simple check for now
+    }
+  }, []);
 
   const navItems = [
     { label: "How it works", href: "#how-it-works" },
@@ -18,6 +26,10 @@ export default function Header() {
     { label: "Pricing", href: "#pricing" },
     { label: "About", href: "#about" },
   ];
+
+  if (!isClient) {
+    return null; // Don't render until client-side
+  }
 
   return (
     <motion.header
@@ -34,10 +46,14 @@ export default function Header() {
       >
         <Link href="/" className="flex items-center gap-3">
           <div className="w-8 h-8 md:w-10 md:h-10 lg:w-12 lg:h-12 bg-gradient-to-br from-primary to-secondary rounded-lg flex items-center justify-center">
-            <span className="text-white text-lg md:text-xl lg:text-2xl">🌊</span>
+            <span className="text-white text-lg md:text-xl lg:text-2xl">
+              🌊
+            </span>
           </div>
-          <span className="text-white font-bold text-xl md:text-2xl lg:text-3xl">Waves</span>
-        </div>
+          <span className="text-white font-bold text-xl md:text-2xl lg:text-3xl">
+            Waves
+          </span>
+        </Link>
       </motion.figure>
 
       {/* Desktop Navigation */}
@@ -69,14 +85,14 @@ export default function Header() {
             <Button
               variant="secondary"
               className="text-sm md:text-base px-4 md:px-6 py-2 md:py-3"
-              onClick={() => window.location.href = "/dashboard"}
+              onClick={() => (window.location.href = "/dashboard")}
             >
               Dashboard
             </Button>
             <Button
               variant="primary"
               className="text-sm md:text-base px-4 md:px-6 py-2 md:py-3"
-              onClick={() => window.location.href = "/profile"}
+              onClick={() => (window.location.href = "/profile")}
             >
               Profile
             </Button>
@@ -109,7 +125,9 @@ export default function Header() {
         aria-label="Toggle mobile menu"
       >
         <motion.span
-          animate={isMobileMenuOpen ? { rotate: 45, y: 6 } : { rotate: 0, y: 0 }}
+          animate={
+            isMobileMenuOpen ? { rotate: 45, y: 6 } : { rotate: 0, y: 0 }
+          }
           transition={{ duration: 0.3 }}
           className="w-6 h-0.5 bg-light rounded-full"
         />
@@ -119,7 +137,9 @@ export default function Header() {
           className="w-6 h-0.5 bg-light rounded-full"
         />
         <motion.span
-          animate={isMobileMenuOpen ? { rotate: -45, y: -6 } : { rotate: 0, y: 0 }}
+          animate={
+            isMobileMenuOpen ? { rotate: -45, y: -6 } : { rotate: 0, y: 0 }
+          }
           transition={{ duration: 0.3 }}
           className="w-6 h-0.5 bg-light rounded-full"
         />

@@ -12,7 +12,7 @@ import {
 import Link from "next/link";
 import { useState } from "react";
 import { motion } from "framer-motion";
-import { Button, Card, Input, TextArea } from "@/app/components/ui";
+import { Button, Card, Input, TextArea, EmptyState } from "@/app/components/ui";
 import { useRooms } from "@/app/hooks/use-rooms";
 import { useRouter } from "next/navigation";
 import { toast } from "sonner";
@@ -173,7 +173,7 @@ export default function CreateRoom() {
                       <Input
                         placeholder="Enter room name..."
                         value={roomData.name}
-                        onChange={(e) =>
+                        onChange={(e: React.ChangeEvent<HTMLInputElement>) =>
                           handleInputChange("name", e.target.value)
                         }
                         className="bg-neutral-700 border-neutral-600 text-white placeholder-neutral-400"
@@ -188,7 +188,7 @@ export default function CreateRoom() {
                         name="description"
                         placeholder="Describe your room's vibe..."
                         value={roomData.description}
-                        onChange={(e) =>
+                        onChange={(e: React.ChangeEvent<HTMLTextAreaElement>) =>
                           handleInputChange("description", e.target.value)
                         }
                         className="bg-neutral-700 border-neutral-600 text-white placeholder-neutral-400"
@@ -241,7 +241,7 @@ export default function CreateRoom() {
                         <Input
                           placeholder="Enter invite code..."
                           value={roomData.inviteCode}
-                          onChange={(e) =>
+                          onChange={(e: React.ChangeEvent<HTMLInputElement>) =>
                             handleInputChange("inviteCode", e.target.value)
                           }
                           className="bg-neutral-700 border-neutral-600 text-white placeholder-neutral-400"

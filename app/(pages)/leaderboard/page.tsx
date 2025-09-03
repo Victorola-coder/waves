@@ -14,7 +14,7 @@ import {
 } from "lucide-react";
 import { useState } from "react";
 import { motion } from "framer-motion";
-import { Card } from "@/app/components/ui";
+import { Card, EmptyState } from "@/app/components/ui";
 
 interface LeaderboardEntry {
   rank: number;
@@ -258,102 +258,123 @@ export default function Leaderboard() {
               </div>
 
               {/* Top 3 Podium */}
-              <div className="grid grid-cols-1 md:grid-cols-3 gap-4 mb-8">
-                {leaderboardData.slice(0, 3).map((entry, index) => (
-                  <motion.div
-                    key={entry.rank}
-                    initial={{ opacity: 0, y: 20 }}
-                    animate={{ opacity: 1, y: 0 }}
-                    transition={{ duration: 0.5, delay: index * 0.1 }}
-                    className={`text-center p-6 rounded-lg ${
-                      index === 0
-                        ? "bg-gradient-to-br from-yellow-500/20 to-amber-600/20 border-yellow-500/30"
-                        : index === 1
-                        ? "bg-gradient-to-br from-gray-400/20 to-gray-500/20 border-gray-400/30"
-                        : "bg-gradient-to-br from-amber-600/20 to-orange-700/20 border-amber-600/30"
-                    } border-2`}
-                  >
-                    <div className="w-20 h-20 mx-auto mb-4 rounded-full bg-neutral-700 flex items-center justify-center">
-                      {getRankIcon(entry.rank)}
-                    </div>
-                    <h3 className="text-lg font-bold text-white mb-2">
-                      {entry.username}
-                    </h3>
-                    <p className="text-2xl font-bold text-primary mb-2">
-                      {getScoreDisplay(entry.score)}
-                    </p>
-                    <div className="text-sm text-neutral-400 space-y-1">
-                      <p>Level {entry.level}</p>
-                      <p>{entry.totalListens} listens</p>
-                      <p>{entry.achievements} achievements</p>
-                    </div>
-                  </motion.div>
-                ))}
-              </div>
-
-              {/* Full Leaderboard */}
-              <div className="space-y-3">
-                {leaderboardData.map((entry, index) => (
-                  <motion.div
-                    key={entry.rank}
-                    initial={{ opacity: 0, x: -20 }}
-                    animate={{ opacity: 1, x: 0 }}
-                    transition={{ duration: 0.3, delay: index * 0.05 }}
-                    className="flex items-center space-x-4 p-4 rounded-lg hover:bg-neutral-700/30 transition-colors duration-200"
-                  >
-                    {/* Rank */}
-                    <div className="w-12 h-12 rounded-full bg-neutral-700 flex items-center justify-center">
-                      <span className="text-lg font-bold text-white">
-                        {entry.rank}
-                      </span>
-                    </div>
-
-                    {/* User Info */}
-                    <div className="flex-1 flex items-center space-x-4">
-                      <div className="w-12 h-12 rounded-full bg-neutral-700 flex items-center justify-center">
-                        <img
-                          src={entry.avatar}
-                          alt={entry.username}
-                          className="w-full h-full object-cover rounded-full"
-                        />
+              {leaderboardData.length >= 3 ? (
+                <div className="grid grid-cols-1 md:grid-cols-3 gap-4 mb-8">
+                  {leaderboardData.slice(0, 3).map((entry, index) => (
+                    <motion.div
+                      key={entry.rank}
+                      initial={{ opacity: 0, y: 20 }}
+                      animate={{ opacity: 1, y: 0 }}
+                      transition={{ duration: 0.5, delay: index * 0.1 }}
+                      className={`text-center p-6 rounded-lg ${
+                        index === 0
+                          ? "bg-gradient-to-br from-yellow-500/20 to-amber-600/20 border-yellow-500/30"
+                          : index === 1
+                          ? "bg-gradient-to-br from-gray-400/20 to-gray-500/20 border-gray-400/30"
+                          : "bg-gradient-to-br from-amber-600/20 to-orange-700/20 border-amber-600/30"
+                      } border-2`}
+                    >
+                      <div className="w-20 h-20 mx-auto mb-4 rounded-full bg-neutral-700 flex items-center justify-center">
+                        {getRankIcon(entry.rank)}
                       </div>
-                      <div>
-                        <h3 className="text-white font-semibold">
-                          {entry.username}
-                        </h3>
-                        <div className="flex items-center space-x-2 text-sm text-neutral-400">
-                          <span>Level {entry.level}</span>
-                          <span>•</span>
-                          <span>{entry.totalListens} listens</span>
-                          <span>•</span>
-                          <span>{entry.achievements} achievements</span>
-                        </div>
-                      </div>
-                    </div>
-
-                    {/* Score */}
-                    <div className="text-right">
-                      <p className="text-xl font-bold text-primary">
+                      <h3 className="text-lg font-bold text-white mb-2">
+                        {entry.username}
+                      </h3>
+                      <p className="text-2xl font-bold text-primary mb-2">
                         {getScoreDisplay(entry.score)}
                       </p>
-                      <div className="flex items-center justify-end space-x-1">
-                        {getChangeIcon(entry.change)}
-                        {entry.changeAmount && entry.change !== "same" && (
-                          <span
-                            className={`text-sm ${
-                              entry.change === "up"
-                                ? "text-green-500"
-                                : "text-red-500"
-                            }`}
-                          >
-                            {entry.changeAmount}
-                          </span>
-                        )}
+                      <div className="text-sm text-neutral-400 space-y-1">
+                        <p>Level {entry.level}</p>
+                        <p>{entry.totalListens} listens</p>
+                        <p>{entry.achievements} achievements</p>
                       </div>
-                    </div>
-                  </motion.div>
-                ))}
-              </div>
+                    </motion.div>
+                  ))}
+                </div>
+              ) : (
+                <div className="mb-8">
+                  <EmptyState
+                    icon={Trophy}
+                    title="Not Enough Data for Podium"
+                    description="We need at least 3 participants to show the top performers."
+                    variant="compact"
+                  />
+                </div>
+              )}
+
+              {/* Full Leaderboard */}
+              {leaderboardData.length > 0 ? (
+                <div className="space-y-3">
+                  {leaderboardData.map((entry, index) => (
+                    <motion.div
+                      key={entry.rank}
+                      initial={{ opacity: 0, x: -20 }}
+                      animate={{ opacity: 1, x: 0 }}
+                      transition={{ duration: 0.3, delay: index * 0.05 }}
+                      className="flex items-center space-x-4 p-4 rounded-lg hover:bg-neutral-700/30 transition-colors duration-200"
+                    >
+                      {/* Rank */}
+                      <div className="w-12 h-12 rounded-full bg-neutral-700 flex items-center justify-center">
+                        <span className="text-lg font-bold text-white">
+                          {entry.rank}
+                        </span>
+                      </div>
+
+                      {/* User Info */}
+                      <div className="flex-1 flex items-center space-x-4">
+                        <div className="w-12 h-12 rounded-full bg-neutral-700 flex items-center justify-center">
+                          <img
+                            src={entry.avatar}
+                            alt={entry.username}
+                            className="w-full h-full object-cover rounded-full"
+                          />
+                        </div>
+                        <div>
+                          <h3 className="text-white font-semibold">
+                            {entry.username}
+                          </h3>
+                          <div className="flex items-center space-x-2 text-sm text-neutral-400">
+                            <span>Level {entry.level}</span>
+                            <span>•</span>
+                            <span>{entry.totalListens} listens</span>
+                            <span>•</span>
+                            <span>{entry.achievements} achievements</span>
+                          </div>
+                        </div>
+                      </div>
+
+                      {/* Score */}
+                      <div className="text-right">
+                        <p className="text-xl font-bold text-primary">
+                          {getScoreDisplay(entry.score)}
+                        </p>
+                        <div className="flex items-center justify-end space-x-1">
+                          {getChangeIcon(entry.change)}
+                          {entry.changeAmount && entry.change !== "same" && (
+                            <span
+                              className={`text-sm ${
+                                entry.change === "up"
+                                  ? "text-green-500"
+                                  : "text-red-500"
+                              }`}
+                            >
+                              {entry.changeAmount}
+                            </span>
+                          )}
+                        </div>
+                      </div>
+                    </motion.div>
+                  ))}
+                </div>
+              ) : (
+                <EmptyState
+                  icon={Trophy}
+                  title="No Leaderboard Data"
+                  description="Start listening to music and creating rooms to appear on the leaderboard!"
+                  actionLabel="Create Your First Room"
+                  onAction={() => (window.location.href = "/rooms/create")}
+                />
+              )}
             </div>
           </Card>
         </motion.div>

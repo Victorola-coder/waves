@@ -15,7 +15,7 @@ import {
 } from "lucide-react";
 import { useState } from "react";
 import { motion } from "framer-motion";
-import { Button, Card, Input } from "@/app/components/ui";
+import { Button, Card, Input, EmptyState } from "@/app/components/ui";
 import { NavHeader } from "@/app/components/atom";
 import { useAuth } from "@/app/hooks/use-auth";
 import { useRooms } from "@/app/hooks/use-rooms";
@@ -144,7 +144,9 @@ export default function Dashboard() {
             <Input
               placeholder="Search rooms, friends, or music..."
               value={searchQuery}
-              onChange={(e) => setSearchQuery(e.target.value)}
+              onChange={(e: React.ChangeEvent<HTMLInputElement>) =>
+                setSearchQuery(e.target.value)
+              }
               className="pl-10 bg-neutral/60 border-neutral-400/30"
             />
           </div>
@@ -274,35 +276,48 @@ export default function Dashboard() {
               Recent Activity
             </h2>
             <Card className="bg-neutral-800/50 border-neutral-600/30">
-              <div className="p-6">
-                {recentActivity.map((activity, index) => (
-                  <div
-                    key={index}
-                    className="flex items-center space-x-4 py-3 border-b border-neutral-700/30 last:border-b-0"
-                  >
-                    <div className="w-10 h-10 rounded-full bg-neutral-700/50 flex items-center justify-center">
-                      {activity.icon === "Users" && (
-                        <Users className="w-5 h-5 text-neutral-300" />
-                      )}
-                      {activity.icon === "Trophy" && (
-                        <Trophy className="w-5 h-5 text-neutral-300" />
-                      )}
-                      {activity.icon === "Music" && (
-                        <Music className="w-5 h-5 text-neutral-300" />
-                      )}
-                      {activity.icon === "Star" && (
-                        <Star className="w-5 h-5 text-neutral-300" />
-                      )}
+              {recentActivity.length > 0 ? (
+                <div className="p-6">
+                  {recentActivity.map((activity, index) => (
+                    <div
+                      key={index}
+                      className="flex items-center space-x-4 py-3 border-b border-neutral-700/30 last:border-b-0"
+                    >
+                      <div className="w-10 h-10 rounded-full bg-neutral-700/50 flex items-center justify-center">
+                        {activity.icon === "Users" && (
+                          <Users className="w-5 h-5 text-neutral-300" />
+                        )}
+                        {activity.icon === "Trophy" && (
+                          <Trophy className="w-5 h-5 text-neutral-300" />
+                        )}
+                        {activity.icon === "Music" && (
+                          <Music className="w-5 h-5 text-neutral-300" />
+                        )}
+                        {activity.icon === "Star" && (
+                          <Star className="w-5 h-5 text-neutral-300" />
+                        )}
+                      </div>
+                      <div className="flex-1">
+                        <p className="text-white font-medium">
+                          {activity.title}
+                        </p>
+                        <p className="text-sm text-neutral-400">
+                          {activity.time}
+                        </p>
+                      </div>
                     </div>
-                    <div className="flex-1">
-                      <p className="text-white font-medium">{activity.title}</p>
-                      <p className="text-sm text-neutral-400">
-                        {activity.time}
-                      </p>
-                    </div>
-                  </div>
-                ))}
-              </div>
+                  ))}
+                </div>
+              ) : (
+                <EmptyState
+                  icon={Clock}
+                  title="No Recent Activity"
+                  description="Start by creating a room or joining one to see your activity here."
+                  actionLabel="Create Room"
+                  onAction={() => router.push("/rooms/create")}
+                  variant="compact"
+                />
+              )}
             </Card>
           </motion.div>
 
@@ -345,6 +360,102 @@ export default function Dashboard() {
             </Card>
           </motion.div>
         </div>
+
+        {/* Available Rooms */}
+        <motion.div
+          initial={{ opacity: 0, y: 20 }}
+          animate={{ opacity: 1, y: 0 }}
+          transition={{ duration: 0.5, delay: 0.4 }}
+          className="mt-8"
+        >
+          <div className="flex items-center justify-between mb-4">
+            <h2 className="text-xl font-semibold text-white">
+              Available Rooms
+            </h2>
+            <Button
+              onClick={() => router.push("/rooms/create")}
+              className="bg-gradient-to-r from-primary to-secondary hover:from-primary/80 hover:to-secondary/80"
+            >
+              <Plus className="w-4 h-4 mr-2" />
+              Create Room
+            </Button>
+          </div>
+
+          {roomsLoading ? (
+            <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
+              {[1, 2, 3].map((i) => (
+                <div
+                  key={i}
+                  className="h-48 bg-neutral-800/50 rounded-xl animate-pulse"
+                />
+              ))}
+            </div>
+          ) : rooms.length > 0 ? (
+            <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
+              {rooms.map((room) => (
+                <div
+                  key={room.id}
+                  className="cursor-pointer group"
+                  onClick={() => router.push(`/rooms/${room.id}`)}
+                >
+                  <Card className="bg-neutral-800/50 border-neutral-600/30 hover:border-primary/50 transition-all duration-300">
+                    <div className="p-6">
+                      <div className="flex items-start justify-between mb-4">
+                        <div className="flex-1">
+                          <h3 className="text-white font-semibold group-hover:text-primary transition-colors">
+                            {room.name}
+                          </h3>
+                          <p className="text-neutral-400 text-sm">
+                            Hosted by {room.host.displayName}
+                          </p>
+                        </div>
+                        <div className="flex items-center space-x-2">
+                          <Users className="w-4 h-4 text-neutral-400" />
+                          <span className="text-neutral-400 text-sm">
+                            {room._count.members}
+                          </span>
+                        </div>
+                      </div>
+                      <div className="flex items-center justify-between">
+                        <div className="flex items-center space-x-2">
+                          <div
+                            className={`w-2 h-2 rounded-full ${
+                              room.status === "active"
+                                ? "bg-green-500"
+                                : room.status === "idle"
+                                ? "bg-yellow-500"
+                                : "bg-red-500"
+                            }`}
+                          />
+                          <span className="text-neutral-400 text-sm capitalize">
+                            {room.status}
+                          </span>
+                        </div>
+                        <Button
+                          variant="secondary"
+                          size="sm"
+                          className="opacity-0 group-hover:opacity-100 transition-opacity"
+                        >
+                          Join
+                        </Button>
+                      </div>
+                    </div>
+                  </Card>
+                </div>
+              ))}
+            </div>
+          ) : (
+            <Card className="bg-neutral-800/50 border-neutral-600/30">
+              <EmptyState
+                icon={Users}
+                title="No Rooms Available"
+                description="Be the first to create a listening room and start sharing music with friends!"
+                actionLabel="Create Your First Room"
+                onAction={() => router.push("/rooms/create")}
+              />
+            </Card>
+          )}
+        </motion.div>
 
         {/* Current Listening Session */}
         <motion.div

@@ -21,6 +21,7 @@ import { useAuth } from "@/app/hooks/use-auth";
 import { useRooms } from "@/app/hooks/use-rooms";
 import { useLeaderboard } from "@/app/hooks/use-leaderboard";
 import { useAchievements } from "@/app/hooks/use-achievements";
+import { useUserStats } from "@/app/hooks/use-user-stats";
 import { useRouter } from "next/navigation";
 import { toast } from "sonner";
 
@@ -31,45 +32,10 @@ export default function Dashboard() {
   const { rooms, loading: roomsLoading, createRoom } = useRooms();
   const { data: leaderboardData } = useLeaderboard("rooms_created", "week");
   const { data: achievementsData } = useAchievements();
+  const { stats: userStats, loading: statsLoading } = useUserStats();
 
-  // Mock user stats (in real app, this would come from API)
-  const userStats = {
-    totalListens: 1247,
-    totalTime: "89h 32m",
-    level: 23,
-    xp: 1840,
-    nextLevelXp: 2000,
-    achievements: achievementsData?.userStats.totalAchievements || 0,
-    followers: 89,
-    following: 156,
-  };
-
-  const recentActivity = [
-    {
-      type: "joined_room",
-      title: "Chill Vibes",
-      time: "2 min ago",
-      icon: Users,
-    },
-    {
-      type: "unlocked_achievement",
-      title: "Music Explorer",
-      time: "1 hour ago",
-      icon: Trophy,
-    },
-    {
-      type: "listened_to_track",
-      title: "Blinding Lights",
-      time: "3 hours ago",
-      icon: Music,
-    },
-    {
-      type: "hosted_room",
-      title: "Late Night Jams",
-      time: "1 day ago",
-      icon: Star,
-    },
-  ];
+  // Use real activity data from user stats
+  const recentActivity = userStats?.recentActivity || [];
 
   const quickActions = [
     {
@@ -191,66 +157,77 @@ export default function Dashboard() {
           transition={{ duration: 0.5 }}
           className="mb-8"
         >
-          <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6">
-            <Card className="bg-gradient-to-br from-primary/20 to-primary/10 border-primary/30">
-              <div className="p-6">
-                <div className="flex items-center justify-between">
-                  <div>
-                    <p className="text-neutral-400 text-sm">Total Listens</p>
-                    <p className="text-3xl font-bold text-white">
-                      {userStats.totalListens.toLocaleString()}
-                    </p>
+          {statsLoading ? (
+            <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6">
+              {[1, 2, 3, 4].map((i) => (
+                <div
+                  key={i}
+                  className="h-32 bg-neutral-800/50 rounded-xl animate-pulse"
+                />
+              ))}
+            </div>
+          ) : (
+            <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6">
+              <Card className="bg-gradient-to-br from-primary/20 to-primary/10 border-primary/30">
+                <div className="p-6">
+                  <div className="flex items-center justify-between">
+                    <div>
+                      <p className="text-neutral-400 text-sm">Total Rooms</p>
+                      <p className="text-3xl font-bold text-white">
+                        {userStats?.totalRooms?.toLocaleString() || 0}
+                      </p>
+                    </div>
+                    <Music className="w-8 h-8 text-primary" />
                   </div>
-                  <Music className="w-8 h-8 text-primary" />
                 </div>
-              </div>
-            </Card>
+              </Card>
 
-            <Card className="bg-gradient-to-br from-secondary/20 to-secondary/10 border-secondary/30">
-              <div className="p-6">
-                <div className="flex items-center justify-between">
-                  <div>
-                    <p className="text-neutral-400 text-sm">Listening Time</p>
-                    <p className="text-3xl font-bold text-white">
-                      {userStats.totalTime}
-                    </p>
+              <Card className="bg-gradient-to-br from-secondary/20 to-secondary/10 border-secondary/30">
+                <div className="p-6">
+                  <div className="flex items-center justify-between">
+                    <div>
+                      <p className="text-neutral-400 text-sm">Memberships</p>
+                      <p className="text-3xl font-bold text-white">
+                        {userStats?.totalMemberships || 0}
+                      </p>
+                    </div>
+                    <Clock className="w-8 h-8 text-secondary" />
                   </div>
-                  <Clock className="w-8 h-8 text-secondary" />
                 </div>
-              </div>
-            </Card>
+              </Card>
 
-            <Card className="bg-gradient-to-br from-accent/20 to-accent/10 border-accent/30">
-              <div className="p-6">
-                <div className="flex items-center justify-between">
-                  <div>
-                    <p className="text-neutral-400 text-sm">Level</p>
-                    <p className="text-3xl font-bold text-white">
-                      {userStats.level}
-                    </p>
-                    <p className="text-sm text-neutral-400">
-                      {userStats.xp}/{userStats.nextLevelXp} XP
-                    </p>
+              <Card className="bg-gradient-to-br from-accent/20 to-accent/10 border-accent/30">
+                <div className="p-6">
+                  <div className="flex items-center justify-between">
+                    <div>
+                      <p className="text-neutral-400 text-sm">Level</p>
+                      <p className="text-3xl font-bold text-white">
+                        {userStats?.level || 1}
+                      </p>
+                      <p className="text-sm text-neutral-400">
+                        {userStats?.xp || 0}/{userStats?.nextLevelXp || 1000} XP
+                      </p>
+                    </div>
+                    <Star className="w-8 h-8 text-accent" />
                   </div>
-                  <Star className="w-8 h-8 text-accent" />
                 </div>
-              </div>
-            </Card>
+              </Card>
 
-            <Card className="bg-gradient-to-br from-neutral/20 to-neutral/10 border-neutral/30">
-              <div className="p-6">
-                <div className="flex items-center justify-between">
-                  <div>
-                    <p className="text-neutral-400 text-sm">Achievements</p>
-                    <p className="text-3xl font-bold text-white">
-                      {userStats.achievements}
-                    </p>
+              <Card className="bg-gradient-to-br from-neutral/20 to-neutral/10 border-neutral/30">
+                <div className="p-6">
+                  <div className="flex items-center justify-between">
+                    <div>
+                      <p className="text-neutral-400 text-sm">Achievements</p>
+                      <p className="text-3xl font-bold text-white">
+                        {userStats?.totalAchievements || 0}
+                      </p>
+                    </div>
+                    <Trophy className="w-8 h-8 text-neutral-300" />
                   </div>
-                  <Trophy className="w-8 h-8 text-neutral-300" />
                 </div>
-              </div>
-            </Card>
-          </div>
+              </Card>
+            </div>
+          )}
         </motion.div>
 
         {/* Quick Actions */}
@@ -304,7 +281,18 @@ export default function Dashboard() {
                     className="flex items-center space-x-4 py-3 border-b border-neutral-700/30 last:border-b-0"
                   >
                     <div className="w-10 h-10 rounded-full bg-neutral-700/50 flex items-center justify-center">
-                      <activity.icon className="w-5 h-5 text-neutral-300" />
+                      {activity.icon === "Users" && (
+                        <Users className="w-5 h-5 text-neutral-300" />
+                      )}
+                      {activity.icon === "Trophy" && (
+                        <Trophy className="w-5 h-5 text-neutral-300" />
+                      )}
+                      {activity.icon === "Music" && (
+                        <Music className="w-5 h-5 text-neutral-300" />
+                      )}
+                      {activity.icon === "Star" && (
+                        <Star className="w-5 h-5 text-neutral-300" />
+                      )}
                     </div>
                     <div className="flex-1">
                       <p className="text-white font-medium">{activity.title}</p>
@@ -332,25 +320,25 @@ export default function Dashboard() {
                 <div className="flex items-center justify-between">
                   <span className="text-neutral-300">Followers</span>
                   <span className="text-white font-semibold">
-                    {userStats.followers}
+                    {userStats?.followers || 0}
                   </span>
                 </div>
                 <div className="flex items-center justify-between">
                   <span className="text-neutral-300">Following</span>
                   <span className="text-white font-semibold">
-                    {userStats.following}
+                    {userStats?.following || 0}
                   </span>
                 </div>
                 <div className="flex items-center justify-between">
                   <span className="text-neutral-300">Rooms Hosted</span>
                   <span className="text-white font-semibold">
-                    {rooms.filter((room) => room.host.id === user.id).length}
+                    {userStats?.totalRooms || 0}
                   </span>
                 </div>
                 <div className="flex items-center justify-between">
                   <span className="text-neutral-300">Total Parties</span>
                   <span className="text-white font-semibold">
-                    {rooms.length}
+                    {userStats?.totalMemberships || 0}
                   </span>
                 </div>
               </div>

@@ -27,7 +27,7 @@ export default function CreateRoom() {
   });
 
   const [step, setStep] = useState(1);
-  const { createRoom, loading: apiLoading } = useRooms();
+  const { createRoom, loading: apiLoading, error } = useRooms();
   const router = useRouter();
 
   const handleInputChange = (field: string, value: string | boolean) => {
@@ -36,7 +36,7 @@ export default function CreateRoom() {
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
-    
+
     if (!roomData.name.trim()) {
       toast.error("Room name is required");
       return;
@@ -47,7 +47,7 @@ export default function CreateRoom() {
         name: roomData.name.trim(),
         isPrivate: roomData.isPrivate,
       });
-      
+
       toast.success("Room created successfully! 🎉");
       router.push(`/rooms/${newRoom.id}`);
     } catch (error: any) {
@@ -144,6 +144,17 @@ export default function CreateRoom() {
 
           <Card className="bg-neutral-800/50 border-neutral-600/30">
             <div className="p-8">
+              {/* Error Display */}
+              {error && (
+                <motion.div
+                  initial={{ opacity: 0, y: -10 }}
+                  animate={{ opacity: 1, y: 0 }}
+                  className="mb-6 p-4 bg-red-500/10 border border-red-500/20 rounded-lg"
+                >
+                  <p className="text-red-400 text-sm">{error}</p>
+                </motion.div>
+              )}
+
               {step === 1 && (
                 <motion.div
                   initial={{ opacity: 0, x: 20 }}
@@ -353,7 +364,7 @@ export default function CreateRoom() {
                 {step < 3 ? (
                   <Button
                     onClick={() => setStep(step + 1)}
-                    disabled={step === 1 && !roomData.name}
+                    disabled={step === 1 && !roomData.name.trim()}
                     className="bg-gradient-to-r from-primary to-secondary hover:from-primary/80 hover:to-secondary/80 ml-auto"
                   >
                     Next
@@ -361,10 +372,15 @@ export default function CreateRoom() {
                 ) : (
                   <Button
                     onClick={handleSubmit}
+                    disabled={apiLoading || !roomData.name.trim()}
                     className="bg-gradient-to-r from-primary to-secondary hover:from-primary/80 hover:to-secondary/80 ml-auto"
                   >
-                    <Plus className="w-4 h-4 mr-2" />
-                    Create Room
+                    {apiLoading ? (
+                      <div className="w-4 h-4 border-2 border-white border-t-transparent rounded-full animate-spin mr-2" />
+                    ) : (
+                      <Plus className="w-4 h-4 mr-2" />
+                    )}
+                    {apiLoading ? "Creating..." : "Create Room"}
                   </Button>
                 )}
               </div>

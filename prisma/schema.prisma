@@ -54,6 +54,10 @@ model User {
   rooms       Room[]        @relation("UserRoomsHosted")
   memberships RoomMember[]
   queueItems  QueueItem[]   @relation("UserQueueItems")
+  
+  // Social connections
+  followers   SocialConnection[] @relation("UserFollowers")
+  following   SocialConnection[] @relation("UserFollowing")
 }
 
 model Connection {
@@ -133,4 +137,19 @@ model QueueItem {
   addedBy User  @relation("UserQueueItems", fields: [addedByUserId], references: [id], onDelete: Cascade)
 
   @@index([roomId, position])
+}
+
+model SocialConnection {
+  id           String   @id @default(cuid())
+  followerId   String   // User who is following
+  followingId  String   // User being followed
+  status       String   @default("pending") // pending, accepted, blocked
+  createdAt    DateTime @default(now())
+
+  follower User @relation("UserFollowers", fields: [followerId], references: [id], onDelete: Cascade)
+  following User @relation("UserFollowing", fields: [followingId], references: [id], onDelete: Cascade)
+
+  @@unique([followerId, followingId])
+  @@index([followerId])
+  @@index([followingId])
 }

@@ -2,21 +2,20 @@
 
 import { useState } from "react";
 import { motion } from "framer-motion";
-import {
-  Music,
-  Users,
-  Lock,
-  Globe,
-  Spotify,
-  Youtube,
+import { 
+  Music, 
+  Users, 
+  Lock, 
+  Globe, 
+  Youtube, 
   Plus,
   ArrowLeft,
 } from "lucide-react";
-import { Button } from "../../components/ui/button";
-import { Card } from "../../components/ui/card";
-import { Input } from "../../components/ui/input";
-import { TextArea } from "../../components/ui/textArea";
-import { Select } from "../../components/ui/select";
+import Button from "../../components/ui/button";
+import Card from "../../components/ui/card";
+import Input from "../../components/ui/input";
+import TextArea from "../../components/ui/textArea";
+import Select from "../../components/ui/select";
 import Link from "next/link";
 
 export default function CreateRoom() {
@@ -44,7 +43,7 @@ export default function CreateRoom() {
     {
       value: "spotify",
       label: "Spotify",
-      icon: Spotify,
+      icon: Music,
       color: "text-green-500",
     },
     {
@@ -69,8 +68,8 @@ export default function CreateRoom() {
           <div className="flex items-center space-x-4">
             <Link href="/dashboard">
               <Button
-                variant="ghost"
-                size="icon"
+                variant="secondary"
+                size="sm"
                 className="text-neutral-400 hover:text-white"
               >
                 <ArrowLeft className="w-5 h-5" />
@@ -159,12 +158,12 @@ export default function CreateRoom() {
                         Description
                       </label>
                       <TextArea
+                        name="description"
                         placeholder="Describe your room's vibe..."
                         value={roomData.description}
                         onChange={(e) =>
                           handleInputChange("description", e.target.value)
                         }
-                        rows={3}
                         className="bg-neutral-700 border-neutral-600 text-white placeholder-neutral-400"
                       />
                     </div>
@@ -327,7 +326,7 @@ export default function CreateRoom() {
               <div className="flex justify-between mt-8">
                 {step > 1 && (
                   <Button
-                    variant="outline"
+                    variant="secondary"
                     onClick={() => setStep(step - 1)}
                     className="border-neutral-600 text-neutral-300 hover:border-primary hover:text-primary"
                   >

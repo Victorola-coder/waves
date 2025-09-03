@@ -2,31 +2,31 @@
 
 import { useState, useEffect } from "react";
 import { motion, AnimatePresence } from "framer-motion";
-import {
-  Music,
-  Users,
-  MessageSquare,
-  Play,
-  Pause,
-  SkipBack,
-  SkipForward,
-  Volume2,
-  Shuffle,
+import { 
+  Music, 
+  Users, 
+  MessageSquare, 
+  Play, 
+  Pause, 
+  SkipBack, 
+  SkipForward, 
+  Volume2, 
+  Shuffle, 
   Repeat,
   Plus,
   Heart,
   Share2,
   MoreVertical,
   ArrowLeft,
-  Queue,
+  List,
   Mic,
   MicOff,
   Headphones,
   Crown,
 } from "lucide-react";
-import { Button } from "../../components/ui/button";
-import { Card } from "../../components/ui/card";
-import { Input } from "../../components/ui/input";
+import Button from "../../components/ui/button";
+import Card from "../../components/ui/card";
+import Input from "../../components/ui/input";
 import Link from "next/link";
 
 interface Track {
@@ -56,7 +56,13 @@ interface Message {
   type: "message" | "system";
 }
 
-export default function RoomPage({ params }: { params: { id: string } }) {
+export default async function RoomPage({ params }: { params: Promise<{ id: string }> }) {
+  const { id } = await params;
+  
+  return <RoomClient roomId={id} />;
+}
+
+function RoomClient({ roomId }: { roomId: string }) {
   const [isPlaying, setIsPlaying] = useState(false);
   const [currentTrack, setCurrentTrack] = useState<Track | null>(null);
   const [queue, setQueue] = useState<Track[]>([]);
@@ -188,8 +194,8 @@ export default function RoomPage({ params }: { params: { id: string } }) {
             <div className="flex items-center space-x-4">
               <Link href="/dashboard">
                 <Button
-                  variant="ghost"
-                  size="icon"
+                  variant="secondary"
+                  size="sm"
                   className="text-neutral-400 hover:text-white"
                 >
                   <ArrowLeft className="w-5 h-5" />
@@ -208,7 +214,7 @@ export default function RoomPage({ params }: { params: { id: string } }) {
 
             <div className="flex items-center space-x-2">
               <Button
-                variant="outline"
+                variant="secondary"
                 size="sm"
                 className="border-neutral-600 text-neutral-300 hover:border-primary hover:text-primary"
               >
@@ -216,7 +222,7 @@ export default function RoomPage({ params }: { params: { id: string } }) {
                 Invite
               </Button>
               <Button
-                variant="outline"
+                variant="secondary"
                 size="sm"
                 className="border-neutral-600 text-neutral-300 hover:border-primary hover:text-primary"
               >
@@ -271,21 +277,21 @@ export default function RoomPage({ params }: { params: { id: string } }) {
                 {/* Player Controls */}
                 <div className="flex items-center justify-center space-x-4 mb-6">
                   <Button
-                    variant="ghost"
-                    size="icon"
+                    variant="secondary"
+                    size="sm"
                     className="text-neutral-400 hover:text-white"
                   >
                     <Shuffle className="w-5 h-5" />
                   </Button>
                   <Button
-                    variant="ghost"
-                    size="icon"
+                    variant="secondary"
+                    size="sm"
                     className="text-neutral-400 hover:text-white"
                   >
                     <SkipBack className="w-6 h-6" />
                   </Button>
                   <Button
-                    size="icon"
+                    size="lg"
                     className="w-16 h-16 bg-gradient-to-r from-primary to-secondary hover:from-primary/80 hover:to-secondary/80"
                     onClick={togglePlayPause}
                   >
@@ -296,15 +302,15 @@ export default function RoomPage({ params }: { params: { id: string } }) {
                     )}
                   </Button>
                   <Button
-                    variant="ghost"
-                    size="icon"
+                    variant="secondary"
+                    size="sm"
                     className="text-neutral-400 hover:text-white"
                   >
                     <SkipForward className="w-6 h-6" />
                   </Button>
                   <Button
-                    variant="ghost"
-                    size="icon"
+                    variant="secondary"
+                    size="sm"
                     className="text-neutral-400 hover:text-white"
                   >
                     <Repeat className="w-5 h-5" />
@@ -314,8 +320,8 @@ export default function RoomPage({ params }: { params: { id: string } }) {
                 {/* Volume Control */}
                 <div className="flex items-center justify-center space-x-3">
                   <Button
-                    variant="ghost"
-                    size="icon"
+                    variant="secondary"
+                    size="sm"
                     className="text-neutral-400 hover:text-white"
                     onClick={toggleMute}
                   >
@@ -345,7 +351,7 @@ export default function RoomPage({ params }: { params: { id: string } }) {
                 Add to Queue
               </Button>
               <Button
-                variant="outline"
+                variant="secondary"
                 className="border-neutral-600 text-neutral-300 hover:border-primary hover:text-primary"
               >
                 <Heart className="w-4 h-4 mr-2" />
@@ -359,7 +365,7 @@ export default function RoomPage({ params }: { params: { id: string } }) {
             {/* Tab Navigation */}
             <div className="flex space-x-1 bg-neutral-800/50 rounded-lg p-1">
               {[
-                { id: "queue", label: "Queue", icon: Queue },
+                { id: "queue", label: "Queue", icon: List },
                 { id: "members", label: "Members", icon: Users },
                 { id: "chat", label: "Chat", icon: MessageSquare },
               ].map((tab) => (

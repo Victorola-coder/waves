@@ -11,7 +11,6 @@ import {
   Settings,
   Edit,
   Camera,
-  Spotify,
   Youtube,
   Headphones,
   Calendar,
@@ -22,10 +21,10 @@ import {
   CheckCircle,
   XCircle,
 } from "lucide-react";
-import { Button } from "../components/ui/button";
-import { Card } from "../components/ui/card";
-import { Input } from "../components/ui/input";
-import { TextArea } from "../components/ui/textArea";
+import Button from "../components/ui/button";
+import Card from "../components/ui/card";
+import Input from "../components/ui/input";
+import TextArea from "../components/ui/textArea";
 
 interface ListeningSession {
   id: string;
@@ -53,6 +52,11 @@ export default function Profile() {
   const [activeTab, setActiveTab] = useState<
     "overview" | "history" | "connections" | "settings"
   >("overview");
+
+  const handleInputChange = (field: string, value: string) => {
+    // Handle input changes here
+    console.log(field, value);
+  };
 
   const userProfile = {
     username: "musicmaster",
@@ -110,7 +114,7 @@ export default function Profile() {
       id: "1",
       provider: "spotify",
       providerName: "Spotify",
-      providerIcon: Spotify,
+      providerIcon: Music,
       isConnected: true,
       lastSync: new Date("2024-01-25T15:30:00"),
       username: "alexchen_music",
@@ -160,7 +164,7 @@ export default function Profile() {
           <div className="flex items-center justify-between">
             <h1 className="text-3xl font-bold text-white">Profile</h1>
             <Button
-              variant="outline"
+              variant="secondary"
               onClick={() => setIsEditing(!isEditing)}
               className="border-neutral-600 text-neutral-300 hover:border-primary hover:text-primary"
             >
@@ -193,7 +197,7 @@ export default function Profile() {
                   </div>
                   {isEditing && (
                     <Button
-                      size="icon"
+                      size="sm"
                       className="absolute bottom-0 right-0 w-10 h-10 bg-primary hover:bg-primary/80"
                     >
                       <Camera className="w-5 h-5" />
@@ -220,8 +224,11 @@ export default function Profile() {
                   <div className="mb-4">
                     {isEditing ? (
                       <TextArea
+                        name="bio"
                         value={userProfile.bio}
-                        rows={3}
+                        onChange={(e) =>
+                          handleInputChange("bio", e.target.value)
+                        }
                         className="bg-neutral-700 border-neutral-600 text-white text-center md:text-left"
                       />
                     ) : (
@@ -553,7 +560,7 @@ export default function Profile() {
                       <div className="flex space-x-2">
                         {connection.isConnected ? (
                           <Button
-                            variant="outline"
+                            variant="secondary"
                             size="sm"
                             className="border-neutral-600 text-neutral-300 hover:border-red-500 hover:text-red-500"
                           >

@@ -5,11 +5,12 @@ import { motion, AnimatePresence } from "framer-motion";
 import { Menu, X, Music, Bell, Settings, LogOut, User } from "lucide-react";
 import { Button } from "../ui";
 import Link from "next/link";
-import { useRouter } from "next/navigation";
+import { useAuth } from "../../hooks/use-auth";
+import { toast } from "sonner";
 
 export default function NavHeader() {
   const [isMobileMenuOpen, setIsMobileMenuOpen] = useState(false);
-  const router = useRouter();
+  const { user, logout } = useAuth();
 
   const navItems = [
     { label: "Dashboard", href: "/dashboard" },
@@ -21,12 +22,16 @@ export default function NavHeader() {
 
   const handleLogout = async () => {
     try {
-      await fetch("/api/auth/logout", { method: "POST" });
-      router.push("/");
+      await logout();
+      toast.success("Logged out successfully");
     } catch (error) {
-      console.error("Logout failed:", error);
+      toast.error("Logout failed");
     }
   };
+
+  if (!user) {
+    return null; // Don't render header if user is not authenticated
+  }
 
   return (
     <motion.header
@@ -41,15 +46,13 @@ export default function NavHeader() {
         transition={{ duration: 0.2 }}
         className="flex-shrink-0"
       >
-        <Link href=" /dashboard" className="flex items-center gap-3">
+        <Link href="/dashboard" className="flex items-center gap-3">
           <div className="w-8 h-8 md:w-10 md:h-10 lg:w-12 lg:h-12 bg-gradient-to-br from-primary to-secondary rounded-lg flex items-center justify-center">
-            <img
-              src="/images/wave_emoji.svg"
-              alt="Waves Logo"
-              className="w-5 h-5 md:w-6 md:h-6 lg:w-8 lg:h-8"
-            />
+            <span className="text-white text-lg md:text-xl lg:text-2xl">
+              🌊
+            </span>
           </div>
-          <span className="text-white font-poppins font-bold text-xl md:text-2xl lg:text-3xl">
+          <span className="text-white font-bold text-xl md:text-2xl lg:text-3xl">
             Waves
           </span>
         </Link>
@@ -61,7 +64,7 @@ export default function NavHeader() {
           <Link
             key={item.label}
             href={item.href}
-            className="text-light/80 hover:text-white transition-colors duration-200 font-inter font-medium text-base hover:scale-105 transform transition-transform"
+            className="text-light/80 hover:text-white transition-colors duration-200 font-medium text-base hover:scale-105 transform transition-transform"
           >
             {item.label}
           </Link>
@@ -115,7 +118,7 @@ export default function NavHeader() {
                   key={item.label}
                   href={item.href}
                   onClick={() => setIsMobileMenuOpen(false)}
-                  className="block text-light/80 hover:text-white transition-colors duration-200 font-inter font-medium text-lg py-2"
+                  className="block text-light/80 hover:text-white transition-colors duration-200 font-medium text-lg py-2"
                 >
                   {item.label}
                 </Link>

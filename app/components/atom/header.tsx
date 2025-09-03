@@ -1,97 +1,30 @@
 "use client";
 
-import { Button } from "../ui";
-import { Menu, X } from "lucide-react";
-import React, { useState } from "react";
+import { useState } from "react";
 import { motion, AnimatePresence } from "framer-motion";
+import { Menu, X } from "lucide-react";
+import { Button } from "../ui";
+import Link from "next/link";
+import { useAuth } from "../../hooks/use-auth";
 
 export default function Header() {
   const [isMobileMenuOpen, setIsMobileMenuOpen] = useState(false);
+  const { user } = useAuth();
 
   const navItems = [
-    {
-      label: "How it works",
-      href: "#how-it-works",
-    },
-    {
-      label: "Features",
-      href: "#features",
-    },
-    {
-      label: "Leaderboards",
-      href: "#leaderboards",
-    },
-    {
-      label: "Pricing",
-      href: "#pricing",
-    },
-    {
-      label: "About",
-      href: "#about",
-    },
+    { label: "How it works", href: "#how-it-works" },
+    { label: "Features", href: "#features" },
+    { label: "Leaderboards", href: "#leaderboards" },
+    { label: "Pricing", href: "#pricing" },
+    { label: "About", href: "#about" },
   ];
-
-  const containerVariants = {
-    hidden: { y: -50, opacity: 0 },
-    visible: {
-      y: 0,
-      opacity: 1,
-      transition: {
-        duration: 0.6,
-        ease: "easeOut",
-      },
-    },
-  };
-
-  const navVariants = {
-    hidden: { opacity: 0 },
-    visible: {
-      opacity: 1,
-      transition: {
-        staggerChildren: 0.1,
-        delayChildren: 0.2,
-      },
-    },
-  };
-
-  const navItemVariants = {
-    hidden: { y: -20, opacity: 0 },
-    visible: {
-      y: 0,
-      opacity: 1,
-      transition: {
-        duration: 0.4,
-        ease: "easeOut",
-      },
-    },
-  };
-
-  const mobileMenuVariants = {
-    hidden: { opacity: 0, height: 0 },
-    visible: {
-      opacity: 1,
-      height: "auto",
-      transition: {
-        duration: 0.3,
-        ease: "easeOut",
-      },
-    },
-    exit: {
-      opacity: 0,
-      height: 0,
-      transition: {
-        duration: 0.3,
-        ease: "easeIn",
-      },
-    },
-  };
 
   return (
     <motion.header
       className="bg-neutral/80 backdrop-blur-xl border-b border-neutral-400/20 px-4 sm:px-6 md:px-8 lg:px-16 xl:px-[131px] py-3 md:py-[10px] flex items-center justify-between relative sticky top-0 z-50"
-      variants={containerVariants}
-      initial="hidden"
-      animate="visible"
+      initial={{ y: -50, opacity: 0 }}
+      animate={{ y: 0, opacity: 1 }}
+      transition={{ duration: 0.6, ease: "easeOut" }}
     >
       {/* Logo */}
       <motion.figure
@@ -99,138 +32,178 @@ export default function Header() {
         transition={{ duration: 0.2 }}
         className="flex-shrink-0"
       >
-        <div className="flex items-center gap-3">
+        <Link href="/" className="flex items-center gap-3">
           <div className="w-8 h-8 md:w-10 md:h-10 lg:w-12 lg:h-12 bg-gradient-to-br from-primary to-secondary rounded-lg flex items-center justify-center">
-            <span className="text-white font-poppins font-bold text-lg md:text-xl lg:text-2xl">
-              🌊
-            </span>
+            <span className="text-white text-lg md:text-xl lg:text-2xl">🌊</span>
           </div>
-          <span className="text-white font-poppins font-bold text-xl md:text-2xl lg:text-3xl">
-            Waves
-          </span>
+          <span className="text-white font-bold text-xl md:text-2xl lg:text-3xl">Waves</span>
         </div>
       </motion.figure>
 
       {/* Desktop Navigation */}
-      <motion.nav
-        className="hidden lg:block flex-1 mx-8 xl:mx-16"
-        variants={navVariants}
-      >
+      <nav className="hidden lg:block flex-1 mx-8 xl:mx-16">
         <ul className="flex items-center justify-center gap-6 xl:gap-8 2xl:gap-[52px]">
           {navItems.map((item, index) => (
             <motion.li
-              key={index}
-              variants={navItemVariants}
-              whileHover={{
-                y: -2,
-                scale: 1.05,
-                transition: { duration: 0.2 },
-              }}
+              key={item.label}
+              initial={{ opacity: 0, y: -20 }}
+              animate={{ opacity: 1, y: 0 }}
+              transition={{ duration: 0.6, delay: index * 0.1 }}
             >
               <a
                 href={item.href}
-                className="text-[16px] xl:text-[18px] 2xl:text-[20px] leading-[24px] xl:leading-[28px] 2xl:leading-[40px] font-inter font-medium transition-all duration-300 hover:text-primary hover:font-semibold cursor-pointer text-light/80 whitespace-nowrap"
+                className="text-[16px] xl:text-[18px] 2xl:text-[20px] leading-[24px] xl:leading-[28px] 2xl:leading-[40px] font-medium transition-all duration-300 hover:text-primary hover:font-semibold cursor-pointer text-light/80 whitespace-nowrap"
               >
                 {item.label}
               </a>
             </motion.li>
           ))}
         </ul>
-      </motion.nav>
+      </nav>
+
+      {/* Desktop Buttons - Hidden on Mobile */}
+      <div className="hidden lg:block flex-shrink-0 flex items-center gap-4">
+        {user ? (
+          // User is logged in - show dashboard and logout
+          <>
+            <Button
+              variant="secondary"
+              className="text-sm md:text-base px-4 md:px-6 py-2 md:py-3"
+              onClick={() => window.location.href = "/dashboard"}
+            >
+              Dashboard
+            </Button>
+            <Button
+              variant="primary"
+              className="text-sm md:text-base px-4 md:px-6 py-2 md:py-3"
+              onClick={() => window.location.href = "/profile"}
+            >
+              Profile
+            </Button>
+          </>
+        ) : (
+          // User is not logged in - show sign in and get started
+          <>
+            <Button
+              variant="secondary"
+              className="text-sm md:text-base px-4 md:px-6 py-2 md:py-3"
+              onClick={() => (window.location.href = "/login")}
+            >
+              Sign In
+            </Button>
+            <Button
+              variant="primary"
+              className="text-sm md:text-base px-4 md:px-6 py-2 md:py-3"
+              onClick={() => (window.location.href = "/signup")}
+            >
+              Get Started
+            </Button>
+          </>
+        )}
+      </div>
 
       {/* Mobile Menu Button */}
       <button
-        className="lg:hidden flex flex-col space-y-1 p-2 z-50"
         onClick={() => setIsMobileMenuOpen(!isMobileMenuOpen)}
+        className="lg:hidden flex flex-col space-y-1 p-2 z-50"
         aria-label="Toggle mobile menu"
       >
-        {isMobileMenuOpen ? (
-          <X className="w-6 h-6 text-light" />
-        ) : (
-          <Menu className="w-6 h-6 text-light" />
-        )}
+        <motion.span
+          animate={isMobileMenuOpen ? { rotate: 45, y: 6 } : { rotate: 0, y: 0 }}
+          transition={{ duration: 0.3 }}
+          className="w-6 h-0.5 bg-light rounded-full"
+        />
+        <motion.span
+          animate={isMobileMenuOpen ? { opacity: 0 } : { opacity: 1 }}
+          transition={{ duration: 0.3 }}
+          className="w-6 h-0.5 bg-light rounded-full"
+        />
+        <motion.span
+          animate={isMobileMenuOpen ? { rotate: -45, y: -6 } : { rotate: 0, y: 0 }}
+          transition={{ duration: 0.3 }}
+          className="w-6 h-0.5 bg-light rounded-full"
+        />
       </button>
 
-      {/* Mobile Navigation */}
+      {/* Mobile Menu */}
       <AnimatePresence>
         {isMobileMenuOpen && (
           <motion.div
-            className="lg:hidden absolute top-full left-0 right-0 bg-neutral/95 backdrop-blur-xl border-t border-neutral-400/20 z-40"
-            variants={mobileMenuVariants}
-            initial="hidden"
-            animate="visible"
-            exit="exit"
+            className="absolute top-full left-0 right-0 bg-neutral/95 backdrop-blur-xl border-b border-neutral-400/20 lg:hidden"
+            initial={{ opacity: 0, height: 0 }}
+            animate={{ opacity: 1, height: "auto" }}
+            exit={{ opacity: 0, height: 0 }}
+            transition={{ duration: 0.3, ease: "easeOut" }}
           >
-            <nav className="px-4 py-6">
-              <ul className="flex flex-col space-y-4">
-                {navItems.map((item, index) => (
-                  <motion.li
-                    key={item.label}
-                    variants={navItemVariants}
-                    initial="hidden"
-                    animate="visible"
-                    transition={{ delay: index * 0.1 }}
-                  >
-                    <a
-                      href={item.href}
-                      className="text-[18px] leading-[24px] font-inter font-medium transition-all duration-300 hover:text-primary hover:font-semibold cursor-pointer text-light/80 block py-2"
-                      onClick={() => setIsMobileMenuOpen(false)}
-                    >
-                      {item.label}
-                    </a>
-                  </motion.li>
-                ))}
-              </ul>
+            <div className="px-4 py-6 space-y-4">
+              {/* Mobile Navigation Items */}
+              {navItems.map((item) => (
+                <a
+                  key={item.label}
+                  href={item.href}
+                  onClick={() => setIsMobileMenuOpen(false)}
+                  className="block text-light/80 hover:text-white transition-colors duration-200 font-medium text-lg py-2"
+                >
+                  {item.label}
+                </a>
+              ))}
 
               {/* Mobile Auth Buttons */}
-              <div className="mt-6 pt-6 border-t border-neutral-400/20 space-y-3">
-                <Button
-                  variant="secondary"
-                  className="w-full justify-center"
-                  onClick={() => {
-                    setIsMobileMenuOpen(false);
-                    window.location.href = "/login";
-                  }}
-                >
-                  Sign In
-                </Button>
-                <Button
-                  variant="primary"
-                  className="w-full justify-center"
-                  onClick={() => {
-                    setIsMobileMenuOpen(false);
-                    window.location.href = "/signup";
-                  }}
-                >
-                  Get Started
-                </Button>
+              <div className="pt-4 border-t border-neutral-400/20 space-y-3">
+                {user ? (
+                  // User is logged in
+                  <>
+                    <Button
+                      variant="secondary"
+                      className="w-full justify-center"
+                      onClick={() => {
+                        setIsMobileMenuOpen(false);
+                        window.location.href = "/dashboard";
+                      }}
+                    >
+                      Dashboard
+                    </Button>
+                    <Button
+                      variant="primary"
+                      className="w-full justify-center"
+                      onClick={() => {
+                        setIsMobileMenuOpen(false);
+                        window.location.href = "/profile";
+                      }}
+                    >
+                      Profile
+                    </Button>
+                  </>
+                ) : (
+                  // User is not logged in
+                  <>
+                    <Button
+                      variant="secondary"
+                      className="w-full justify-center"
+                      onClick={() => {
+                        setIsMobileMenuOpen(false);
+                        window.location.href = "/login";
+                      }}
+                    >
+                      Sign In
+                    </Button>
+                    <Button
+                      variant="primary"
+                      className="w-full justify-center"
+                      onClick={() => {
+                        setIsMobileMenuOpen(false);
+                        window.location.href = "/signup";
+                      }}
+                    >
+                      Get Started
+                    </Button>
+                  </>
+                )}
               </div>
-            </nav>
+            </div>
           </motion.div>
         )}
       </AnimatePresence>
-
-      {/* Desktop Buttons - Hidden on Mobile */}
-      <motion.div
-        className="hidden lg:block flex-shrink-0 flex items-center gap-4"
-        whileHover={{ scale: 1.05 }}
-        whileTap={{ scale: 0.95 }}
-      >
-        <Button
-          variant="secondary"
-          className="text-sm md:text-base px-4 md:px-6 py-2 md:py-3"
-          onClick={() => (window.location.href = "/login")}
-        >
-          Sign In
-        </Button>
-        <Button
-          variant="primary"
-          className="text-sm md:text-base px-4 md:px-6 py-2 md:py-3"
-          onClick={() => (window.location.href = "/signup")}
-        >
-          Get Started
-        </Button>
-      </motion.div>
     </motion.header>
   );
 }

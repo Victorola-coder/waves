@@ -17,19 +17,29 @@ import { useState } from "react";
 import { motion } from "framer-motion";
 import { Button, Card, Input } from "@/app/components/ui";
 import { NavHeader } from "@/app/components/atom";
+import { useAuth } from "@/app/hooks/use-auth";
+import { useRooms } from "@/app/hooks/use-rooms";
+import { useLeaderboard } from "@/app/hooks/use-leaderboard";
+import { useAchievements } from "@/app/hooks/use-achievements";
 import { useRouter } from "next/navigation";
+import { toast } from "sonner";
 
 export default function Dashboard() {
   const [searchQuery, setSearchQuery] = useState("");
   const router = useRouter();
+  const { user, logout } = useAuth();
+  const { rooms, loading: roomsLoading, createRoom } = useRooms();
+  const { data: leaderboardData } = useLeaderboard("rooms_created", "week");
+  const { data: achievementsData } = useAchievements();
 
+  // Mock user stats (in real app, this would come from API)
   const userStats = {
     totalListens: 1247,
     totalTime: "89h 32m",
     level: 23,
     xp: 1840,
     nextLevelXp: 2000,
-    achievements: 12,
+    achievements: achievementsData?.userStats.totalAchievements || 0,
     followers: 89,
     following: 156,
   };
@@ -107,6 +117,34 @@ export default function Dashboard() {
     }
   };
 
+  const handleLogout = async () => {
+    try {
+      await logout();
+      toast.success("Logged out successfully");
+    } catch (error) {
+      toast.error("Logout failed");
+    }
+  };
+
+  if (!user) {
+    return (
+      <div className="min-h-screen bg-gradient-to-br from-neutral-900 via-neutral-800 to-neutral-900 flex items-center justify-center">
+        <div className="text-center">
+          <div className="w-16 h-16 bg-gradient-to-br from-primary to-secondary rounded-2xl flex items-center justify-center mx-auto mb-4">
+            <span className="text-white text-3xl">🌊</span>
+          </div>
+          <h1 className="text-white text-2xl font-bold mb-4">
+            Welcome to Waves
+          </h1>
+          <p className="text-neutral-400 mb-6">Please sign in to continue</p>
+          <Button variant="primary" onClick={() => router.push("/login")}>
+            Sign In
+          </Button>
+        </div>
+      </div>
+    );
+  }
+
   return (
     <div className="min-h-screen bg-gradient-to-br from-neutral-900 via-neutral-800 to-neutral-900">
       {/* Navigation Header */}
@@ -120,10 +158,10 @@ export default function Dashboard() {
           transition={{ duration: 0.6 }}
           className="mb-8"
         >
-          <h1 className="text-3xl md:text-4xl lg:text-5xl font-bold text-white font-poppins mb-4">
-            Welcome back, Music Explorer! 🎵
+          <h1 className="text-3xl md:text-4xl lg:text-5xl font-bold text-white mb-4">
+            Welcome back, {user.displayName || "Music Explorer"}! 🎵
           </h1>
-          <p className="text-light/60 font-inter text-lg">
+          <p className="text-light/60 text-lg">
             Ready to discover new music with friends?
           </p>
         </motion.div>
@@ -305,11 +343,15 @@ export default function Dashboard() {
                 </div>
                 <div className="flex items-center justify-between">
                   <span className="text-neutral-300">Rooms Hosted</span>
-                  <span className="text-white font-semibold">24</span>
+                  <span className="text-white font-semibold">
+                    {rooms.filter((room) => room.host.id === user.id).length}
+                  </span>
                 </div>
                 <div className="flex items-center justify-between">
                   <span className="text-neutral-300">Total Parties</span>
-                  <span className="text-white font-semibold">156</span>
+                  <span className="text-white font-semibold">
+                    {rooms.length}
+                  </span>
                 </div>
               </div>
             </Card>
@@ -340,7 +382,10 @@ export default function Dashboard() {
                     Start a room or join one to begin your music journey!
                   </p>
                 </div>
-                <Button className="bg-gradient-to-r from-primary to-secondary hover:from-primary/80 hover:to-secondary/80">
+                <Button
+                  className="bg-gradient-to-r from-primary to-secondary hover:from-primary/80 hover:to-secondary/80"
+                  onClick={() => router.push("/rooms/create")}
+                >
                   <Play className="w-4 h-4 mr-2" />
                   Start Listening
                 </Button>

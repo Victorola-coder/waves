@@ -18,20 +18,23 @@ export async function GET(request: NextRequest) {
     }
 
     // Exchange code for access token
-    const tokenResponse = await fetch("https://accounts.spotify.com/api/token", {
-      method: "POST",
-      headers: {
-        "Content-Type": "application/x-www-form-urlencoded",
-        Authorization: `Basic ${Buffer.from(
-          `${process.env.SPOTIFY_CLIENT_ID}:${process.env.SPOTIFY_CLIENT_SECRET}`
-        ).toString("base64")}`,
-      },
-      body: new URLSearchParams({
-        grant_type: "authorization_code",
-        code,
-        redirect_uri: `${process.env.NEXT_PUBLIC_APP_URL}/api/spotify/auth`,
-      }),
-    });
+    const tokenResponse = await fetch(
+      "https://accounts.spotify.com/api/token",
+      {
+        method: "POST",
+        headers: {
+          "Content-Type": "application/x-www-form-urlencoded",
+          Authorization: `Basic ${Buffer.from(
+            `${process.env.SPOTIFY_CLIENT_ID}:${process.env.SPOTIFY_CLIENT_SECRET}`
+          ).toString("base64")}`,
+        },
+        body: new URLSearchParams({
+          grant_type: "authorization_code",
+          code,
+          redirect_uri: `${process.env.NEXT_PUBLIC_APP_URL}/api/spotify/auth`,
+        }),
+      }
+    );
 
     if (!tokenResponse.ok) {
       throw new Error("Failed to exchange code for token");
@@ -67,7 +70,7 @@ export async function GET(request: NextRequest) {
       // Create new user with a generated password hash
       const generatedPassword = randomUUID(); // Generate a random password
       const passwordHash = await hashPassword(generatedPassword);
-      
+
       user = await prisma.user.create({
         data: {
           email: spotifyUser.email,
@@ -124,7 +127,6 @@ export async function GET(request: NextRequest) {
     redirectUrl.searchParams.set("token", token);
 
     return NextResponse.redirect(redirectUrl.toString());
-
   } catch (error) {
     console.error("Spotify auth error:", error);
     return NextResponse.json(

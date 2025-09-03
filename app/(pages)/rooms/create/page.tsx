@@ -1,7 +1,5 @@
 "use client";
 
-import { useState } from "react";
-import { motion } from "framer-motion";
 import {
   Music,
   Users,
@@ -11,12 +9,10 @@ import {
   Plus,
   ArrowLeft,
 } from "lucide-react";
-import Button from "../../../components/ui/button";
-import Card from "../../../components/ui/card";
-import Input from "../../../components/ui/input";
-import TextArea from "../../../components/ui/textArea";
-import Select from "../../../components/ui/select";
 import Link from "next/link";
+import { useState } from "react";
+import { motion } from "framer-motion";
+import { Button, Card, Input, TextArea } from "@/app/components/ui";
 
 export default function CreateRoom() {
   const [roomData, setRoomData] = useState({

@@ -1,34 +1,28 @@
-import { NextResponse } from 'next/server';
-import type { NextRequest } from 'next/server';
+import { NextResponse } from "next/server";
+import type { NextRequest } from "next/server";
 
 // Routes that require authentication
 const protectedRoutes = [
-  '/dashboard',
-  '/profile',
-  '/rooms',
-  '/achievements',
-  '/leaderboard',
+  "/dashboard",
+  "/profile",
+  "/rooms",
+  "/achievements",
+  "/leaderboard",
 ];
 
 // Routes that are public
-const publicRoutes = [
-  '/',
-  '/api/auth/signup',
-  '/api/auth/login',
-];
+const publicRoutes = ["/", "/api/signup", "/api/login"];
 
 export function middleware(request: NextRequest) {
   const { pathname } = request.nextUrl;
 
   // Check if route requires authentication
-  const isProtectedRoute = protectedRoutes.some(route => 
+  const isProtectedRoute = protectedRoutes.some((route) =>
     pathname.startsWith(route)
   );
 
   // Check if route is public API endpoint
-  const isPublicApi = publicRoutes.some(route => 
-    pathname.startsWith(route)
-  );
+  const isPublicApi = publicRoutes.some((route) => pathname.startsWith(route));
 
   // Skip middleware for public routes and API endpoints
   if (isPublicApi) {
@@ -37,19 +31,17 @@ export function middleware(request: NextRequest) {
 
   // For protected routes, check for JWT token
   if (isProtectedRoute) {
-    const token = request.cookies.get('auth-token')?.value || 
-                  request.headers.get('authorization')?.replace('Bearer ', '');
+    const token =
+      request.cookies.get("auth-token")?.value ||
+      request.headers.get("authorization")?.replace("Bearer ", "");
 
     if (!token) {
       // Redirect to login if no token found
-      if (pathname.startsWith('/api/')) {
-        return NextResponse.json(
-          { error: 'Unauthorized' },
-          { status: 401 }
-        );
+      if (pathname.startsWith("/api/")) {
+        return NextResponse.json({ error: "Unauthorized" }, { status: 401 });
       }
-      
-      const loginUrl = new URL('/auth/login', request.url);
+
+      const loginUrl = new URL("/login", request.url);
       return NextResponse.redirect(loginUrl);
     }
   }
@@ -66,6 +58,6 @@ export const config = {
      * - favicon.ico (favicon file)
      * - public folder
      */
-    '/((?!_next/static|_next/image|favicon.ico|public).*)',
+    "/((?!_next/static|_next/image|favicon.ico|public).*)",
   ],
 };

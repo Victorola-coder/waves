@@ -1,11 +1,11 @@
 "use client";
 
+import Link from "next/link";
 import { useState } from "react";
 import { motion } from "framer-motion";
 import { useRouter } from "next/navigation";
 import { Eye, EyeOff, Music, Check } from "lucide-react";
 import { Button, Card, Input } from "../../components/ui";
-import Link from "next/link";
 
 export default function SignupPage() {
   const [formData, setFormData] = useState({
@@ -28,7 +28,7 @@ export default function SignupPage() {
   const router = useRouter();
 
   const handleInputChange = (field: string, value: string) => {
-    setFormData(prev => ({ ...prev, [field]: value }));
+    setFormData((prev) => ({ ...prev, [field]: value }));
     setError(""); // Clear error when user types
 
     // Check password strength
@@ -84,10 +84,9 @@ export default function SignupPage() {
 
       // Store token in localStorage (in production, use httpOnly cookies)
       localStorage.setItem("auth-token", data.token);
-      
+
       // Redirect to dashboard
       router.push("/dashboard");
-      
     } catch (error) {
       setError(error instanceof Error ? error.message : "Signup failed");
     } finally {
@@ -95,11 +94,19 @@ export default function SignupPage() {
     }
   };
 
-  const PasswordRequirement = ({ met, text }: { met: boolean; text: string }) => (
+  const PasswordRequirement = ({
+    met,
+    text,
+  }: {
+    met: boolean;
+    text: string;
+  }) => (
     <div className="flex items-center gap-2">
-      <div className={`w-4 h-4 rounded-full flex items-center justify-center ${
-        met ? "bg-secondary text-white" : "bg-neutral-600"
-      }`}>
+      <div
+        className={`w-4 h-4 rounded-full flex items-center justify-center ${
+          met ? "bg-secondary text-white" : "bg-neutral-600"
+        }`}
+      >
         {met && <Check className="w-3 h-3" />}
       </div>
       <span className={`text-sm ${met ? "text-secondary" : "text-light/40"}`}>
@@ -121,7 +128,9 @@ export default function SignupPage() {
           <div className="inline-flex items-center justify-center w-16 h-16 bg-gradient-to-br from-primary to-secondary rounded-2xl mb-4">
             <Music className="w-8 h-8 text-white" />
           </div>
-          <h1 className="text-3xl font-bold text-white font-poppins">Join Waves</h1>
+          <h1 className="text-3xl font-bold text-white font-poppins">
+            Join Waves
+          </h1>
           <p className="text-light/60 font-inter mt-2">
             Start your musical journey with friends
           </p>
@@ -141,7 +150,10 @@ export default function SignupPage() {
             )}
 
             <div className="space-y-2">
-              <label htmlFor="displayName" className="text-white font-medium font-inter">
+              <label
+                htmlFor="displayName"
+                className="text-white font-medium font-inter"
+              >
                 Display Name
               </label>
               <Input
@@ -149,14 +161,19 @@ export default function SignupPage() {
                 type="text"
                 placeholder="Enter your display name"
                 value={formData.displayName}
-                onChange={(e) => handleInputChange("displayName", e.target.value)}
+                onChange={(e) =>
+                  handleInputChange("displayName", e.target.value)
+                }
                 required
                 className="w-full"
               />
             </div>
 
             <div className="space-y-2">
-              <label htmlFor="email" className="text-white font-medium font-inter">
+              <label
+                htmlFor="email"
+                className="text-white font-medium font-inter"
+              >
                 Email
               </label>
               <Input
@@ -171,7 +188,10 @@ export default function SignupPage() {
             </div>
 
             <div className="space-y-2">
-              <label htmlFor="password" className="text-white font-medium font-inter">
+              <label
+                htmlFor="password"
+                className="text-white font-medium font-inter"
+              >
                 Password
               </label>
               <div className="relative">
@@ -180,7 +200,9 @@ export default function SignupPage() {
                   type={showPassword ? "text" : "password"}
                   placeholder="Create a strong password"
                   value={formData.password}
-                  onChange={(e) => handleInputChange("password", e.target.value)}
+                  onChange={(e) =>
+                    handleInputChange("password", e.target.value)
+                  }
                   required
                   className="w-full pr-12"
                 />
@@ -189,22 +211,44 @@ export default function SignupPage() {
                   onClick={() => setShowPassword(!showPassword)}
                   className="absolute right-3 top-1/2 transform -translate-y-1/2 text-light/40 hover:text-light/60 transition-colors"
                 >
-                  {showPassword ? <EyeOff className="w-5 h-5" /> : <Eye className="w-5 h-5" />}
+                  {showPassword ? (
+                    <EyeOff className="w-5 h-5" />
+                  ) : (
+                    <Eye className="w-5 h-5" />
+                  )}
                 </button>
               </div>
-              
+
               {/* Password Requirements */}
               <div className="space-y-2 mt-3">
-                <PasswordRequirement met={passwordStrength.length} text="At least 8 characters" />
-                <PasswordRequirement met={passwordStrength.uppercase} text="One uppercase letter" />
-                <PasswordRequirement met={passwordStrength.lowercase} text="One lowercase letter" />
-                <PasswordRequirement met={passwordStrength.number} text="One number" />
-                <PasswordRequirement met={passwordStrength.special} text="One special character" />
+                <PasswordRequirement
+                  met={passwordStrength.length}
+                  text="At least 8 characters"
+                />
+                <PasswordRequirement
+                  met={passwordStrength.uppercase}
+                  text="One uppercase letter"
+                />
+                <PasswordRequirement
+                  met={passwordStrength.lowercase}
+                  text="One lowercase letter"
+                />
+                <PasswordRequirement
+                  met={passwordStrength.number}
+                  text="One number"
+                />
+                <PasswordRequirement
+                  met={passwordStrength.special}
+                  text="One special character"
+                />
               </div>
             </div>
 
             <div className="space-y-2">
-              <label htmlFor="confirmPassword" className="text-white font-medium font-inter">
+              <label
+                htmlFor="confirmPassword"
+                className="text-white font-medium font-inter"
+              >
                 Confirm Password
               </label>
               <div className="relative">
@@ -213,7 +257,9 @@ export default function SignupPage() {
                   type={showConfirmPassword ? "text" : "password"}
                   placeholder="Confirm your password"
                   value={formData.confirmPassword}
-                  onChange={(e) => handleInputChange("confirmPassword", e.target.value)}
+                  onChange={(e) =>
+                    handleInputChange("confirmPassword", e.target.value)
+                  }
                   required
                   className="w-full pr-12"
                 />
@@ -222,7 +268,11 @@ export default function SignupPage() {
                   onClick={() => setShowConfirmPassword(!showConfirmPassword)}
                   className="absolute right-3 top-1/2 transform -translate-y-1/2 text-light/40 hover:text-light/60 transition-colors"
                 >
-                  {showConfirmPassword ? <EyeOff className="w-5 h-5" /> : <Eye className="w-5 h-5" />}
+                  {showConfirmPassword ? (
+                    <EyeOff className="w-5 h-5" />
+                  ) : (
+                    <Eye className="w-5 h-5" />
+                  )}
                 </button>
               </div>
             </div>
@@ -239,12 +289,12 @@ export default function SignupPage() {
             <div className="text-center">
               <p className="text-light/60 font-inter text-sm">
                 Already have an account?{" "}
-                <a
-                  href="/auth/login"
+                <Link
+                  href="/login"
                   className="text-primary hover:text-primary-400 transition-colors font-medium"
                 >
                   Sign in
-                </a>
+                </Link>
               </p>
             </div>
           </form>

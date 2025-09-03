@@ -1,7 +1,5 @@
 "use client";
 
-import { useState } from "react";
-import { motion } from "framer-motion";
 import {
   Music,
   Users,
@@ -15,7 +13,9 @@ import {
   Bell,
   Settings,
 } from "lucide-react";
-import { Button, Card, Input } from "../../components/ui";
+import { useState } from "react";
+import { motion } from "framer-motion";
+import { Button, Card, Input } from "@/app/components/ui";
 
 export default function Dashboard() {
   const [searchQuery, setSearchQuery] = useState("");

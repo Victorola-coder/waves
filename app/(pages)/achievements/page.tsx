@@ -1,7 +1,5 @@
 "use client";
 
-import React, { useState } from "react";
-import { motion } from "framer-motion";
 import {
   Trophy,
   Star,
@@ -17,6 +15,8 @@ import {
   Heart,
   Zap,
 } from "lucide-react";
+import React, { useState } from "react";
+import { motion } from "framer-motion";
 import { Card } from "@/app/components/ui";
 
 interface Achievement {

@@ -1,7 +1,5 @@
 "use client";
 
-import { useState } from "react";
-import { motion } from "framer-motion";
 import {
   Trophy,
   Medal,
@@ -14,10 +12,9 @@ import {
   Star,
   Award,
 } from "lucide-react";
-import { Card } from "../../components/ui";
-// import { Card } from "../components/ui/card";
-// import { Button } from "../components/ui/button";
-// import { Select } from "../components/ui/select";
+import { useState } from "react";
+import { motion } from "framer-motion";
+import { Card } from "@/app/components/ui";
 
 interface LeaderboardEntry {
   rank: number;

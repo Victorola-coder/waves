@@ -1,11 +1,11 @@
 "use client";
 
+import Link from "next/link";
 import { useState } from "react";
 import { motion } from "framer-motion";
 import { useRouter } from "next/navigation";
 import { Eye, EyeOff, Music } from "lucide-react";
 import { Button, Card, Input } from "../../components/ui";
-import Link from "next/link";
 
 export default function LoginPage() {
   const [formData, setFormData] = useState({
@@ -18,7 +18,7 @@ export default function LoginPage() {
   const router = useRouter();
 
   const handleInputChange = (field: string, value: string) => {
-    setFormData(prev => ({ ...prev, [field]: value }));
+    setFormData((prev) => ({ ...prev, [field]: value }));
     setError(""); // Clear error when user types
   };
 
@@ -44,10 +44,9 @@ export default function LoginPage() {
 
       // Store token in localStorage (in production, use httpOnly cookies)
       localStorage.setItem("auth-token", data.token);
-      
+
       // Redirect to dashboard
       router.push("/dashboard");
-      
     } catch (error) {
       setError(error instanceof Error ? error.message : "Login failed");
     } finally {
@@ -68,7 +67,9 @@ export default function LoginPage() {
           <div className="inline-flex items-center justify-center w-16 h-16 bg-gradient-to-br from-primary to-secondary rounded-2xl mb-4">
             <Music className="w-8 h-8 text-white" />
           </div>
-          <h1 className="text-3xl font-bold text-white font-poppins">Welcome Back</h1>
+          <h1 className="text-3xl font-bold text-white font-poppins">
+            Welcome Back
+          </h1>
           <p className="text-light/60 font-inter mt-2">
             Sign in to continue your musical journey
           </p>
@@ -88,7 +89,10 @@ export default function LoginPage() {
             )}
 
             <div className="space-y-2">
-              <label htmlFor="email" className="text-white font-medium font-inter">
+              <label
+                htmlFor="email"
+                className="text-white font-medium font-inter"
+              >
                 Email
               </label>
               <Input
@@ -103,7 +107,10 @@ export default function LoginPage() {
             </div>
 
             <div className="space-y-2">
-              <label htmlFor="password" className="text-white font-medium font-inter">
+              <label
+                htmlFor="password"
+                className="text-white font-medium font-inter"
+              >
                 Password
               </label>
               <div className="relative">
@@ -112,7 +119,9 @@ export default function LoginPage() {
                   type={showPassword ? "text" : "password"}
                   placeholder="Enter your password"
                   value={formData.password}
-                  onChange={(e) => handleInputChange("password", e.target.value)}
+                  onChange={(e) =>
+                    handleInputChange("password", e.target.value)
+                  }
                   required
                   className="w-full pr-12"
                 />
@@ -121,7 +130,11 @@ export default function LoginPage() {
                   onClick={() => setShowPassword(!showPassword)}
                   className="absolute right-3 top-1/2 transform -translate-y-1/2 text-light/40 hover:text-light/60 transition-colors"
                 >
-                  {showPassword ? <EyeOff className="w-5 h-5" /> : <Eye className="w-5 h-5" />}
+                  {showPassword ? (
+                    <EyeOff className="w-5 h-5" />
+                  ) : (
+                    <Eye className="w-5 h-5" />
+                  )}
                 </button>
               </div>
             </div>
@@ -138,12 +151,12 @@ export default function LoginPage() {
             <div className="text-center">
               <p className="text-light/60 font-inter text-sm">
                 Don't have an account?{" "}
-                <a
-                  href="/auth/signup"
+                <Link
+                  href="/signup"
                   className="text-primary hover:text-primary-400 transition-colors font-medium"
                 >
                   Sign up
-                </a>
+                </Link>
               </p>
             </div>
           </form>

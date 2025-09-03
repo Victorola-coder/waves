@@ -1,6 +1,5 @@
 "use client";
 
-import { useState } from "react";
 import { motion } from "framer-motion";
 import {
   User,
@@ -21,10 +20,8 @@ import {
   CheckCircle,
   XCircle,
 } from "lucide-react";
-import Button from "../../components/ui/button";
-import Card from "../../components/ui/card";
-import Input from "../../components/ui/input";
-import TextArea from "../../components/ui/textArea";
+import { useState } from "react";
+import { Button, Card, Input, TextArea } from "@/app/components/ui";
 
 interface ListeningSession {
   id: string;

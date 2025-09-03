@@ -1,6 +1,6 @@
 import { NextRequest, NextResponse } from "next/server";
 import { prisma } from "../../../lib/db";
-import { generateToken } from "../../../lib/auth";
+import { comparePassword, generateToken } from "../../../lib/auth";
 import { z } from "zod";
 
 const loginSchema = z.object({
@@ -11,7 +11,7 @@ const loginSchema = z.object({
 export async function POST(request: NextRequest) {
   try {
     const body = await request.json();
-    const { email } = loginSchema.parse(body);
+    const { email, password } = loginSchema.parse(body);
 
     // Find user
     const user = await prisma.user.findUnique({
@@ -19,6 +19,15 @@ export async function POST(request: NextRequest) {
     });
 
     if (!user) {
+      return NextResponse.json(
+        { error: "Invalid credentials" },
+        { status: 401 }
+      );
+    }
+
+    // Verify password
+    const ok = await comparePassword(password, user.passwordHash);
+    if (!ok) {
       return NextResponse.json(
         { error: "Invalid credentials" },
         { status: 401 }

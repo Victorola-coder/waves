@@ -3,6 +3,7 @@ import { prisma } from "../../../lib/db";
 import { generateToken } from "../../../lib/auth";
 import { z } from "zod";
 import { randomUUID } from "crypto";
+import { hashPassword } from "../../../lib/auth";
 
 const signupSchema = z.object({
   email: z.string().email(),
@@ -27,11 +28,15 @@ export async function POST(request: NextRequest) {
       );
     }
 
+    // Hash password
+    const passwordHash = await hashPassword(password);
+
     // Create user (schema requires explicit id)
     const user = await prisma.user.create({
       data: {
         id: randomUUID(),
         email,
+        passwordHash,
         displayName: displayName || email.split("@")[0],
       },
     });

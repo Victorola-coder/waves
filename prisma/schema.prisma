@@ -18,6 +18,12 @@ datasource db {
 enum Provider {
   spotify
   lastfm
+  google
+}
+
+enum AuthProvider {
+  email
+  google
 }
 
 enum RoomStatus {
@@ -36,7 +42,9 @@ enum RoomRole {
 model User {
   id          String    @id @default(cuid())
   email       String    @unique
-  passwordHash String
+  passwordHash String?  // Optional for OAuth users
+  authProvider AuthProvider @default(email)
+  googleId    String?   // Google OAuth ID
   displayName String?
   avatarUrl   String?
   createdAt   DateTime  @default(now())

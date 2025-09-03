@@ -1,7 +1,7 @@
 import { NextRequest, NextResponse } from "next/server";
 import { prisma } from "../../../lib/db";
 import { comparePassword, generateToken } from "../../../lib/auth";
-import { z } from "zod";
+import { z } from "z";
 
 const loginSchema = z.object({
   email: z.string().email(),
@@ -13,7 +13,6 @@ export async function POST(request: NextRequest) {
     const body = await request.json();
     const { email, password } = loginSchema.parse(body);
 
-    // Find user
     const user = await prisma.user.findUnique({
       where: { email },
     });
@@ -25,16 +24,23 @@ export async function POST(request: NextRequest) {
       );
     }
 
+    // Check if user has a password (not OAuth-only user)
+    if (!user.passwordHash) {
+      return NextResponse.json(
+        { error: "This account was created with OAuth. Please use Google to sign in." },
+        { status: 401 }
+      );
+    }
+
     // Verify password
-    const ok = await comparePassword(password, user.passwordHash);
-    if (!ok) {
+    const isValidPassword = await comparePassword(password, user.passwordHash);
+    if (!isValidPassword) {
       return NextResponse.json(
         { error: "Invalid credentials" },
         { status: 401 }
       );
     }
 
-    // Generate JWT token
     const token = generateToken({
       userId: user.id,
       email: user.email,
@@ -47,6 +53,7 @@ export async function POST(request: NextRequest) {
         displayName: user.displayName,
         avatarUrl: user.avatarUrl,
         createdAt: user.createdAt,
+        authProvider: user.authProvider,
       },
       token,
     });

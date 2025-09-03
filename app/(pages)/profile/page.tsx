@@ -19,30 +19,14 @@ import {
   Trash2,
   CheckCircle,
   XCircle,
+  Loader2,
 } from "lucide-react";
 import { useState } from "react";
-import { Button, Card, Input, TextArea } from "@/app/components/ui";
-
-interface ListeningSession {
-  id: string;
-  trackTitle: string;
-  artist: string;
-  album: string;
-  duration: string;
-  listenedAt: Date;
-  source: "room" | "solo";
-  roomName?: string;
-}
-
-interface Connection {
-  id: string;
-  provider: string;
-  providerName: string;
-  providerIcon: any;
-  isConnected: boolean;
-  lastSync?: Date;
-  username?: string;
-}
+import { Button, Card, Input, TextArea, EmptyState } from "@/app/components/ui";
+import { useProfile } from "@/app/hooks/use-profile";
+import { useAuth } from "@/app/hooks/use-auth";
+import { useRouter } from "next/navigation";
+import { toast } from "sonner";
 
 export default function Profile() {
   const [isEditing, setIsEditing] = useState(false);
@@ -50,94 +34,73 @@ export default function Profile() {
     "overview" | "history" | "connections" | "settings"
   >("overview");
 
+  const { profile, loading, error, updateProfile } = useProfile();
+  const { user } = useAuth();
+  const router = useRouter();
+
   const handleInputChange = (field: string, value: string) => {
     // Handle input changes here
     console.log(field, value);
   };
 
-  const userProfile = {
-    username: "musicmaster",
-    displayName: "Alex Chen",
-    bio: "Music enthusiast and room host. Love discovering new artists and sharing music with friends. 🎵",
-    email: "alex@example.com",
-    avatar: "/api/placeholder/120/120",
-    country: "United States",
-    level: 23,
-    xp: 1840,
-    nextLevelXp: 2000,
-    totalListens: 1247,
-    totalTimeMs: 321600000, // 89h 20m in milliseconds
-    achievements: 12,
-    followers: 89,
-    following: 156,
-    roomsHosted: 24,
-    joinDate: new Date("2023-06-15"),
-  };
+  // Show loading state
+  if (loading) {
+    return (
+      <div className="min-h-screen bg-gradient-to-br from-neutral-900 via-neutral-800 to-neutral-900 flex items-center justify-center">
+        <div className="text-center">
+          <Loader2 className="w-12 h-12 text-primary animate-spin mx-auto mb-4" />
+          <p className="text-white text-lg">Loading profile...</p>
+        </div>
+      </div>
+    );
+  }
 
-  const recentSessions: ListeningSession[] = [
-    {
-      id: "1",
-      trackTitle: "Blinding Lights",
-      artist: "The Weeknd",
-      album: "After Hours",
-      duration: "3:20",
-      listenedAt: new Date("2024-01-25T20:30:00"),
-      source: "room",
-      roomName: "Chill Vibes",
-    },
-    {
-      id: "2",
-      trackTitle: "Dance Monkey",
-      artist: "Tones and I",
-      album: "The Kids Are Coming",
-      duration: "3:29",
-      listenedAt: new Date("2024-01-25T19:45:00"),
-      source: "solo",
-    },
-    {
-      id: "3",
-      trackTitle: "Shape of You",
-      artist: "Ed Sheeran",
-      album: "÷ (Divide)",
-      duration: "3:53",
-      listenedAt: new Date("2024-01-25T18:20:00"),
-      source: "room",
-      roomName: "Late Night Jams",
-    },
-  ];
+  // Show error state
+  if (error) {
+    return (
+      <div className="min-h-screen bg-gradient-to-br from-neutral-900 via-neutral-800 to-neutral-900 flex items-center justify-center">
+        <div className="text-center max-w-md">
+          <EmptyState
+            icon={User}
+            title="Failed to Load Profile"
+            description={error}
+            actionLabel="Go Back to Dashboard"
+            onAction={() => router.push("/dashboard")}
+          />
+        </div>
+      </div>
+    );
+  }
 
-  const connections: Connection[] = [
-    {
-      id: "1",
-      provider: "spotify",
-      providerName: "Spotify",
-      providerIcon: Music,
-      isConnected: true,
-      lastSync: new Date("2024-01-25T15:30:00"),
-      username: "alexchen_music",
-    },
-    {
-      id: "2",
-      provider: "youtube_music",
-      providerName: "YouTube Music",
-      providerIcon: Youtube,
-      isConnected: false,
-    },
-    {
-      id: "3",
-      provider: "lastfm",
-      providerName: "Last.fm",
-      providerIcon: Headphones,
-      isConnected: true,
-      lastSync: new Date("2024-01-24T12:15:00"),
-      username: "alexchen",
-    },
-  ];
+  // Show profile not found
+  if (!profile) {
+    return (
+      <div className="min-h-screen bg-gradient-to-br from-neutral-900 via-neutral-800 to-neutral-900 flex items-center justify-center">
+        <div className="text-center max-w-md">
+          <EmptyState
+            icon={User}
+            title="Profile Not Found"
+            description="Unable to load your profile information."
+            actionLabel="Go Back to Dashboard"
+            onAction={() => router.push("/dashboard")}
+          />
+        </div>
+      </div>
+    );
+  }
 
-  const formatTime = (ms: number) => {
+  const formatDuration = (ms: number) => {
     const hours = Math.floor(ms / (1000 * 60 * 60));
     const minutes = Math.floor((ms % (1000 * 60 * 60)) / (1000 * 60));
     return `${hours}h ${minutes}m`;
+  };
+
+  const formatDate = (dateString: string) => {
+    return new Date(dateString).toLocaleDateString("en-US", {
+      year: "numeric",
+      month: "long",
+      day: "numeric",
+    });
   };
 
   const getProviderColor = (provider: string) => {
@@ -187,8 +150,8 @@ export default function Profile() {
                 <div className="relative">
                   <div className="w-32 h-32 rounded-full bg-neutral-700 flex items-center justify-center overflow-hidden">
                     <img
-                      src={userProfile.avatar}
-                      alt={userProfile.displayName}
+                      src={profile.avatar}
+                      alt={profile.displayName}
                       className="w-full h-full object-cover"
                     />
                   </div>
@@ -207,42 +170,40 @@ export default function Profile() {
                   <div className="mb-4">
                     {isEditing ? (
                       <Input
-                        value={userProfile.displayName}
+                        value={profile.displayName}
                         className="text-2xl font-bold text-white bg-neutral-700 border-neutral-600 text-center md:text-left"
                       />
                     ) : (
                       <h2 className="text-2xl font-bold text-white">
-                        {userProfile.displayName}
+                        {profile.displayName}
                       </h2>
                     )}
-                    <p className="text-neutral-400">@{userProfile.username}</p>
+                    <p className="text-neutral-400">@{profile.username}</p>
                   </div>
 
                   <div className="mb-4">
                     {isEditing ? (
                       <TextArea
                         name="bio"
-                        value={userProfile.bio}
+                        value={profile.bio}
                         onChange={(e) =>
                           handleInputChange("bio", e.target.value)
                         }
                         className="bg-neutral-700 border-neutral-600 text-white text-center md:text-left"
                       />
                     ) : (
-                      <p className="text-neutral-300">{userProfile.bio}</p>
+                      <p className="text-neutral-300">{profile.bio}</p>
                     )}
                   </div>
 
                   <div className="flex flex-wrap justify-center md:justify-start gap-4 text-sm text-neutral-400">
                     <div className="flex items-center space-x-2">
                       <MapPin className="w-4 h-4" />
-                      <span>{userProfile.country}</span>
+                      <span>{profile.country}</span>
                     </div>
                     <div className="flex items-center space-x-2">
                       <Calendar className="w-4 h-4" />
-                      <span>
-                        Joined {userProfile.joinDate.toLocaleDateString()}
-                      </span>
+                      <span>Joined {profile.joinDate}</span>
                     </div>
                   </div>
                 </div>
@@ -251,14 +212,14 @@ export default function Profile() {
                 <div className="text-center">
                   <div className="w-20 h-20 bg-gradient-to-r from-primary to-secondary rounded-full flex items-center justify-center mb-2">
                     <span className="text-2xl font-bold text-white">
-                      {userProfile.level}
+                      {profile.level}
                     </span>
                   </div>
                   <p className="text-sm text-neutral-400">
-                    Level {userProfile.level}
+                    Level {profile.level}
                   </p>
                   <p className="text-xs text-neutral-500">
-                    {userProfile.xp}/{userProfile.nextLevelXp} XP
+                    {profile.xp}/{profile.nextLevelXp} XP
                   </p>
                 </div>
               </div>
@@ -281,7 +242,7 @@ export default function Profile() {
                 </div>
                 <h3 className="text-white font-semibold mb-2">Total Listens</h3>
                 <p className="text-3xl font-bold text-primary">
-                  {userProfile.totalListens.toLocaleString()}
+                  {profile.totalListens.toLocaleString()}
                 </p>
               </div>
             </Card>
@@ -295,7 +256,7 @@ export default function Profile() {
                   Listening Time
                 </h3>
                 <p className="text-3xl font-bold text-secondary">
-                  {formatTime(userProfile.totalTimeMs)}
+                  {formatDuration(profile.totalTimeMs)}
                 </p>
               </div>
             </Card>
@@ -307,7 +268,7 @@ export default function Profile() {
                 </div>
                 <h3 className="text-white font-semibold mb-2">Achievements</h3>
                 <p className="text-3xl font-bold text-accent">
-                  {userProfile.achievements}
+                  {profile.achievements}
                 </p>
               </div>
             </Card>
@@ -319,7 +280,7 @@ export default function Profile() {
                 </div>
                 <h3 className="text-white font-semibold mb-2">Rooms Hosted</h3>
                 <p className="text-3xl font-bold text-neutral-300">
-                  {userProfile.roomsHosted}
+                  {profile.roomsHosted}
                 </p>
               </div>
             </Card>
@@ -375,13 +336,13 @@ export default function Profile() {
                     <div className="flex items-center justify-between">
                       <span className="text-neutral-300">Followers</span>
                       <span className="text-white font-semibold">
-                        {userProfile.followers}
+                        {profile.followers}
                       </span>
                     </div>
                     <div className="flex items-center justify-between">
                       <span className="text-neutral-300">Following</span>
                       <span className="text-white font-semibold">
-                        {userProfile.following}
+                        {profile.following}
                       </span>
                     </div>
                     <div className="flex items-center justify-between">
@@ -399,37 +360,40 @@ export default function Profile() {
                     Recent Activity
                   </h3>
                   <div className="space-y-3">
-                    {recentSessions.slice(0, 3).map((session) => (
-                      <div
-                        key={session.id}
-                        className="flex items-center space-x-3 p-2 rounded-lg hover:bg-neutral-700/30"
-                      >
-                        <div className="w-10 h-10 bg-neutral-700 rounded flex items-center justify-center">
-                          <Music className="w-5 h-5 text-neutral-400" />
-                        </div>
-                        <div className="flex-1 min-w-0">
-                          <p className="text-white font-medium truncate">
-                            {session.trackTitle}
-                          </p>
-                          <p className="text-sm text-neutral-400 truncate">
-                            {session.artist}
-                          </p>
-                          {session.roomName && (
-                            <p className="text-xs text-primary">
-                              in {session.roomName}
+                    {profile.recentRooms.length > 0 ? (
+                      profile.recentRooms.slice(0, 3).map((room) => (
+                        <div
+                          key={room.id}
+                          className="flex items-center space-x-3 p-2 rounded-lg hover:bg-neutral-700/30"
+                        >
+                          <div className="w-10 h-10 bg-neutral-700 rounded flex items-center justify-center">
+                            <Music className="w-5 h-5 text-neutral-400" />
+                          </div>
+                          <div className="flex-1 min-w-0">
+                            <p className="text-white font-medium truncate">
+                              {room.name}
                             </p>
-                          )}
+                            <p className="text-sm text-neutral-400 truncate">
+                              {room.memberCount} members
+                            </p>
+                          </div>
+                          <div className="text-right">
+                            <p className="text-xs text-neutral-500">
+                              {formatDate(room.createdAt)}
+                            </p>
+                          </div>
                         </div>
-                        <div className="text-right">
-                          <p className="text-sm text-neutral-400">
-                            {session.duration}
-                          </p>
-                          <p className="text-xs text-neutral-500">
-                            {session.listenedAt.toLocaleDateString()}
-                          </p>
-                        </div>
-                      </div>
-                    ))}
+                      ))
+                    ) : (
+                      <EmptyState
+                        icon={Music}
+                        title="No Recent Rooms"
+                        description="You haven't hosted any rooms recently."
+                        actionLabel="Create a Room"
+                        onAction={() => router.push("/rooms/create")}
+                        variant="compact"
+                      />
+                    )}
                   </div>
                 </div>
               </Card>
@@ -443,48 +407,14 @@ export default function Profile() {
                   Listening History
                 </h3>
                 <div className="space-y-3">
-                  {recentSessions.map((session) => (
-                    <div
-                      key={session.id}
-                      className="flex items-center space-x-3 p-3 rounded-lg hover:bg-neutral-700/30"
-                    >
-                      <div className="w-12 h-12 bg-neutral-700 rounded flex items-center justify-center">
-                        <Music className="w-6 h-6 text-neutral-400" />
-                      </div>
-                      <div className="flex-1 min-w-0">
-                        <p className="text-white font-medium truncate">
-                          {session.trackTitle}
-                        </p>
-                        <p className="text-sm text-neutral-400 truncate">
-                          {session.artist} • {session.album}
-                        </p>
-                        <div className="flex items-center space-x-2 mt-1">
-                          <span
-                            className={`text-xs px-2 py-1 rounded ${
-                              session.source === "room"
-                                ? "bg-primary/20 text-primary"
-                                : "bg-neutral-700 text-neutral-400"
-                            }`}
-                          >
-                            {session.source === "room" ? "Room" : "Solo"}
-                          </span>
-                          {session.roomName && (
-                            <span className="text-xs text-neutral-500">
-                              in {session.roomName}
-                            </span>
-                          )}
-                        </div>
-                      </div>
-                      <div className="text-right">
-                        <p className="text-sm text-neutral-400">
-                          {session.duration}
-                        </p>
-                        <p className="text-xs text-neutral-500">
-                          {session.listenedAt.toLocaleDateString()}
-                        </p>
-                      </div>
-                    </div>
-                  ))}
+                  {/* This section will need to be populated with actual data */}
+                  <EmptyState
+                    icon={Music}
+                    title="No Listening History"
+                    description="You haven't listened to any music yet."
+                    actionLabel="Start Listening"
+                    onAction={() => router.push("/discover")}
+                  />
                 </div>
               </div>
             </Card>
@@ -503,77 +433,80 @@ export default function Profile() {
                   </Button>
                 </div>
                 <div className="space-y-4">
-                  {connections.map((connection) => (
-                    <div
-                      key={connection.id}
-                      className="flex items-center justify-between p-4 rounded-lg border border-neutral-600/30"
-                    >
-                      <div className="flex items-center space-x-4">
-                        <div
-                          className={`w-12 h-12 rounded-full bg-neutral-700 flex items-center justify-center ${
-                            connection.isConnected
-                              ? "border-2 border-green-500"
-                              : ""
-                          }`}
-                        >
-                          <connection.providerIcon
-                            className={`w-6 h-6 ${getProviderColor(
-                              connection.provider
-                            )}`}
-                          />
-                        </div>
-                        <div>
-                          <h4 className="text-white font-semibold">
-                            {connection.providerName}
-                          </h4>
-                          {connection.isConnected ? (
-                            <div className="flex items-center space-x-2">
-                              <CheckCircle className="w-4 h-4 text-green-500" />
-                              <span className="text-sm text-green-500">
-                                Connected
-                              </span>
-                              {connection.username && (
-                                <span className="text-sm text-neutral-400">
-                                  as {connection.username}
+                  {profile.connections.length > 0 ? (
+                    profile.connections.map((connection) => (
+                      <div
+                        key={connection.id}
+                        className="flex items-center justify-between p-4 rounded-lg border border-neutral-600/30"
+                      >
+                        <div className="flex items-center space-x-4">
+                          <div
+                            className={`w-12 h-12 rounded-full bg-neutral-700 flex items-center justify-center ${
+                              connection.isConnected
+                                ? "border-2 border-green-500"
+                                : ""
+                            }`}
+                          >
+                            <span className="text-2xl">
+                              {connection.providerIcon}
+                            </span>
+                          </div>
+                          <div>
+                            <h4 className="text-white font-semibold">
+                              {connection.providerName}
+                            </h4>
+                            {connection.isConnected ? (
+                              <div className="flex items-center space-x-2">
+                                <CheckCircle className="w-4 h-4 text-green-500" />
+                                <span className="text-sm text-green-500">
+                                  Connected
                                 </span>
-                              )}
-                            </div>
+                              </div>
+                            ) : (
+                              <div className="flex items-center space-x-2">
+                                <XCircle className="w-4 h-4 text-neutral-500" />
+                                <span className="text-xs text-neutral-500">
+                                  Not connected
+                                </span>
+                              </div>
+                            )}
+                            {connection.lastSync && (
+                              <p className="text-xs text-neutral-500">
+                                Last synced {formatDate(connection.lastSync)}
+                              </p>
+                            )}
+                          </div>
+                        </div>
+                        <div className="flex space-x-2">
+                          {connection.isConnected ? (
+                            <Button
+                              variant="secondary"
+                              size="sm"
+                              className="border-neutral-600 text-neutral-300 hover:border-red-500 hover:text-red-500"
+                            >
+                              <Trash2 className="w-4 h-4" />
+                            </Button>
                           ) : (
-                            <div className="flex items-center space-x-2">
-                              <XCircle className="w-4 h-4 text-neutral-500" />
-                              <span className="text-sm text-neutral-500">
-                                Not connected
-                              </span>
-                            </div>
-                          )}
-                          {connection.lastSync && (
-                            <p className="text-xs text-neutral-500">
-                              Last synced{" "}
-                              {connection.lastSync.toLocaleDateString()}
-                            </p>
+                            <Button
+                              size="sm"
+                              className="bg-gradient-to-r from-primary to-secondary hover:from-primary/80 hover:to-secondary/80"
+                            >
+                              Connect
+                            </Button>
                           )}
                         </div>
                       </div>
-                      <div className="flex space-x-2">
-                        {connection.isConnected ? (
-                          <Button
-                            variant="secondary"
-                            size="sm"
-                            className="border-neutral-600 text-neutral-300 hover:border-red-500 hover:text-red-500"
-                          >
-                            <Trash2 className="w-4 h-4" />
-                          </Button>
-                        ) : (
-                          <Button
-                            size="sm"
-                            className="bg-gradient-to-r from-primary to-secondary hover:from-primary/80 hover:to-secondary/80"
-                          >
-                            Connect
-                          </Button>
-                        )}
-                      </div>
-                    </div>
-                  ))}
+                    ))
+                  ) : (
+                    <EmptyState
+                      icon={Headphones}
+                      title="No Music Platform Connections"
+                      description="Connect your music platforms to track your listening history."
+                      actionLabel="Connect Platform"
+                      onAction={() => router.push("/connections")}
+                      variant="compact"
+                    />
+                  )}
                 </div>
               </div>
             </Card>
@@ -591,7 +524,7 @@ export default function Profile() {
                       Email
                     </label>
                     <Input
-                      value={userProfile.email}
+                      value={profile.email}
                       type="email"
                       className="bg-neutral-700 border-neutral-600 text-white"
                     />
@@ -601,7 +534,7 @@ export default function Profile() {
                       Username
                     </label>
                     <Input
-                      value={userProfile.username}
+                      value={profile.username}
                       className="bg-neutral-700 border-neutral-600 text-white"
                     />
                   </div>
@@ -610,7 +543,7 @@ export default function Profile() {
                       Country
                     </label>
                     <Input
-                      value={userProfile.country}
+                      value={profile.country}
                       className="bg-neutral-700 border-neutral-600 text-white"
                     />
                   </div>

@@ -14,10 +14,13 @@ import {
   Crown,
   Heart,
   Zap,
+  Loader2,
 } from "lucide-react";
-import React, { useState } from "react";
+import React, { useState, useEffect } from "react";
 import { motion } from "framer-motion";
-import { Card } from "@/app/components/ui";
+import { Card, EmptyState } from "@/app/components/ui";
+import { useAuth } from "@/app/hooks/use-auth";
+import { useRouter } from "next/navigation";
 
 interface Achievement {
   id: string;
@@ -29,9 +32,17 @@ interface Achievement {
   threshold: number;
   progress: number;
   isUnlocked: boolean;
-  unlockedAt?: Date;
+  unlockedAt?: string;
   rarity: "common" | "rare" | "epic" | "legendary";
   xpReward: number;
+}
+
+interface AchievementStats {
+  total: number;
+  unlocked: number;
+  locked: number;
+  completionRate: number;
+  totalXP: number;
 }
 
 export default function Achievements() {
@@ -39,6 +50,13 @@ export default function Achievements() {
   const [sortBy, setSortBy] = useState<"progress" | "rarity" | "recent">(
     "progress"
   );
+  const [achievements, setAchievements] = useState<Achievement[]>([]);
+  const [stats, setStats] = useState<AchievementStats | null>(null);
+  const [loading, setLoading] = useState(true);
+  const [error, setError] = useState<string | null>(null);
+
+  const { user } = useAuth();
+  const router = useRouter();
 
   const categories = [
     { value: "all", label: "All", icon: Trophy, color: "text-primary" },
@@ -72,140 +90,93 @@ export default function Achievements() {
     legendary: Heart,
   };
 
-  // Mock achievements data
-  const achievements: Achievement[] = [
-    {
-      id: "1",
-      code: "FIRST_LISTEN",
-      name: "First Steps",
-      description: "Listen to your first track",
-      icon: "🎵",
-      category: "listening",
-      threshold: 1,
-      progress: 1,
-      isUnlocked: true,
-      unlockedAt: new Date("2024-01-15"),
-      rarity: "common",
-      xpReward: 10,
-    },
-    {
-      id: "2",
-      code: "MUSIC_EXPLORER",
-      name: "Music Explorer",
-      description: "Listen to 100 different tracks",
-      icon: "🔍",
-      category: "listening",
-      threshold: 100,
-      progress: 87,
-      isUnlocked: false,
-      rarity: "rare",
-      xpReward: 50,
-    },
-    {
-      id: "3",
-      code: "SOCIAL_BUTTERFLY",
-      name: "Social Butterfly",
-      description: "Join 50 different rooms",
-      icon: "🦋",
-      category: "social",
-      threshold: 50,
-      progress: 32,
-      isUnlocked: false,
-      rarity: "epic",
-      xpReward: 100,
-    },
-    {
-      id: "4",
-      code: "ROOM_MASTER",
-      name: "Room Master",
-      description: "Host 25 rooms",
-      icon: "👑",
-      category: "hosting",
-      threshold: 25,
-      progress: 18,
-      isUnlocked: false,
-      rarity: "epic",
-      xpReward: 150,
-    },
-    {
-      id: "5",
-      code: "TIME_WARRIOR",
-      name: "Time Warrior",
-      description: "Listen for 100 hours total",
-      icon: "⏰",
-      category: "time",
-      threshold: 100,
-      progress: 89,
-      isUnlocked: false,
-      rarity: "rare",
-      xpReward: 75,
-    },
-    {
-      id: "6",
-      code: "MUSIC_ADDICT",
-      name: "Music Addict",
-      description: "Listen for 24 hours in a single day",
-      icon: "🔥",
-      category: "listening",
-      threshold: 24,
-      progress: 18,
-      isUnlocked: false,
-      rarity: "legendary",
-      xpReward: 500,
-    },
-    {
-      id: "7",
-      code: "FRIENDLY_HOST",
-      name: "Friendly Host",
-      description: "Have 10 people in a single room",
-      icon: "🤝",
-      category: "hosting",
-      threshold: 10,
-      progress: 10,
-      isUnlocked: true,
-      unlockedAt: new Date("2024-01-20"),
-      rarity: "rare",
-      xpReward: 100,
-    },
-    {
-      id: "8",
-      code: "WEEKEND_WARRIOR",
-      name: "Weekend Warrior",
-      description: "Listen every day for a week",
-      icon: "📅",
-      category: "time",
-      threshold: 7,
-      progress: 7,
-      isUnlocked: true,
-      unlockedAt: new Date("2024-01-22"),
-      rarity: "common",
-      xpReward: 25,
-    },
-  ];
+  // Fetch achievements data
+  useEffect(() => {
+    const fetchAchievements = async () => {
+      try {
+        setLoading(true);
+        setError(null);
 
+        const response = await fetch("/api/achievements", {
+          headers: {
+            Authorization: `Bearer ${localStorage.getItem("auth-token")}`,
+          },
+        });
+
+        if (!response.ok) {
+          throw new Error("Failed to fetch achievements");
+        }
+
+        const data = await response.json();
+        setAchievements(data.achievements);
+        setStats(data.stats);
+      } catch (err: any) {
+        setError(err.message || "Failed to fetch achievements");
+      } finally {
+        setLoading(false);
+      }
+    };
+
+    if (user) {
+      fetchAchievements();
+    }
+  }, [user]);
+
+  // Filter achievements by category
   const filteredAchievements = achievements.filter(
     (achievement) =>
       selectedCategory === "all" || achievement.category === selectedCategory
   );
 
+  // Sort achievements
   const sortedAchievements = [...filteredAchievements].sort((a, b) => {
-    if (sortBy === "progress") {
-      return b.progress - a.progress;
-    } else if (sortBy === "rarity") {
-      const rarityOrder = { legendary: 4, epic: 3, rare: 2, common: 1 };
-      return rarityOrder[b.rarity] - rarityOrder[a.rarity];
-    } else {
-      return (b.unlockedAt?.getTime() || 0) - (a.unlockedAt?.getTime() || 0);
+    switch (sortBy) {
+      case "progress":
+        return b.progress - a.progress;
+      case "rarity":
+        const rarityOrder = { common: 1, rare: 2, epic: 3, legendary: 4 };
+        return rarityOrder[b.rarity] - rarityOrder[a.rarity];
+      case "recent":
+        if (a.isUnlocked && b.isUnlocked) {
+          return (
+            new Date(b.unlockedAt || "").getTime() -
+            new Date(a.unlockedAt || "").getTime()
+          );
+        }
+        return a.isUnlocked ? -1 : 1;
+      default:
+        return 0;
     }
   });
 
-  const unlockedCount = achievements.filter((a) => a.isUnlocked).length;
-  const totalXP = achievements
-    .filter((a) => a.isUnlocked)
-    .reduce((sum, a) => sum + a.xpReward, 0);
-  const completionRate = Math.round(
-    (unlockedCount / achievements.length) * 100
-  );
+  // Show loading state
+  if (loading) {
+    return (
+      <div className="min-h-screen bg-gradient-to-br from-neutral-900 via-neutral-800 to-neutral-900 flex items-center justify-center">
+        <div className="text-center">
+          <Loader2 className="w-12 h-12 text-primary animate-spin mx-auto mb-4" />
+          <p className="text-white text-lg">Loading achievements...</p>
+        </div>
+      </div>
+    );
+  }
+
+  // Show error state
+  if (error) {
+    return (
+      <div className="min-h-screen bg-gradient-to-br from-neutral-900 via-neutral-800 to-neutral-900 flex items-center justify-center">
+        <div className="text-center max-w-md">
+          <EmptyState
+            icon={Trophy}
+            title="Failed to Load Achievements"
+            description={error}
+            actionLabel="Go Back to Dashboard"
+            onAction={() => router.push("/dashboard")}
+          />
+        </div>
+      </div>
+    );
+  }
 
   return (
     <div className="min-h-screen bg-gradient-to-br from-neutral-900 via-neutral-800 to-neutral-900">
@@ -240,10 +211,10 @@ export default function Achievements() {
                 </div>
                 <h3 className="text-white font-semibold mb-2">Unlocked</h3>
                 <p className="text-3xl font-bold text-primary">
-                  {unlockedCount}
+                  {stats?.unlocked || 0}
                 </p>
                 <p className="text-sm text-neutral-400">
-                  of {achievements.length}
+                  of {stats?.total || 0}
                 </p>
               </div>
             </Card>
@@ -255,7 +226,7 @@ export default function Achievements() {
                 </div>
                 <h3 className="text-white font-semibold mb-2">Completion</h3>
                 <p className="text-3xl font-bold text-secondary">
-                  {completionRate}%
+                  {stats?.completionRate || 0}%
                 </p>
                 <p className="text-sm text-neutral-400">Complete</p>
               </div>
@@ -267,7 +238,9 @@ export default function Achievements() {
                   <Star className="w-6 h-6 text-accent" />
                 </div>
                 <h3 className="text-white font-semibold mb-2">Total XP</h3>
-                <p className="text-3xl font-bold text-accent">{totalXP}</p>
+                <p className="text-3xl font-bold text-accent">
+                  {stats?.totalXP || 0}
+                </p>
                 <p className="text-sm text-neutral-400">Earned</p>
               </div>
             </Card>
@@ -278,8 +251,20 @@ export default function Achievements() {
                   <TrendingUp className="w-6 h-6 text-neutral-300" />
                 </div>
                 <h3 className="text-white font-semibold mb-2">Next Goal</h3>
-                <p className="text-2xl font-bold text-neutral-300">87/100</p>
-                <p className="text-sm text-neutral-400">Music Explorer</p>
+                <p className="text-2xl font-bold text-neutral-300">
+                  {achievements.find(
+                    (a) => a.isUnlocked && a.progress < a.threshold
+                  )?.progress || 0}
+                  /
+                  {achievements.find(
+                    (a) => a.isUnlocked && a.progress < a.threshold
+                  )?.threshold || 0}
+                </p>
+                <p className="text-sm text-neutral-400">
+                  {achievements.find(
+                    (a) => a.isUnlocked && a.progress < a.threshold
+                  )?.name || "No next goal"}
+                </p>
               </div>
             </Card>
           </div>
@@ -454,7 +439,10 @@ export default function Achievements() {
                     {achievement.isUnlocked && achievement.unlockedAt && (
                       <div className="pt-4 border-t border-neutral-700/30">
                         <p className="text-xs text-neutral-500 text-center">
-                          Unlocked {achievement.unlockedAt.toLocaleDateString()}
+                          Unlocked{" "}
+                          {new Date(
+                            achievement.unlockedAt || ""
+                          ).toLocaleDateString()}
                         </p>
                       </div>
                     )}

@@ -1,7 +1,8 @@
-import { NextRequest, NextResponse } from 'next/server';
-import { prisma } from '../../../lib/db';
-import { hashPassword, generateToken } from '../../../lib/auth';
-import { z } from 'zod';
+import { NextRequest, NextResponse } from "next/server";
+import { prisma } from "../../../lib/db";
+import { generateToken } from "../../../lib/auth";
+import { z } from "zod";
+import { randomUUID } from "crypto";
 
 const signupSchema = z.object({
   email: z.string().email(),
@@ -16,31 +17,29 @@ export async function POST(request: NextRequest) {
 
     // Check if user already exists
     const existingUser = await prisma.user.findUnique({
-      where: { email }
+      where: { email },
     });
 
     if (existingUser) {
       return NextResponse.json(
-        { error: 'User already exists' },
+        { error: "User already exists" },
         { status: 400 }
       );
     }
 
-    // Hash password
-    const hashedPassword = await hashPassword(password);
-
-    // Create user
+    // Create user (schema requires explicit id)
     const user = await prisma.user.create({
       data: {
+        id: randomUUID(),
         email,
-        displayName: displayName || email.split('@')[0],
-      }
+        displayName: displayName || email.split("@")[0],
+      },
     });
 
     // Generate JWT token
     const token = generateToken({
       userId: user.id,
-      email: user.email
+      email: user.email,
     });
 
     return NextResponse.json({
@@ -49,23 +48,22 @@ export async function POST(request: NextRequest) {
         email: user.email,
         displayName: user.displayName,
         avatarUrl: user.avatarUrl,
-        createdAt: user.createdAt
+        createdAt: user.createdAt,
       },
-      token
+      token,
     });
-
   } catch (error) {
-    console.error('Signup error:', error);
-    
+    console.error("Signup error:", error);
+
     if (error instanceof z.ZodError) {
       return NextResponse.json(
-        { error: 'Invalid input data', details: error.errors },
+        { error: "Invalid input data", details: error.errors },
         { status: 400 }
       );
     }
 
     return NextResponse.json(
-      { error: 'Internal server error' },
+      { error: "Internal server error" },
       { status: 500 }
     );
   }

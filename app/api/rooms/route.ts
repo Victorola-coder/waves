@@ -1,7 +1,8 @@
-import { NextRequest, NextResponse } from 'next/server';
-import { prisma } from '../../lib/db';
-import { getUserFromToken } from '../../lib/auth';
-import { z } from 'zod';
+import { NextRequest, NextResponse } from "next/server";
+import { prisma } from "../../lib/db";
+import { getUserFromToken } from "../../lib/auth";
+import { z } from "zod";
+import { randomUUID } from "crypto";
 
 const createRoomSchema = z.object({
   name: z.string().min(1).max(100),
@@ -11,9 +12,9 @@ const createRoomSchema = z.object({
 export async function GET(request: NextRequest) {
   try {
     const { searchParams } = new URL(request.url);
-    const page = parseInt(searchParams.get('page') || '1');
-    const limit = parseInt(searchParams.get('limit') || '20');
-    const status = searchParams.get('status') || 'active';
+    const page = parseInt(searchParams.get("page") || "1");
+    const limit = parseInt(searchParams.get("limit") || "20");
+    const status = searchParams.get("status") || "active";
 
     const skip = (page - 1) * limit;
 
@@ -28,17 +29,17 @@ export async function GET(request: NextRequest) {
             id: true,
             displayName: true,
             avatarUrl: true,
-          }
+          },
         },
         _count: {
           select: {
             members: true,
             queue: true,
-          }
-        }
+          },
+        },
       },
       orderBy: {
-        createdAt: 'desc'
+        createdAt: "desc",
       },
       skip,
       take: limit,
@@ -48,7 +49,7 @@ export async function GET(request: NextRequest) {
       where: {
         isPrivate: false,
         status: status as any,
-      }
+      },
     });
 
     return NextResponse.json({
@@ -57,14 +58,13 @@ export async function GET(request: NextRequest) {
         page,
         limit,
         total,
-        pages: Math.ceil(total / limit)
-      }
+        pages: Math.ceil(total / limit),
+      },
     });
-
   } catch (error) {
-    console.error('Get rooms error:', error);
+    console.error("Get rooms error:", error);
     return NextResponse.json(
-      { error: 'Internal server error' },
+      { error: "Internal server error" },
       { status: 500 }
     );
   }
@@ -72,22 +72,16 @@ export async function GET(request: NextRequest) {
 
 export async function POST(request: NextRequest) {
   try {
-    const authHeader = request.headers.get('authorization');
-    if (!authHeader?.startsWith('Bearer ')) {
-      return NextResponse.json(
-        { error: 'Unauthorized' },
-        { status: 401 }
-      );
+    const authHeader = request.headers.get("authorization");
+    if (!authHeader?.startsWith("Bearer ")) {
+      return NextResponse.json({ error: "Unauthorized" }, { status: 401 });
     }
 
     const token = authHeader.substring(7);
     const user = await getUserFromToken(token);
-    
+
     if (!user) {
-      return NextResponse.json(
-        { error: 'Unauthorized' },
-        { status: 401 }
-      );
+      return NextResponse.json({ error: "Unauthorized" }, { status: 401 });
     }
 
     const body = await request.json();
@@ -95,10 +89,11 @@ export async function POST(request: NextRequest) {
 
     const room = await prisma.room.create({
       data: {
+        id: randomUUID(),
         name,
         isPrivate,
         hostId: user.id,
-        status: 'idle',
+        status: "idle",
       },
       include: {
         host: {
@@ -106,34 +101,34 @@ export async function POST(request: NextRequest) {
             id: true,
             displayName: true,
             avatarUrl: true,
-          }
-        }
-      }
+          },
+        },
+      },
     });
 
     // Add creator as first member
     await prisma.roomMember.create({
       data: {
+        id: randomUUID(),
         roomId: room.id,
         userId: user.id,
-        role: 'host',
-      }
+        role: "host",
+      },
     });
 
     return NextResponse.json(room, { status: 201 });
-
   } catch (error) {
-    console.error('Create room error:', error);
-    
+    console.error("Create room error:", error);
+
     if (error instanceof z.ZodError) {
       return NextResponse.json(
-        { error: 'Invalid input data', details: error.errors },
+        { error: "Invalid input data", details: error.errors },
         { status: 400 }
       );
     }
 
     return NextResponse.json(
-      { error: 'Internal server error' },
+      { error: "Internal server error" },
       { status: 500 }
     );
   }

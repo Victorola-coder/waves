@@ -1,7 +1,7 @@
-import { NextRequest, NextResponse } from "next/server";
+import { z } from "zod";
 import { prisma } from "../../../lib/db";
+import { NextRequest, NextResponse } from "next/server";
 import { comparePassword, generateToken } from "../../../lib/auth";
-import { z } from "z";
 
 const loginSchema = z.object({
   email: z.string().email(),
@@ -27,7 +27,10 @@ export async function POST(request: NextRequest) {
     // Check if user has a password (not OAuth-only user)
     if (!user.passwordHash) {
       return NextResponse.json(
-        { error: "This account was created with OAuth. Please use Google to sign in." },
+        {
+          error:
+            "This account was created with OAuth. Please use Google to sign in.",
+        },
         { status: 401 }
       );
     }

@@ -23,6 +23,14 @@ export async function GET(request: NextRequest) {
       );
     }
 
+    // Check if Supabase is configured
+    if (!process.env.NEXT_PUBLIC_SUPABASE_URL || !process.env.SUPABASE_SERVICE_ROLE_KEY) {
+      return NextResponse.json(
+        { error: "Supabase not configured" },
+        { status: 500 }
+      );
+    }
+
     const supabase = createServerSupabaseClient();
 
     // Exchange code for session
@@ -73,8 +81,16 @@ export async function GET(request: NextRequest) {
       email: dbUser.email,
     });
 
+    // Check if app URL is configured
+    if (!process.env.NEXT_PUBLIC_APP_URL) {
+      return NextResponse.json(
+        { error: "App URL not configured" },
+        { status: 500 }
+      );
+    }
+
     // Redirect to dashboard with token
-    const redirectUrl = new URL("/dashboard", process.env.NEXT_PUBLIC_APP_URL!);
+    const redirectUrl = new URL("/dashboard", process.env.NEXT_PUBLIC_APP_URL);
     redirectUrl.searchParams.set("token", token);
 
     return NextResponse.redirect(redirectUrl.toString());
@@ -91,6 +107,22 @@ export async function GET(request: NextRequest) {
 // Get Google OAuth URL
 export async function POST(request: NextRequest) {
   try {
+    // Check if Supabase is configured
+    if (!process.env.NEXT_PUBLIC_SUPABASE_URL || !process.env.SUPABASE_SERVICE_ROLE_KEY) {
+      return NextResponse.json(
+        { error: "Supabase not configured" },
+        { status: 500 }
+      );
+    }
+
+    // Check if app URL is configured
+    if (!process.env.NEXT_PUBLIC_APP_URL) {
+      return NextResponse.json(
+        { error: "App URL not configured" },
+        { status: 500 }
+      );
+    }
+
     const supabase = createServerSupabaseClient();
     
     const { data, error } = await supabase.auth.signInWithOAuth({

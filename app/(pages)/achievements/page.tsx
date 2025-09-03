@@ -17,7 +17,7 @@ import {
   Heart,
   Zap,
 } from "lucide-react";
-import { Card } from "../components/ui";
+import { Card } from "@/app/components/ui";
 
 interface Achievement {
   id: string;

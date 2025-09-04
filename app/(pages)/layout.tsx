@@ -4,6 +4,7 @@ import { useAuth } from "@/app/hooks/use-auth";
 import { useRouter } from "next/navigation";
 import { useEffect, useState } from "react";
 import { Loader2 } from "lucide-react";
+import Link from "next/link";
 
 export default function PagesLayout({
   children,
@@ -53,30 +54,30 @@ export default function PagesLayout({
 
               {/* Navigation Links */}
               <nav className="hidden md:flex items-center space-x-6">
-                <a
+                <Link
                   href="/dashboard"
                   className="text-neutral-400 hover:text-white transition-colors"
                 >
                   Dashboard
-                </a>
-                <a
+                </Link>
+                <Link
                   href="/rooms/create"
                   className="text-neutral-400 hover:text-white transition-colors"
                 >
                   Create Room
-                </a>
-                <a
+                </Link>
+                <Link
                   href="/leaderboard"
                   className="text-neutral-400 hover:text-white transition-colors"
                 >
                   Leaderboard
-                </a>
-                <a
+                </Link>
+                <Link
                   href="/achievements"
                   className="text-neutral-400 hover:text-white transition-colors"
                 >
                   Achievements
-                </a>
+                </Link>
               </nav>
             </div>
 
@@ -107,12 +108,12 @@ export default function PagesLayout({
 
               {/* Profile and Logout */}
               <div className="flex items-center space-x-2">
-                <a
+                <Link
                   href="/profile"
                   className="px-3 py-2 text-sm text-neutral-400 hover:text-white transition-colors"
                 >
                   Profile
-                </a>
+                </Link>
                 <button
                   onClick={() => {
                     localStorage.removeItem("auth-token");

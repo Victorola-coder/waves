@@ -31,6 +31,8 @@ import { useRoom } from "@/app/hooks/use-room";
 import { useAuth } from "@/app/hooks/use-auth";
 import { useRouter } from "next/navigation";
 import { toast } from "sonner";
+import MusicPlayer from "@/app/components/music-player";
+import { useRoomWebSocket } from "@/app/hooks/use-websocket";
 
 interface Message {
   id: string;
@@ -50,15 +52,11 @@ export default async function RoomPage({
 }
 
 function RoomClient({ roomId }: { roomId: string }) {
-  const [isPlaying, setIsPlaying] = useState(false);
-  const [currentTrack, setCurrentTrack] = useState<any>(null);
   const [newMessage, setNewMessage] = useState("");
   const [activeTab, setActiveTab] = useState<"queue" | "members" | "chat">(
     "queue"
   );
   const [volume, setVolume] = useState(80);
-  const [isMuted, setIsMuted] = useState(false);
-  const [messages, setMessages] = useState<Message[]>([]);
 
   const { user } = useAuth();
   const router = useRouter();
@@ -72,6 +70,20 @@ function RoomClient({ roomId }: { roomId: string }) {
     removeFromQueue,
   } = useRoom(roomId);
 
+  // WebSocket functionality
+  const {
+    roomMessages,
+    currentTrack,
+    isPlaying,
+    roomMembers,
+    joinRoom: wsJoinRoom,
+    leaveRoom: wsLeaveRoom,
+    sendRoomMessage,
+    playTrack,
+    pauseTrack,
+    skipTrack,
+  } = useRoomWebSocket(roomId);
+
   // Auto-join room when component mounts
   useEffect(() => {
     if (roomId && user) {
@@ -79,40 +91,33 @@ function RoomClient({ roomId }: { roomId: string }) {
         console.error("Failed to join room:", err);
         toast.error("Failed to join room");
       });
+      // Also join via WebSocket
+      wsJoinRoom();
     }
-  }, [roomId, user]);
+  }, [roomId, user, joinRoom, wsJoinRoom]);
 
-  // Initialize messages with system message
+  // Cleanup on unmount
   useEffect(() => {
-    if (room) {
-      setMessages([
-        {
-          id: "1",
-          username: "system",
-          content: `Welcome to ${room.name}! 🎵`,
-          timestamp: new Date(),
-          type: "system",
-        },
-      ]);
-    }
-  }, [room]);
+    return () => {
+      wsLeaveRoom();
+    };
+  }, [wsLeaveRoom]);
 
   const handleSendMessage = () => {
-    if (newMessage.trim() && room) {
-      const message: Message = {
-        id: Date.now().toString(),
-        username: user?.displayName || "You",
-        content: newMessage,
-        timestamp: new Date(),
-        type: "message",
-      };
-      setMessages((prev) => [...prev, message]);
+    if (newMessage.trim()) {
+      sendRoomMessage(newMessage);
       setNewMessage("");
     }
   };
 
-  const togglePlayPause = () => setIsPlaying(!isPlaying);
-  const toggleMute = () => setIsMuted(!isMuted);
+  const togglePlayPause = () => {
+    if (isPlaying) {
+      pauseTrack();
+    } else {
+      // For now, just pause since we don't have a track to play
+      pauseTrack();
+    }
+  };
 
   // Show loading state
   if (loading) {
@@ -208,108 +213,42 @@ function RoomClient({ roomId }: { roomId: string }) {
       <div className="grid grid-cols-1 lg:grid-cols-3 gap-6">
         {/* Main Music Player */}
         <div className="lg:col-span-2">
-          <Card className="bg-neutral-800/50 border-neutral-600/30 mb-6">
-            <div className="p-6">
-              {/* Now Playing */}
-              <div className="text-center mb-6">
-                <div className="w-48 h-48 mx-auto mb-4 rounded-lg bg-neutral-700 flex items-center justify-center">
-                  {currentTrack?.artworkUrl ? (
-                    <img
-                      src={currentTrack.artworkUrl}
-                      alt="Album Art"
-                      className="w-full h-full object-cover rounded-lg"
-                    />
-                  ) : (
-                    <Music className="w-16 h-16 text-neutral-400" />
-                  )}
-                </div>
-                <h2 className="text-xl font-bold text-white mb-2">
-                  {currentTrack?.title || "No track playing"}
-                </h2>
-                <p className="text-neutral-400 mb-1">{currentTrack?.artist}</p>
-                <p className="text-sm text-neutral-500">
-                  {currentTrack?.album}
-                </p>
-              </div>
-
-              {/* Progress Bar */}
-              <div className="mb-6">
-                <div className="flex justify-between text-sm text-neutral-400 mb-2">
-                  <span>0:00</span>
-                  <span>{currentTrack?.duration || "0:00"}</span>
-                </div>
-                <div className="w-full bg-neutral-700 rounded-full h-2">
-                  <div className="bg-gradient-to-r from-primary to-secondary h-2 rounded-full w-1/3"></div>
-                </div>
-              </div>
-
-              {/* Player Controls */}
-              <div className="flex items-center justify-center space-x-4 mb-6">
-                <Button
-                  variant="secondary"
-                  size="sm"
-                  className="text-neutral-400 hover:text-white"
-                >
-                  <Shuffle className="w-5 h-5" />
-                </Button>
-                <Button
-                  variant="secondary"
-                  size="sm"
-                  className="text-neutral-400 hover:text-white"
-                >
-                  <SkipBack className="w-6 h-6" />
-                </Button>
-                <Button
-                  size="lg"
-                  className="w-16 h-16 bg-gradient-to-r from-primary to-secondary hover:from-primary/80 hover:to-secondary/80"
-                  onClick={togglePlayPause}
-                >
-                  {isPlaying ? (
-                    <Pause className="w-8 h-8" />
-                  ) : (
-                    <Play className="w-8 h-8" />
-                  )}
-                </Button>
-                <Button
-                  variant="secondary"
-                  size="sm"
-                  className="text-neutral-400 hover:text-white"
-                >
-                  <SkipForward className="w-6 h-6" />
-                </Button>
-                <Button
-                  variant="secondary"
-                  size="sm"
-                  className="text-neutral-400 hover:text-white"
-                >
-                  <Repeat className="w-5 h-5" />
-                </Button>
-              </div>
-
-              {/* Volume Control */}
-              <div className="flex items-center justify-center space-x-3">
-                <Button
-                  variant="secondary"
-                  size="sm"
-                  className="text-neutral-400 hover:text-white"
-                  onClick={toggleMute}
-                >
-                  {isMuted ? (
-                    <MicOff className="w-4 h-4" />
-                  ) : (
-                    <Volume2 className="w-4 h-4" />
-                  )}
-                </Button>
-                <div className="w-32 bg-neutral-700 rounded-full h-2">
-                  <div
-                    className="bg-neutral-400 h-2 rounded-full"
-                    style={{ width: `${isMuted ? 0 : volume}%` }}
-                  ></div>
-                </div>
-                <span className="text-sm text-neutral-400 w-12">{volume}%</span>
-              </div>
-            </div>
-          </Card>
+          <MusicPlayer
+            currentTrack={
+              currentTrack
+                ? {
+                    id: currentTrack.id || "1",
+                    name: currentTrack.title || "No track playing",
+                    artist: currentTrack.artist || "Unknown Artist",
+                    album: currentTrack.album || "Unknown Album",
+                    duration: currentTrack.duration || 180,
+                    imageUrl: currentTrack.artworkUrl || "",
+                    previewUrl: currentTrack.previewUrl,
+                    isPlaying: isPlaying,
+                  }
+                : null
+            }
+            isPlaying={isPlaying}
+            onPlayPause={togglePlayPause}
+            onSkipNext={() => {
+              skipTrack();
+              toast.info("Skipped to next track!");
+            }}
+            onSkipPrevious={() => {
+              // TODO: Implement skip previous functionality
+              toast.info("Skip previous functionality coming soon!");
+            }}
+            onVolumeChange={(vol) => setVolume(vol)}
+            onLike={() => {
+              // TODO: Implement like functionality
+              toast.info("Like functionality coming soon!");
+            }}
+            onShare={() => {
+              // TODO: Implement share functionality
+              toast.info("Share functionality coming soon!");
+            }}
+            className="mb-6"
+          />
 
           {/* Action Buttons */}
           <div className="flex space-x-4 mb-6">
@@ -504,7 +443,7 @@ function RoomClient({ roomId }: { roomId: string }) {
 
                     {/* Messages */}
                     <div className="h-64 overflow-y-auto space-y-3 mb-4">
-                      {messages.map((message) => (
+                      {roomMessages.map((message) => (
                         <div
                           key={message.id}
                           className={`${
@@ -655,7 +594,7 @@ function RoomClient({ roomId }: { roomId: string }) {
 
                     {/* Messages */}
                     <div className="h-64 overflow-y-auto space-y-3 mb-4">
-                      {messages.map((message) => (
+                      {roomMessages.map((message: any) => (
                         <div
                           key={message.id}
                           className={`${

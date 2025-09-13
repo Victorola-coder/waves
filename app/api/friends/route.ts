@@ -1,29 +1,23 @@
 import { NextRequest, NextResponse } from "next/server";
 import { prisma } from "../../lib/db";
-import { getUserFromToken } from "../../lib/auth";
-import { randomUUID } from "crypto";
+import { verifyToken } from "../../lib/auth";
 
 export async function GET(request: NextRequest) {
   try {
     const authHeader = request.headers.get("authorization");
-    
+
     if (!authHeader?.startsWith("Bearer ")) {
-      return NextResponse.json(
-        { error: "Unauthorized" },
-        { status: 401 }
-      );
+      return NextResponse.json({ error: "Unauthorized" }, { status: 401 });
     }
 
     const token = authHeader.substring(7);
-    const user = await getUserFromToken(token);
-    
-    if (!user) {
-      return NextResponse.json(
-        { error: "Unauthorized" },
-        { status: 401 }
-      );
+    const decoded = verifyToken(token);
+
+    if (!decoded) {
+      return NextResponse.json({ error: "Unauthorized" }, { status: 401 });
     }
 
+    const userId = decoded.userId;
     const { searchParams } = new URL(request.url);
     const type = searchParams.get("type") || "all"; // all, following, followers, suggestions
 
@@ -31,22 +25,21 @@ export async function GET(request: NextRequest) {
 
     switch (type) {
       case "following":
-        // Mock data for now - would come from Follow table
-        friendsData = await getMockFollowing(user.id);
+        friendsData = await getFollowing(userId);
         break;
-      
+
       case "followers":
-        friendsData = await getMockFollowers(user.id);
+        friendsData = await getFollowers(userId);
         break;
-      
+
       case "suggestions":
-        friendsData = await getMockSuggestions(user.id);
+        friendsData = await getSuggestions(userId);
         break;
-      
+
       default:
         // Return all friends
-        const following = await getMockFollowing(user.id);
-        const followers = await getMockFollowers(user.id);
+        const following = await getFollowing(userId);
+        const followers = await getFollowers(userId);
         friendsData = [...following, ...followers];
         break;
     }
@@ -54,9 +47,8 @@ export async function GET(request: NextRequest) {
     return NextResponse.json({
       friends: friendsData,
       type,
-      total: friendsData.length
+      total: friendsData.length,
     });
-
   } catch (error) {
     console.error("Friends error:", error);
     return NextResponse.json(
@@ -70,24 +62,19 @@ export async function GET(request: NextRequest) {
 export async function POST(request: NextRequest) {
   try {
     const authHeader = request.headers.get("authorization");
-    
+
     if (!authHeader?.startsWith("Bearer ")) {
-      return NextResponse.json(
-        { error: "Unauthorized" },
-        { status: 401 }
-      );
+      return NextResponse.json({ error: "Unauthorized" }, { status: 401 });
     }
 
     const token = authHeader.substring(7);
-    const currentUser = await getUserFromToken(token);
-    
-    if (!currentUser) {
-      return NextResponse.json(
-        { error: "Unauthorized" },
-        { status: 401 }
-      );
+    const decoded = verifyToken(token);
+
+    if (!decoded) {
+      return NextResponse.json({ error: "Unauthorized" }, { status: 401 });
     }
 
+    const currentUserId = decoded.userId;
     const body = await request.json();
     const { targetUserId } = body;
 
@@ -98,7 +85,7 @@ export async function POST(request: NextRequest) {
       );
     }
 
-    if (currentUser.id === targetUserId) {
+    if (currentUserId === targetUserId) {
       return NextResponse.json(
         { error: "Cannot follow yourself" },
         { status: 400 }
@@ -106,23 +93,33 @@ export async function POST(request: NextRequest) {
     }
 
     // Check if already following
-    // In real app, this would check a Follow table
-    const isAlreadyFollowing = false; // Mock for now
+    const existingConnection = await prisma.socialConnection.findFirst({
+      where: {
+        followerId: currentUserId,
+        followingId: targetUserId,
+      },
+    });
 
-    if (isAlreadyFollowing) {
+    if (existingConnection) {
       return NextResponse.json(
         { error: "Already following this user" },
         { status: 400 }
       );
     }
 
-    // In real app, this would create a Follow record
-    // For now, return success
-    return NextResponse.json({
-      message: "Followed successfully",
-      following: true
+    // Create the follow relationship
+    await prisma.socialConnection.create({
+      data: {
+        followerId: currentUserId,
+        followingId: targetUserId,
+        status: "accepted",
+      },
     });
 
+    return NextResponse.json({
+      message: "Followed successfully",
+      following: true,
+    });
   } catch (error) {
     console.error("Follow user error:", error);
     return NextResponse.json(
@@ -136,24 +133,19 @@ export async function POST(request: NextRequest) {
 export async function DELETE(request: NextRequest) {
   try {
     const authHeader = request.headers.get("authorization");
-    
+
     if (!authHeader?.startsWith("Bearer ")) {
-      return NextResponse.json(
-        { error: "Unauthorized" },
-        { status: 401 }
-      );
+      return NextResponse.json({ error: "Unauthorized" }, { status: 401 });
     }
 
     const token = authHeader.substring(7);
-    const currentUser = await getUserFromToken(token);
-    
-    if (!currentUser) {
-      return NextResponse.json(
-        { error: "Unauthorized" },
-        { status: 401 }
-      );
+    const decoded = verifyToken(token);
+
+    if (!decoded) {
+      return NextResponse.json({ error: "Unauthorized" }, { status: 401 });
     }
 
+    const currentUserId = decoded.userId;
     const { searchParams } = new URL(request.url);
     const targetUserId = searchParams.get("userId");
 
@@ -164,13 +156,18 @@ export async function DELETE(request: NextRequest) {
       );
     }
 
-    // In real app, this would delete a Follow record
-    // For now, return success
-    return NextResponse.json({
-      message: "Unfollowed successfully",
-      following: false
+    // Delete the follow relationship
+    await prisma.socialConnection.deleteMany({
+      where: {
+        followerId: currentUserId,
+        followingId: targetUserId,
+      },
     });
 
+    return NextResponse.json({
+      message: "Unfollowed successfully",
+      following: false,
+    });
   } catch (error) {
     console.error("Unfollow user error:", error);
     return NextResponse.json(
@@ -180,74 +177,93 @@ export async function DELETE(request: NextRequest) {
   }
 }
 
-// Mock functions for now
-async function getMockFollowing(userId: string) {
-  const users = await prisma.user.findMany({
-    take: 10,
+// Real functions using SocialConnection model
+async function getFollowing(userId: string) {
+  const connections = await prisma.socialConnection.findMany({
     where: {
-      id: { not: userId }
+      followerId: userId,
+      status: "accepted",
     },
-    select: {
-      id: true,
-      displayName: true,
-      avatarUrl: true,
-      createdAt: true,
-    }
+    include: {
+      following: {
+        select: {
+          id: true,
+          displayName: true,
+          avatarUrl: true,
+          createdAt: true,
+        },
+      },
+    },
   });
 
-  return users.map(user => ({
-    id: user.id,
-    displayName: user.displayName || "Anonymous User",
-    avatarUrl: user.avatarUrl,
-    status: "online", // Mock status
+  return connections.map((conn) => ({
+    id: conn.following.id,
+    displayName: conn.following.displayName || "Anonymous User",
+    avatarUrl: conn.following.avatarUrl,
+    status: "online", // Could be enhanced with real status tracking
     lastSeen: new Date().toISOString(),
-    mutualFriends: Math.floor(Math.random() * 5) + 1
+    followedAt: conn.createdAt.toISOString(),
+    mutualFriends: 0, // Could be calculated with additional queries
   }));
 }
 
-async function getMockFollowers(userId: string) {
-  const users = await prisma.user.findMany({
-    take: 8,
+async function getFollowers(userId: string) {
+  const connections = await prisma.socialConnection.findMany({
     where: {
-      id: { not: userId }
+      followingId: userId,
+      status: "accepted",
     },
-    select: {
-      id: true,
-      displayName: true,
-      avatarUrl: true,
-      createdAt: true,
-    }
+    include: {
+      follower: {
+        select: {
+          id: true,
+          displayName: true,
+          avatarUrl: true,
+          createdAt: true,
+        },
+      },
+    },
   });
 
-  return users.map(user => ({
-    id: user.id,
-    displayName: user.displayName || "Anonymous User",
-    avatarUrl: user.avatarUrl,
-    status: "online", // Mock status
+  return connections.map((conn) => ({
+    id: conn.follower.id,
+    displayName: conn.follower.displayName || "Anonymous User",
+    avatarUrl: conn.follower.avatarUrl,
+    status: "online", // Could be enhanced with real status tracking
     lastSeen: new Date().toISOString(),
-    mutualFriends: Math.floor(Math.random() * 3) + 1
+    followedAt: conn.createdAt.toISOString(),
+    mutualFriends: 0, // Could be calculated with additional queries
   }));
 }
 
-async function getMockSuggestions(userId: string) {
+async function getSuggestions(userId: string) {
+  // Get users who are not already followed by the current user
+  const followingIds = await prisma.socialConnection.findMany({
+    where: { followerId: userId },
+    select: { followingId: true },
+  });
+
+  const followingIdSet = new Set(followingIds.map((f) => f.followingId));
+  followingIdSet.add(userId); // Exclude self
+
   const users = await prisma.user.findMany({
     take: 15,
     where: {
-      id: { not: userId }
+      id: { notIn: Array.from(followingIdSet) },
     },
     select: {
       id: true,
       displayName: true,
       avatarUrl: true,
       createdAt: true,
-    }
+    },
   });
 
-  return users.map(user => ({
+  return users.map((user) => ({
     id: user.id,
     displayName: user.displayName || "Anonymous User",
     avatarUrl: user.avatarUrl,
-    mutualFriends: Math.floor(Math.random() * 8) + 1,
-    reason: "You have mutual friends" // Mock reason
+    mutualFriends: 0, // Could be calculated with additional queries
+    reason: "Suggested for you",
   }));
 }

@@ -15,120 +15,43 @@ import {
 import { useState } from "react";
 import { motion } from "framer-motion";
 import { Card, EmptyState } from "@/app/components/ui";
-
-interface LeaderboardEntry {
-  rank: number;
-  username: string;
-  avatar: string;
-  score: number;
-  level: number;
-  totalListens: number;
-  totalTime: string;
-  achievements: number;
-  change: "up" | "down" | "same";
-  changeAmount?: number;
-}
+import { useLeaderboard } from "@/app/hooks/use-leaderboard";
 
 export default function Leaderboard() {
-  const [selectedPeriod, setSelectedPeriod] = useState("weekly");
-  const [selectedCategory, setSelectedCategory] = useState("listening_time");
+  const [selectedPeriod, setSelectedPeriod] = useState<"week" | "month" | "year" | "all">("week");
+  const [selectedCategory, setSelectedCategory] = useState<"listening_time" | "rooms_created" | "achievements">("rooms_created");
+
+  const { data, loading, error } = useLeaderboard(selectedCategory, selectedPeriod);
 
   const periods = [
-    { value: "daily", label: "Daily", icon: Clock },
-    { value: "weekly", label: "Weekly", icon: Calendar },
-    { value: "monthly", label: "Monthly", icon: Calendar },
-    { value: "all_time", label: "All Time", icon: Trophy },
+    { value: "week" as const, label: "This Week", icon: Calendar },
+    { value: "month" as const, label: "This Month", icon: Calendar },
+    { value: "year" as const, label: "This Year", icon: Calendar },
+    { value: "all" as const, label: "All Time", icon: Trophy },
   ];
 
   const categories = [
     {
-      value: "listening_time",
+      value: "listening_time" as const,
       label: "Listening Time",
       icon: Clock,
       color: "text-blue-500",
     },
     {
-      value: "total_listens",
-      label: "Total Listens",
-      icon: Music,
-      color: "text-green-500",
+      value: "rooms_created" as const,
+      label: "Rooms Created",
+      icon: Users,
+      color: "text-purple-500",
     },
     {
-      value: "achievements",
+      value: "achievements" as const,
       label: "Achievements",
       icon: Star,
       color: "text-yellow-500",
     },
-    {
-      value: "rooms_hosted",
-      label: "Rooms Hosted",
-      icon: Users,
-      color: "text-purple-500",
-    },
   ];
 
-  // Mock leaderboard data
-  const leaderboardData: LeaderboardEntry[] = [
-    {
-      rank: 1,
-      username: "musicmaster",
-      avatar: "/api/placeholder/40/40",
-      score: 2847,
-      level: 45,
-      totalListens: 1247,
-      totalTime: "89h 32m",
-      achievements: 23,
-      change: "up",
-      changeAmount: 2,
-    },
-    {
-      rank: 2,
-      username: "vibekeeper",
-      avatar: "/api/placeholder/40/40",
-      score: 2654,
-      level: 42,
-      totalListens: 1189,
-      totalTime: "84h 15m",
-      achievements: 21,
-      change: "down",
-      changeAmount: 1,
-    },
-    {
-      rank: 3,
-      username: "grooveguru",
-      avatar: "/api/placeholder/40/40",
-      score: 2489,
-      level: 38,
-      totalListens: 1098,
-      totalTime: "76h 42m",
-      achievements: 19,
-      change: "up",
-      changeAmount: 3,
-    },
-    {
-      rank: 4,
-      username: "beatbuilder",
-      avatar: "/api/placeholder/40/40",
-      score: 2312,
-      level: 35,
-      totalListens: 987,
-      totalTime: "68h 19m",
-      achievements: 17,
-      change: "same",
-    },
-    {
-      rank: 5,
-      username: "rhythmrider",
-      avatar: "/api/placeholder/40/40",
-      score: 2156,
-      level: 32,
-      totalListens: 876,
-      totalTime: "61h 45m",
-      achievements: 15,
-      change: "up",
-      changeAmount: 1,
-    },
-  ];
+  const leaderboardData = data?.leaderboard || [];
 
   const getRankIcon = (rank: number) => {
     if (rank === 1) return <Crown className="w-6 h-6 text-yellow-500" />;
@@ -146,11 +69,11 @@ export default function Leaderboard() {
   };
 
   const getScoreDisplay = (score: number) => {
-    if (selectedCategory === "listening_time")
-      return `${Math.floor(score / 60)}h ${score % 60}m`;
-    if (selectedCategory === "total_listens") return score.toLocaleString();
-    if (selectedCategory === "achievements") return score;
-    if (selectedCategory === "rooms_hosted") return score;
+    if (selectedCategory === "listening_time") {
+      const hours = Math.floor(score / 60);
+      const mins = score % 60;
+      return `${hours}h ${mins}m`;
+    }
     return score;
   };
 
@@ -243,10 +166,11 @@ export default function Leaderboard() {
                 {periods.find((p) => p.value === selectedPeriod)?.label}{" "}
                 Leaderboard
               </h2>
-              <div className="flex items-center space-x-2 text-sm text-neutral-400">
-                <span>Your Rank:</span>
-                <span className="text-primary font-semibold">#127</span>
-              </div>
+              {loading && (
+                <div className="flex items-center space-x-2 text-sm text-neutral-400">
+                  <span>Loading…</span>
+                </div>
+              )}
             </div>
 
             {/* Top 3 Podium */}
@@ -295,9 +219,15 @@ export default function Leaderboard() {
             )}
 
             {/* Full Leaderboard */}
-            {leaderboardData.length > 0 ? (
+            {error ? (
+              <EmptyState
+                icon={Trophy}
+                title="Failed to Load Leaderboard"
+                description={error}
+              />
+            ) : leaderboardData.length > 0 ? (
               <div className="space-y-3">
-                {leaderboardData.map((entry, index) => (
+                {leaderboardData.map((entry: any, index: number) => (
                   <motion.div
                     key={entry.rank}
                     initial={{ opacity: 0, x: -20 }}
@@ -314,24 +244,24 @@ export default function Leaderboard() {
 
                     {/* User Info */}
                     <div className="flex-1 flex items-center space-x-4">
-                      <div className="w-12 h-12 rounded-full bg-neutral-700 flex items-center justify-center">
-                        <img
-                          src={entry.avatar}
-                          alt={entry.username}
-                          className="w-full h-full object-cover rounded-full"
-                        />
+                      <div className="w-12 h-12 rounded-full bg-neutral-700 overflow-hidden">
+                        {entry.avatarUrl ? (
+                          <img
+                            src={entry.avatarUrl}
+                            alt={entry.displayName}
+                            className="w-full h-full object-cover rounded-full"
+                          />
+                        ) : (
+                          <div className="w-full h-full flex items-center justify-center text-neutral-400">
+                            <Users className="w-6 h-6" />
+                          </div>
+                        )}
                       </div>
                       <div>
                         <h3 className="text-white font-semibold">
-                          {entry.username}
+                          {entry.displayName}
                         </h3>
-                        <div className="flex items-center space-x-2 text-sm text-neutral-400">
-                          <span>Level {entry.level}</span>
-                          <span>•</span>
-                          <span>{entry.totalListens} listens</span>
-                          <span>•</span>
-                          <span>{entry.achievements} achievements</span>
-                        </div>
+                        <div className="flex items-center space-x-2 text-sm text-neutral-400" />
                       </div>
                     </div>
 
@@ -340,20 +270,7 @@ export default function Leaderboard() {
                       <p className="text-xl font-bold text-primary">
                         {getScoreDisplay(entry.score)}
                       </p>
-                      <div className="flex items-center justify-end space-x-1">
-                        {getChangeIcon(entry.change)}
-                        {entry.changeAmount && entry.change !== "same" && (
-                          <span
-                            className={`text-sm ${
-                              entry.change === "up"
-                                ? "text-green-500"
-                                : "text-red-500"
-                            }`}
-                          >
-                            {entry.changeAmount}
-                          </span>
-                        )}
-                      </div>
+                      <div className="flex items-center justify-end space-x-1" />
                     </div>
                   </motion.div>
                 ))}
@@ -363,8 +280,7 @@ export default function Leaderboard() {
                 icon={Trophy}
                 title="No Leaderboard Data"
                 description="Start listening to music and creating rooms to appear on the leaderboard!"
-                actionLabel="Create Your First Room"
-                onAction={() => (window.location.href = "/rooms/create")}
+                variant="compact"
               />
             )}
           </div>

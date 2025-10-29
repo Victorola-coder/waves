@@ -26,7 +26,6 @@ import { Button, Card, Input, TextArea, EmptyState } from "@/app/components/ui";
 import { useProfile } from "@/app/hooks/use-profile";
 import { useAuth } from "@/app/hooks/use-auth";
 import { useRouter } from "next/navigation";
-import { toast } from "sonner";
 
 export default function Profile() {
   const [isEditing, setIsEditing] = useState(false);
@@ -479,6 +478,11 @@ export default function Profile() {
                         ) : (
                           <Button
                             size="sm"
+                            onClick={() => {
+                              if (connection.provider === "spotify") {
+                                window.location.href = "/api/spotify/login";
+                              }
+                            }}
                             className="bg-gradient-to-r from-primary to-secondary hover:from-primary/80 hover:to-secondary/80"
                           >
                             Connect

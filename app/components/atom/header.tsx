@@ -35,7 +35,7 @@ export default function Header() {
 
   return (
     <motion.header
-      className="bg-neutral/80 backdrop-blur-xl border-b border-neutral-400/20 px-4 sm:px-6 md:px-8 lg:px-16 xl:px-[131px] py-3 md:py-[10px] flex items-center justify-between relative sticky top-0 z-50"
+      className="bg-neutral/80 backdrop-blur-xl border-b border-neutral-400/20 px-4 sm:px-6 md:px-8 lg:px-16 xl:px-[131px] py-3 md:py-[10px] flex items-center justify-between relative top-0 z-50"
       initial={{ y: -50, opacity: 0 }}
       animate={{ y: 0, opacity: 1 }}
       transition={{ duration: 0.6, ease: "easeOut" }}
@@ -101,10 +101,10 @@ export default function Header() {
           </>
         ) : (
           // User is not logged in - show sign in and get started
-          <>
+          <div className="flex items-center gap-4">
             <Button
               variant="secondary"
-              className="text-sm md:text-base px-4 md:px-6 py-2 md:py-3"
+              className="text-sm md:text-base px-4 md:pxj-6 py-2 md:py-3"
               onClick={() => router.push("/login")}
             >
               Sign In
@@ -116,7 +116,7 @@ export default function Header() {
             >
               Get Started
             </Button>
-          </>
+          </div>
         )}
       </div>
 

@@ -65,13 +65,14 @@ export default function Home() {
               animate={{ opacity: 1, y: 0 }}
               transition={{ duration: 0.6, delay: 0.4 }}
             >
-              <Button
-                variant="primary"
-                className="w-full sm:w-auto px-6 sm:px-8 py-3 sm:py-4 text-base sm:text-lg"
-                onClick={() => (window.location.href = "/signup")}
-              >
-                Get Started
-              </Button>
+              <Link href="/signup">
+                <Button
+                  variant="primary"
+                  className="w-full sm:w-auto px-6 sm:px-8 py-3 sm:py-4 text-base sm:text-lg"
+                >
+                  Get Started
+                </Button>
+              </Link>
               <Button
                 variant="secondary"
                 className="w-full sm:w-auto px-6 sm:px-8 py-3 sm:py-4 text-base sm:text-lg"
@@ -362,7 +363,7 @@ export default function Home() {
 
           {/* Bottom CTA */}
           <motion.div
-            className="mt-[40px] sm:mt-[50px] md:mt-[60px] lg:mt-[70px] xl:mt-[80px] text-center relative z-10 px-4"
+            className="hidden mt-[40px] sm:mt-[50px] md:mt-[60px] lg:mt-[70px] xl:mt-[80px] text-center relative z-10 px-4"
             initial={{ opacity: 0, y: 30 }}
             whileInView={{ opacity: 1, y: 0 }}
             transition={{ duration: 0.6, delay: 0.4 }}
@@ -375,13 +376,15 @@ export default function Home() {
                   Ready to get started?
                 </span>
               </div>
-              <Button
-                variant="primary"
-                size="sm"
-                className="w-full sm:w-auto text-sm sm:text-base px-6 sm:px-8 py-3 sm:py-4"
-              >
-                Try Waves Now
-              </Button>
+              <Link href="/signup">
+                <Button
+                  variant="primary"
+                  size="sm"
+                  className="w-full sm:w-auto text-sm sm:text-base px-6 sm:px-8 py-3 sm:py-4"
+                >
+                  Try Waves Now
+                </Button>
+              </Link>
             </div>
           </motion.div>
         </section>

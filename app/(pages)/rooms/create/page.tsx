@@ -48,7 +48,7 @@ export default function CreateRoom() {
         isPrivate: roomData.isPrivate,
       });
 
-      toast.success("Room created successfully! 🎉");
+      toast.success("Room created successfully!");
       router.push(`/rooms/${newRoom.id}`);
     } catch (error: any) {
       toast.error(error.message || "Failed to create room");

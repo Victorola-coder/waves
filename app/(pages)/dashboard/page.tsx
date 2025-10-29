@@ -92,7 +92,7 @@ export default function Dashboard() {
         className="mb-8"
       >
         <h1 className="text-3xl md:text-4xl lg:text-5xl font-bold text-white mb-4">
-          Welcome back, {user.displayName || "Music Explorer"}! 🎵
+          Welcome back, {user.displayName || "Music Explorer"}!
         </h1>
         <p className="text-neutral-400 text-lg">
           Ready to discover new music with friends?

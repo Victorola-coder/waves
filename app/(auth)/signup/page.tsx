@@ -41,7 +41,7 @@ export default function Signup() {
     try {
       setIsLoading(true);
       await signup(email, password, displayName || undefined);
-      toast.success("Welcome to Waves! 🎵");
+      toast.success("Welcome to Waves!");
     } catch (error: any) {
       toast.error(error.message || "Signup failed");
     } finally {

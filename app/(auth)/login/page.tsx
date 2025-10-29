@@ -49,18 +49,15 @@ export default function Login() {
   };
 
   return (
-    <div className="min-h-screen bg-gradient-to-br from-neutral-900 via-neutral-800 to-neutral-900 flex items-center justify-center px-4">
+    <div className="px-4">
       <motion.div
         initial={{ opacity: 0, y: 20 }}
         animate={{ opacity: 1, y: 0 }}
         transition={{ duration: 0.6 }}
         className="w-full max-w-md"
       >
-        {/* Logo */}
+        {/* Title */}
         <div className="text-center mb-8">
-          <div className="w-16 h-16 bg-gradient-to-br from-primary to-secondary rounded-2xl flex items-center justify-center mx-auto mb-4">
-            <span className="text-white text-3xl">🌊</span>
-          </div>
           <h1 className="text-white text-2xl font-bold">Welcome Back</h1>
           <p className="text-neutral-400 mt-2">Continue your music journey</p>
         </div>

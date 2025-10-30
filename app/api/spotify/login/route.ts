@@ -2,7 +2,9 @@ import { NextRequest, NextResponse } from "next/server";
 
 export async function GET(_req: NextRequest) {
   const clientId = process.env.SPOTIFY_CLIENT_ID;
-  const redirectUri = `${process.env.NEXT_PUBLIC_APP_URL}/api/spotify/auth`;
+  const redirectUri =
+    process.env.SPOTIFY_REDIRECT_URI ||
+    `${process.env.NEXT_PUBLIC_APP_URL}/api/spotify/auth`;
 
   if (
     !clientId ||

@@ -144,7 +144,7 @@ export async function GET(request: NextRequest) {
       displayName: user.displayName || "Unknown User",
       bio: "Music enthusiast and room host. Love discovering new artists and sharing music with friends.", // TODO: Add bio field to user model
       email: user.email,
-      avatar: user.avatarUrl || "/api/placeholder/120/120",
+      avatar: user.avatarUrl || "https://placehold.co/120x120",
       country: "United States", // TODO: Add country field to user model
       level,
       xp: currentLevelXP,

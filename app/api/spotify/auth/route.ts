@@ -31,7 +31,7 @@ export async function GET(request: NextRequest) {
         body: new URLSearchParams({
           grant_type: "authorization_code",
           code,
-          redirect_uri: `${process.env.NEXT_PUBLIC_APP_URL}/api/spotify/auth`,
+          redirect_uri: process.env.SPOTIFY_REDIRECT_URI || `${process.env.NEXT_PUBLIC_APP_URL}/api/spotify/auth`,
         }),
       }
     );
